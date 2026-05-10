@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>더 워케이션 — 뭘 만들고 누가 만드나</title>
+<style>
+  :root {
+    --dev: #3B82F6; --dev-bg: rgba(59,130,246,0.10);
+    --des: #8B5CF6; --des-bg: rgba(139,92,246,0.10);
+    --qa:  #10B981; --qa-bg:  rgba(16,185,129,0.10);
+    --bg:  #0F172A;
+    --card:#1E293B;
+    --card2:#263548;
+    --border:#334155;
+    --text:#F1F5F9;
+    --muted:#94A3B8;
+    --dim:#64748B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    padding: 44px 40px; min-width: 1060px; line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 48px; }
+  .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 10px; }
+  .header p  { color: var(--muted); font-size: 14px; }
+
+  /* ── Role legend ── */
+  .roles {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 44px;
+  }
+  .role {
+    background: var(--card); border-radius: 10px;
+    padding: 14px 18px; border-left: 4px solid;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .role.dev { border-color: var(--dev); }
+  .role.des { border-color: var(--des); }
+  .role.qa  { border-color: var(--qa);  }
+  .role-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .role-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .role.dev .role-name { color: #93C5FD; }
+  .role.des .role-name { color: #C4B5FD; }
+  .role.qa  .role-name { color: #6EE7B7; }
+  .role-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ── Phase ── */
+  .phase { margin-bottom: 28px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+
+  .phase-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 22px; background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .phase-num {
+    font-size: 32px; font-weight: 900; color: var(--dim);
+    flex-shrink: 0; min-width: 36px; line-height: 1;
+  }
+  .phase-title-block { flex: 1; }
+  .phase-title { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+  .phase-subtitle { font-size: 12px; color: var(--muted); }
+  .phase-done {
+    font-size: 12px; padding: 6px 14px; border-radius: 8px;
+    background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35);
+    color: #FCD34D; flex-shrink: 0; max-width: 260px; line-height: 1.6;
+  }
+  .phase-done strong { display: block; font-size: 10px; font-weight: 700; color: #F59E0B; margin-bottom: 2px; letter-spacing: 0.06em; }
+
+  /* ── Columns ── */
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .col { padding: 16px; border-right: 1px solid var(--border); }
+  .col:last-child { border-right: none; }
+  .col-head {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .ch-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .col.dev .ch-dot { background: var(--dev); }
+  .col.des .ch-dot { background: var(--des); }
+  .col.qa  .ch-dot { background: var(--qa);  }
+  .col.dev .col-head { color: #93C5FD; }
+  .col.des .col-head { color: #C4B5FD; }
+  .col.qa  .col-head { color: #6EE7B7; }
+
+  /* ── Task card ── */
+  .task {
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
+    background: var(--card2); border-left: 3px solid;
+  }
+  .task:last-child { margin-bottom: 0; }
+  .col.dev .task { border-color: var(--dev); }
+  .col.des .task { border-color: var(--des); }
+  .col.qa  .task { border-color: var(--qa);  }
+  .task.must { border-color: #F59E0B !important; background: rgba(245,158,11,0.07); }
+
+  .task-what {
+    font-size: 14px; font-weight: 700; margin-bottom: 5px;
+    display: flex; align-items: flex-start; gap: 6px;
+  }
+  .task-why {
+    font-size: 12px; color: var(--muted); margin-bottom: 8px;
+    padding-left: 22px;
+  }
+  .task-why strong { color: #CBD5E1; font-weight: 600; }
+
+  .task-meta { display: flex; gap: 5px; align-items: center; padding-left: 22px; }
+  .badge {
+    font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 4px; flex-shrink: 0;
+  }
+  .b-must  { background: rgba(245,158,11,0.2); color: #FCD34D; }
+  .b-time  { background: rgba(100,116,139,0.2); color: var(--muted); }
+  .b-block { background: rgba(239,68,68,0.15);  color: #FCA5A5; }
+
+  /* ── Parallel section ── */
+  .parallel-section {
+    margin-bottom: 44px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .ps-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: #0A1120;
+  }
+  .ps-header h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .ps-header p  { font-size: 12px; color: var(--muted); }
+
+  .ps-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+
+  .ps-col {
+    padding: 20px;
+    border-right: 1px solid var(--border);
+  }
+  .ps-col:last-child { border-right: none; }
+
+  .ps-col-title {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 14px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+
+  /* page assignment */
+  .page-assign-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .person-pages {
+    background: var(--card2); border-radius: 10px; padding: 12px;
+    border-top: 3px solid;
+  }
+  .person-pages.p1 { border-color: var(--dev); }
+  .person-pages.p2 { border-color: var(--des); }
+  .person-pages.p3 { border-color: var(--qa);  }
+  .pp-name { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+  .person-pages.p1 .pp-name { color: #93C5FD; }
+  .person-pages.p2 .pp-name { color: #C4B5FD; }
+  .person-pages.p3 .pp-name { color: #6EE7B7; }
+  .pp-list { list-style: none; font-size: 11px; color: var(--muted); line-height: 2; }
+  .pp-list li::before { content: "📄 "; }
+
+  /* merge rules */
+  .merge-rules { display: flex; flex-direction: column; gap: 8px; }
+  .merge-rule {
+    background: var(--card2); border-radius: 8px; padding: 10px 14px;
+    font-size: 12px; display: flex; align-items: flex-start; gap: 10px;
+    border: 1px solid var(--border);
+  }
+  .mr-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .mr-title { font-weight: 700; margin-bottom: 2px; font-size: 13px; }
+  .mr-desc  { color: var(--muted); line-height: 1.6; }
+  .mr-warn  { color: #FCA5A5; font-size: 11px; margin-top: 4px; }
+
+  /* shared files warning */
+  .shared-files {
+    margin-top: 0; padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    background: rgba(239,68,68,0.05);
+  }
+  .sf-title { font-size: 12px; font-weight: 700; color: #FCA5A5; margin-bottom: 10px; }
+  .sf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .sf-item {
+    background: var(--card2); border-radius: 8px; padding: 10px 12px;
+    border: 1px solid rgba(239,68,68,0.25);
+    font-size: 11px;
+  }
+  .sf-file { font-weight: 700; color: #FCA5A5; margin-bottom: 3px; font-family: monospace; font-size: 12px; }
+  .sf-desc { color: var(--muted); }
+  .sf-owner { margin-top: 5px; font-size: 10px; font-weight: 700; color: var(--dim); }
+
+  /* ── Flow overview (top) ── */
+  .flow-overview {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 44px; justify-content: center;
+  }
+  .fo-node {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 18px; text-align: center;
+    min-width: 130px;
+  }
+  .fo-num { font-size: 11px; color: var(--dim); margin-bottom: 3px; }
+  .fo-name { font-size: 13px; font-weight: 700; }
+  .fo-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .fo-arrow { font-size: 18px; color: var(--dim); padding: 0 6px; flex-shrink: 0; }
+
+  /* ── Bottom note ── */
+  .bottom-note {
+    margin-top: 32px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+  }
+  .bn-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: #FCA5A5; }
+  .bn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .bn-card {
+    background: var(--card2); border-radius: 10px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .bn-card-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .bn-list { list-style: none; font-size: 12px; color: var(--muted); line-height: 2; }
+  .bn-list li::before { content: "• "; color: var(--dim); }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <h1>더 워케이션 — 뭘 만들고 누가 만드나</h1>
+  <p>클로드로 바이브 코딩 기준 · 위에서부터 순서대로 · 위가 완성돼야 아래를 시작할 수 있음</p>
+</div>
+
+<!-- ── Parallel work section ── -->
+<div class="parallel-section">
+  <div class="ps-header">
+    <h2>🔀 3명이 동시에 작업하고 합치는 방법</h2>
+    <p>각자 Claude로 다른 화면을 만들고, 하나의 GitHub 레포에 합침 · 겹치지 않게 담당 페이지를 미리 나눠야 함</p>
+  </div>
+
+  <div class="ps-body">
+
+    <!-- LEFT: page assignment -->
+    <div class="ps-col">
+      <div class="ps-col-title">각자 담당하는 화면 (겹치면 안 됨)</div>
+      <div class="page-assign-grid">
+
+        <div class="person-pages p1">
+          <div class="pp-name">👤 사람 1</div>
+          <ul class="pp-list">
+            <li>로그인·회원가입</li>
+            <li>회사 등록 화면</li>
+            <li>인사담당자 현황판</li>
+            <li>비용 계산기</li>
+          </ul>
+        </div>
+
+        <div class="person-pages p2">
+          <div class="pp-name">👤 사람 2</div>
+          <ul class="pp-list">
+            <li>숙소 카드 목록</li>
+            <li>지도 화면</li>
+            <li>숙소 상세 페이지</li>
+            <li>서비스 소개 첫 화면</li>
+          </ul>
+        </div>
+
+        <div class="person-pages p3">
+          <div class="pp-name">👤 사람 3</div>
+          <ul class="pp-list">
+            <li>예약 흐름 3단계</li>
+            <li>예약 완료 화면</li>
+            <li>운영팀 숙소 등록</li>
+            <li>운영팀 예약·회원 관리</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: merge rules -->
+    <div class="ps-col">
+      <div class="ps-col-title">합칠 때 이렇게 해요 (순서대로)</div>
+      <div class="merge-rules">
+
+        <div class="merge-rule">
+          <div class="mr-icon">1️⃣</div>
+          <div>
+            <div class="mr-title">사람 1이 혼자 "프로젝트 기반"을 먼저 만들어서 GitHub에 올리기</div>
+            <div class="mr-desc">데이터베이스 구조, 로그인 기능, 공통 버튼·헤더 컴포넌트까지. 이게 완성된 다음에 나머지 두 명이 시작해야 함.</div>
+            <div class="mr-warn">⚠️ 기반이 없는데 각자 만들면 나중에 다 뜯어고쳐야 함</div>
+          </div>
+        </div>
+
+        <div class="merge-rule">
+          <div class="mr-icon">2️⃣</div>
+          <div>
+            <div class="mr-title">각자 브랜치(branch) 만들어서 작업</div>
+            <div class="mr-desc">GitHub에서 <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-size:11px;">branch-이름</code> 만들기. 사람1 → <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-size:11px;">feature/auth</code> / 사람2 → <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-size:11px;">feature/accommodations</code> / 사람3 → <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-size:11px;">feature/booking</code></div>
+          </div>
+        </div>
+
+        <div class="merge-rule">
+          <div class="mr-icon">3️⃣</div>
+          <div>
+            <div class="mr-title">Claude에게 요청할 때 항상 "프로젝트 구조"를 먼저 설명하기</div>
+            <div class="mr-desc">"우리 프로젝트는 Next.js + Supabase 써, 폴더 구조는 이래, 데이터베이스 구조는 이래" → 이렇게 먼저 말해야 Claude가 다른 사람 코드와 호환되게 만들어줌.</div>
+          </div>
+        </div>
+
+        <div class="merge-rule">
+          <div class="mr-icon">4️⃣</div>
+          <div>
+            <div class="mr-title">하루 끝에 각자 작업 저장하고 main에 합치기</div>
+            <div class="mr-desc">충돌(conflict) 나면 → 충돌 난 코드를 Claude에게 붙여넣고 "이 충돌 해결해줘" 라고 하면 됨.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Shared files warning -->
+  <div class="shared-files">
+    <div class="sf-title">🚫 이 파일들은 한 명만 수정해요 — 동시에 건드리면 합칠 때 충돌남</div>
+    <div class="sf-grid">
+      <div class="sf-item">
+        <div class="sf-file">supabase.ts</div>
+        <div class="sf-desc">데이터베이스 연결 설정</div>
+        <div class="sf-owner">→ 사람 1만 수정</div>
+      </div>
+      <div class="sf-item">
+        <div class="sf-file">layout.tsx</div>
+        <div class="sf-desc">모든 화면 공통 틀 (헤더·푸터)</div>
+        <div class="sf-owner">→ 사람 1만 수정</div>
+      </div>
+      <div class="sf-item">
+        <div class="sf-file">package.json</div>
+        <div class="sf-desc">라이브러리 목록 — 새 것 설치하면 알리기</div>
+        <div class="sf-owner">→ 설치 전에 팀에 공유</div>
+      </div>
+      <div class="sf-item">
+        <div class="sf-file">.env 파일</div>
+        <div class="sf-desc">비밀 키 (절대 GitHub에 올리면 안 됨)</div>
+        <div class="sf-owner">→ 카톡으로 공유</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Flow overview ── -->
+<div class="flow-overview">
+  <div class="fo-node">
+    <div class="fo-num">단계 0</div>
+    <div class="fo-name">시작 준비</div>
+    <div class="fo-sub">프로젝트 기반</div>
+  </div>
+  <div class="fo-arrow">→</div>
+  <div class="fo-node">
+    <div class="fo-num">단계 1</div>
+    <div class="fo-name">로그인 + 숙소</div>
+    <div class="fo-sub">볼 수 있는 상태</div>
+  </div>
+  <div class="fo-arrow">→</div>
+  <div class="fo-node">
+    <div class="fo-num">단계 2</div>
+    <div class="fo-name">예약하기</div>
+    <div class="fo-sub">쓸 수 있는 상태</div>
+  </div>
+  <div class="fo-arrow">→</div>
+  <div class="fo-node">
+    <div class="fo-num">단계 3</div>
+    <div class="fo-name">관리 화면</div>
+    <div class="fo-sub">보여줄 수 있는 상태</div>
+  </div>
+  <div class="fo-arrow">→</div>
+  <div class="fo-node">
+    <div class="fo-num">단계 4</div>
+    <div class="fo-name">세상에 공개</div>
+    <div class="fo-sub">링크 하나로 접속</div>
+  </div>
+</div>
+
+<!-- ── Roles ── -->
+<div class="roles">
+  <div class="role dev">
+    <div class="role-icon">🔧</div>
+    <div>
+      <div class="role-name">코딩 담당</div>
+      <div class="role-desc">클로드에게 "이 화면 만들어줘" 하고 결과물 정리하는 사람.<br>가장 중요한 역할 — 이 사람이 막히면 전체가 멈춤.</div>
+    </div>
+  </div>
+  <div class="role des">
+    <div class="role-icon">🎨</div>
+    <div>
+      <div class="role-name">디자인·기획 담당</div>
+      <div class="role-desc">화면이 어떻게 생겼는지 먼저 그리는 사람.<br>코딩 담당이 만들기 전에 틀을 잡아줌.</div>
+    </div>
+  </div>
+  <div class="role qa">
+    <div class="role-icon">📊</div>
+    <div>
+      <div class="role-name">데이터·테스트 담당</div>
+      <div class="role-desc">실제 숙소 정보 수집·입력 + 완성된 기능을 직접 눌러보고 오류 찾는 사람.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     단계 0 — 시작 준비
+════════════════════════════ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">0</div>
+    <div class="phase-title-block">
+      <div class="phase-title">시작 준비 <span style="font-size:13px;color:#FCD34D;font-weight:600;">— 사람 1이 먼저 완성해야 사람 2·3이 시작 가능</span></div>
+      <div class="phase-subtitle">아무것도 없는 상태에서 "기본 틀"을 잡는 단계 · 이게 없으면 화면을 하나도 만들 수 없음 · 사람 2·3은 이 단계에서 디자인·데이터 준비만 함</div>
+    </div>
+    <div class="phase-done">
+      <strong>✅ 이 단계가 끝난 상태</strong>
+      브라우저에서 빈 화면이라도 뜸<br>
+      숙소·예약 정보 저장 공간이 생김<br>
+      디자인 뼈대 그림이 공유됨
+    </div>
+  </div>
+  <div class="cols">
+
+    <div class="col dev">
+      <div class="col-head"><span class="ch-dot"></span>코딩 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 프로젝트 기본 틀 만들기</div>
+        <div class="task-why"><strong>왜?</strong> 클로드에게 화면을 만들어달라고 하려면 "집터"가 먼저 있어야 함. 지금은 집터조차 없는 상태.</div>
+        <div class="task-meta">
+          <span class="badge b-must">필수·먼저</span>
+          <span class="badge b-time">반나절</span>
+          <span class="badge b-block">이게 없으면 아무것도 못 만듦</span>
+        </div>
+      </div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 정보 저장 공간 설계</div>
+        <div class="task-why"><strong>왜?</strong> 숙소 정보, 예약 내용, 회사 정보, 사용자 정보를 어디에 저장할지 구조를 잡아야 함. 나중에 바꾸면 다 뒤집어야 함.</div>
+        <div class="task-meta">
+          <span class="badge b-must">필수·먼저</span>
+          <span class="badge b-time">반나절</span>
+          <span class="badge b-block">모든 화면 개발의 전제조건</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🔑 로그인 기능 연결</div>
+        <div class="task-why"><strong>왜?</strong> 인사담당자·직원·운영팀이 각각 다른 화면을 보려면 "누가 접속했는지" 구분하는 기능이 필요함.</div>
+        <div class="task-meta">
+          <span class="badge b-time">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col des">
+      <div class="col-head"><span class="ch-dot"></span>디자인·기획 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 핵심 화면 뼈대 스케치</div>
+        <div class="task-why"><strong>왜?</strong> 코딩 담당이 클로드에게 만들어달라고 할 때, "이렇게 생긴 화면이야"라고 보여줄 그림이 필요함. 그림 없이 말만으로 하면 원하는 것과 다르게 나옴.</div>
+        <div class="task-meta">
+          <span class="badge b-must">필수·먼저</span>
+          <span class="badge b-time">반나절~하루</span>
+          <span class="badge b-block">코딩 시작 전에 필요</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🎨 색깔·버튼 스타일 정하기</div>
+        <div class="task-why"><strong>왜?</strong> 화면마다 버튼 색이 다르면 이상해 보임. 한 번 정해두면 모든 화면에 통일감이 생김.</div>
+        <div class="task-meta">
+          <span class="badge b-time">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col qa">
+      <div class="col-head"><span class="ch-dot"></span>데이터·테스트 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 숙소 5개 정보 수집</div>
+        <div class="task-why"><strong>왜?</strong> 숙소 목록 화면을 만들어도 실제 데이터가 없으면 화면이 텅 빔. 최소 5개는 있어야 화면이 "살아있어 보임".</div>
+        <div class="task-meta">
+          <span class="badge b-must">필수·먼저</span>
+          <span class="badge b-time">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">📋 테스트 순서 문서 작성</div>
+        <div class="task-why"><strong>왜?</strong> 나중에 기능이 완성될 때마다 "어떤 순서로 눌러보면 되는지" 체크리스트가 있으면 테스트가 훨씬 빠름.</div>
+        <div class="task-meta">
+          <span class="badge b-time">반나절</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     단계 1 — 로그인 + 숙소 보기
+════════════════════════════ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">1</div>
+    <div class="phase-title-block">
+      <div class="phase-title">로그인 + 숙소 보기 화면 <span style="font-size:13px;color:#6EE7B7;font-weight:600;">— 3명 동시 작업 가능</span></div>
+      <div class="phase-subtitle">사람들이 서비스에 들어와서 "어떤 숙소가 있는지" 볼 수 있는 상태까지 · 사람 1: 로그인·회사등록 / 사람 2: 숙소 목록·지도·상세 / 사람 3: 디자인 스케치·데이터 준비</div>
+    </div>
+    <div class="phase-done">
+      <strong>✅ 이 단계가 끝난 상태</strong>
+      이메일로 로그인 됨<br>
+      숙소 5개가 카드로 나열됨<br>
+      지도에 숙소 위치가 핀으로 보임<br>
+      숙소 클릭 → 자세한 정보 페이지
+    </div>
+  </div>
+  <div class="cols">
+
+    <div class="col dev">
+      <div class="col-head"><span class="ch-dot"></span>코딩 담당이 할 것</div>
+
+      <div class="task">
+        <div class="task-what">🚪 회원가입·로그인 화면</div>
+        <div class="task-why"><strong>왜?</strong> 서비스에 들어오는 문. 인사담당자·직원·운영팀이 각각 로그인하면 자기 화면으로 이동해야 함.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🏢 회사 정보 등록 화면 (인사담당자용)</div>
+        <div class="task-why"><strong>왜?</strong> 인사담당자가 처음 가입하면 자기 회사 이름, 직원 수, 워케이션 예산을 등록해야 함. 이 정보가 있어야 나중에 예산 관리가 됨.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 숙소 카드 목록 화면</div>
+        <div class="task-why"><strong>왜?</strong> 서비스의 첫 화면. 어떤 숙소가 있는지 카드로 쭉 나옴. 지역·날짜·인원으로 걸러볼 수 있어야 함.</div>
+        <div class="task-meta">
+          <span class="badge b-must">핵심 화면</span>
+          <span class="badge b-time">하루</span>
+          <span class="badge b-block">예약 흐름 만들 때 필요</span>
+        </div>
+      </div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 지도 화면 + 숙소 상세 페이지</div>
+        <div class="task-why"><strong>왜?</strong> 지도에서 위치를 보고 핀을 클릭하면 그 숙소 자세한 정보(사진·가격·편의시설)가 나옴. 투자자에게 보여주는 핵심 화면 중 하나.</div>
+        <div class="task-meta">
+          <span class="badge b-must">데모 핵심</span>
+          <span class="badge b-time">하루</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col des">
+      <div class="col-head"><span class="ch-dot"></span>디자인·기획 담당이 할 것</div>
+
+      <div class="task">
+        <div class="task-what">🃏 숙소 카드 디자인</div>
+        <div class="task-why"><strong>왜?</strong> 사진·이름·가격·태그(와이파이, 업무 공간)가 한눈에 보기 좋게 배치돼야 함. 코딩 전에 그림으로 먼저 잡아야 함.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">📄 숙소 상세 페이지 디자인</div>
+        <div class="task-why"><strong>왜?</strong> 숙소 하나를 클릭했을 때 나오는 화면. 사진 여러 장, 편의시설, 위치, 가격, "예약하기 버튼" 위치를 정해둬야 함.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 예약 흐름 3단계 스케치</div>
+        <div class="task-why"><strong>왜?</strong> 단계 2에서 예약 화면을 만들기 전에 반드시 필요. "날짜 고르기 → 인원 입력 → 최종 확인" 3단계가 어떻게 생겼는지 그려야 함.</div>
+        <div class="task-meta">
+          <span class="badge b-must">단계 2 전에 필요</span>
+          <span class="badge b-time">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col qa">
+      <div class="col-head"><span class="ch-dot"></span>데이터·테스트 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 숙소 5개 시스템에 직접 입력</div>
+        <div class="task-why"><strong>왜?</strong> 개발자가 목록 화면을 완성해도 데이터가 없으면 아무것도 안 보임. 데이터가 들어가 있어야 "지도에 핀 5개가 보임".</div>
+        <div class="task-meta">
+          <span class="badge b-must">필수</span>
+          <span class="badge b-time">반나절</span>
+          <span class="badge b-block">지도 핀 표시에 필요</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">👤 테스트 계정 만들기</div>
+        <div class="task-why"><strong>왜?</strong> 인사담당자 계정 2개, 직원 계정 3개, 운영팀 계정 1개를 미리 만들어두면 테스트할 때 번거롭게 매번 가입 안 해도 됨.</div>
+        <div class="task-meta"><span class="badge b-time">1시간</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🔍 검색·필터 동작 확인</div>
+        <div class="task-why"><strong>왜?</strong> 지역·날짜·인원 필터가 실제로 결과를 줄여주는지 직접 눌러서 확인. 안 되면 코딩 담당에게 알려줌.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     단계 2 — 예약하기
+════════════════════════════ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">2</div>
+    <div class="phase-title-block">
+      <div class="phase-title">예약하기 기능 <span style="font-size:13px;color:#6EE7B7;font-weight:600;">— 3명 동시 작업 가능</span></div>
+      <div class="phase-subtitle">서비스의 핵심 · 실제로 "예약하기" 버튼을 누르면 예약이 저장되는 상태까지 · 사람 3이 예약 흐름 담당 / 사람 1·2는 각자 화면 마무리 + 현황판 스케치</div>
+    </div>
+    <div class="phase-done">
+      <strong>✅ 이 단계가 끝난 상태</strong>
+      직원이 숙소 선택 → 날짜·인원 입력 → 예약 완료<br>
+      인사담당자가 단체 예약 가능<br>
+      예약하면 예산이 자동으로 줄어듦
+    </div>
+  </div>
+  <div class="cols">
+
+    <div class="col dev">
+      <div class="col-head"><span class="ch-dot"></span>코딩 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 개인 예약 흐름 (3단계 화면)</div>
+        <div class="task-why"><strong>왜?</strong> 직원이 숙소를 골라서 예약하는 전체 흐름. 날짜 고르고 → 인원 입력하고 → "예약하기" 누르면 저장됨. 이게 서비스의 핵심 기능.</div>
+        <div class="task-meta">
+          <span class="badge b-must">데모 핵심</span>
+          <span class="badge b-time">하루</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">👥 단체 예약 화면 (인사담당자용)</div>
+        <div class="task-why"><strong>왜?</strong> 인사담당자가 직원 여러 명을 한 번에 예약할 수 있어야 함. 개인 예약과 달리 "몇 명"을 입력하면 총 비용이 자동 계산됨.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">✅ 예약 완료 확인 화면</div>
+        <div class="task-why"><strong>왜?</strong> 예약 후 "예약이 됐다"는 걸 확인해줘야 함. 예약번호·숙소·날짜·금액이 보이는 간단한 화면.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">💰 예약하면 예산 자동으로 줄어드는 기능</div>
+        <div class="task-why"><strong>왜?</strong> 예약할 때마다 회사 예산에서 금액이 빠져야 함. 이게 있어야 인사담당자 현황판에서 "예산 몇 % 썼다"가 보임.</div>
+        <div class="task-meta">
+          <span class="badge b-time">반나절</span>
+          <span class="badge b-block">인사담당자 현황판에 필요</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col des">
+      <div class="col-head"><span class="ch-dot"></span>디자인·기획 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 인사담당자 현황판 스케치</div>
+        <div class="task-why"><strong>왜?</strong> 단계 3에서 만들 현황판을 코딩 전에 먼저 그려둬야 함. 어떤 숫자·그래프가 보여야 하는지 지금 정해야 함.</div>
+        <div class="task-meta">
+          <span class="badge b-must">단계 3 전에 필요</span>
+          <span class="badge b-time">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🖥 운영팀 화면 스케치</div>
+        <div class="task-why"><strong>왜?</strong> 운영팀이 숙소를 직접 등록하고 예약 전체를 볼 수 있는 화면. 단계 3에서 만들기 전에 그려두기.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+    </div>
+
+    <div class="col qa">
+      <div class="col-head"><span class="ch-dot"></span>데이터·테스트 담당이 할 것</div>
+
+      <div class="task">
+        <div class="task-what">🧪 예약 흐름 전체 테스트</div>
+        <div class="task-why"><strong>왜?</strong> 인사담당자로 단체 예약, 직원으로 개인 예약을 직접 해보면서 오류가 없는지 확인. 발견된 오류는 코딩 담당에게 전달.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🏨 숙소 10개로 늘리기</div>
+        <div class="task-why"><strong>왜?</strong> 5개로는 데모가 빈약해 보임. 지역도 다양하게 (서울·강원·제주 등) 10개로 늘리면 훨씬 풍성해 보임.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 현황판용 예약 이력 데이터 넣기</div>
+        <div class="task-why"><strong>왜?</strong> 현황판에 "예약 0건, 예산 0% 사용"이 뜨면 아무것도 안 보임. 미리 예약 이력을 10~20건 넣어두면 현황판이 실제처럼 보임.</div>
+        <div class="task-meta">
+          <span class="badge b-must">데모에 필수</span>
+          <span class="badge b-time">반나절</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     단계 3 — 관리 화면
+════════════════════════════ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">3</div>
+    <div class="phase-title-block">
+      <div class="phase-title">관리 화면 만들기 <span style="font-size:13px;color:#6EE7B7;font-weight:600;">— 3명 동시 작업 가능</span></div>
+      <div class="phase-subtitle">투자자·지자체에 보여주는 핵심 화면 · 사람 1: HR 현황판·계산기 / 사람 2: 서비스 소개 첫 화면 / 사람 3: 운영팀 화면</div>
+    </div>
+    <div class="phase-done">
+      <strong>✅ 이 단계가 끝난 상태</strong>
+      인사담당자가 자기 회사 현황판을 볼 수 있음<br>
+      운영팀이 숙소를 직접 등록할 수 있음<br>
+      서비스 소개 첫 화면 완성
+    </div>
+  </div>
+  <div class="cols">
+
+    <div class="col dev">
+      <div class="col-head"><span class="ch-dot"></span>코딩 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 인사담당자 현황판</div>
+        <div class="task-why"><strong>왜?</strong> 투자자·지자체 데모의 핵심 화면. "우리 회사 직원이 몇 명 예약했고, 예산을 몇 % 썼는지"가 숫자와 그래프로 보임.</div>
+        <div class="task-meta">
+          <span class="badge b-must">데모 핵심</span>
+          <span class="badge b-time">하루</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🧮 비용 미리 계산기</div>
+        <div class="task-why"><strong>왜?</strong> 인사담당자가 예약 전에 "직원 20명이 3박 하면 총 얼마?" 를 바로 알 수 있음. 의사결정을 쉽게 해줌.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🖥 운영팀 숙소 등록 화면</div>
+        <div class="task-why"><strong>왜?</strong> 운영팀이 새 숙소를 직접 시스템에 등록할 수 있어야 함. 지금은 개발자가 직접 DB에 넣고 있는데, 이 화면이 생기면 안 그래도 됨.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">📋 운영팀 예약·회원 목록 화면</div>
+        <div class="task-why"><strong>왜?</strong> 전체 예약 내역과 가입된 회원을 운영팀이 한눈에 볼 수 있어야 함.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🌐 서비스 소개 첫 화면 (랜딩 페이지)</div>
+        <div class="task-why"><strong>왜?</strong> 처음 들어오는 사람이 "이게 뭔 서비스야?"를 바로 알 수 있어야 함. 투자자·지자체에 링크 보낼 때 처음 보이는 화면.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+    </div>
+
+    <div class="col des">
+      <div class="col-head"><span class="ch-dot"></span>디자인·기획 담당이 할 것</div>
+
+      <div class="task">
+        <div class="task-what">🌐 서비스 소개 첫 화면 디자인</div>
+        <div class="task-why"><strong>왜?</strong> "더 워케이션이 뭔지, 왜 좋은지" 를 한 화면에 설명해야 함. 디자인이 좋아야 첫인상이 좋음.</div>
+        <div class="task-meta"><span class="badge b-time">하루</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">✍️ 실제 문구 작성</div>
+        <div class="task-why"><strong>왜?</strong> 지금은 화면에 "숙소 이름" "설명 텍스트" 같은 임시 글씨가 들어가 있음. 실제 서비스 소개 문구로 바꿔야 데모다워 보임.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">📊 발표 자료 초안</div>
+        <div class="task-why"><strong>왜?</strong> 데모 당일에 어떤 순서로 화면을 보여줄지, 어떤 말을 할지 미리 정해두면 당일에 버벅이지 않음.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+    </div>
+
+    <div class="col qa">
+      <div class="col-head"><span class="ch-dot"></span>데이터·테스트 담당이 할 것</div>
+
+      <div class="task">
+        <div class="task-what">🔄 전체 흐름 처음부터 끝까지 테스트</div>
+        <div class="task-why"><strong>왜?</strong> "인사담당자 가입 → 직원 예약 → 현황판 확인"을 막힘없이 할 수 있는지 확인. 데모 당일에 막히면 망함.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🐛 발견한 오류 목록 정리</div>
+        <div class="task-why"><strong>왜?</strong> 지금까지 테스트하면서 발견한 오류를 한 곳에 모아서 코딩 담당에게 줘야 함. "화면 1에서 버튼 눌렀더니 오류남" 처럼 구체적으로.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     단계 4 — 세상에 공개
+════════════════════════════ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">4</div>
+    <div class="phase-title-block">
+      <div class="phase-title">세상에 공개하기</div>
+      <div class="phase-subtitle">링크 하나로 누구나 접속할 수 있는 상태 · 발표 준비 완료</div>
+    </div>
+    <div class="phase-done">
+      <strong>✅ 이 단계가 끝난 상태</strong>
+      URL 하나로 누구나 접속 가능<br>
+      폰·태블릿·PC 모두 정상 표시<br>
+      발표 자료 완성·리허설 완료
+    </div>
+  </div>
+  <div class="cols">
+
+    <div class="col dev">
+      <div class="col-head"><span class="ch-dot"></span>코딩 담당이 할 것</div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 인터넷에 올리기</div>
+        <div class="task-why"><strong>왜?</strong> 지금은 내 컴퓨터에서만 돌아감. Vercel에 올리면 URL 하나로 어디서든 접속 가능. 투자자·지자체에 링크를 보낼 수 있음.</div>
+        <div class="task-meta">
+          <span class="badge b-must">필수</span>
+          <span class="badge b-time">1~2시간</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">🐛 오류 수정</div>
+        <div class="task-why"><strong>왜?</strong> 테스트 담당이 찾아준 오류들을 고침. 데모 당일에 막히는 곳이 없도록.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+    </div>
+
+    <div class="col des">
+      <div class="col-head"><span class="ch-dot"></span>디자인·기획 담당이 할 것</div>
+
+      <div class="task">
+        <div class="task-what">🎯 로고·아이콘 적용</div>
+        <div class="task-why"><strong>왜?</strong> 브라우저 탭에 아이콘이 있고, 화면에 로고가 있으면 "진짜 서비스" 같아 보임.</div>
+        <div class="task-meta"><span class="badge b-time">1~2시간</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-what">📊 발표 자료 최종 완성</div>
+        <div class="task-why"><strong>왜?</strong> 데모 순서, 보여줄 화면 순서, 말할 내용을 확정. 누가 발표하든 막히지 않도록.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+    </div>
+
+    <div class="col qa">
+      <div class="col-head"><span class="ch-dot"></span>데이터·테스트 담당이 할 것</div>
+
+      <div class="task">
+        <div class="task-what">📱 배포 URL로 전 기기 테스트</div>
+        <div class="task-why"><strong>왜?</strong> 내 컴퓨터에선 됐는데 폰에서 안 되는 경우가 많음. 아이폰·안드로이드·PC 모두 직접 눌러봐야 함.</div>
+        <div class="task-meta"><span class="badge b-time">반나절</span></div>
+      </div>
+
+      <div class="task must">
+        <div class="task-what">⭐ 데모 리허설</div>
+        <div class="task-why"><strong>왜?</strong> 발표 당일 보여줄 순서 그대로 한 번 해봄. 막히는 곳 없는지 확인. 이 과정에서 빠진 데이터 채워넣기.</div>
+        <div class="task-meta">
+          <span class="badge b-must">필수</span>
+          <span class="badge b-time">1~2시간</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Claude prompt template ── -->
+<div class="bottom-note" style="margin-bottom:16px;">
+  <div class="bn-title" style="color:#C4B5FD;">🤖 Claude에게 요청할 때 — 맨 앞에 이걸 붙여야 다른 사람 코드와 호환됨</div>
+  <div style="background:var(--card2); border-radius:10px; padding:16px 18px; font-size:12px; line-height:1.9; font-family:monospace; border:1px solid var(--border); color:#CBD5E1; margin-bottom:12px;">
+    우리 프로젝트 정보:<br>
+    - 프레임워크: Next.js (App Router)<br>
+    - 스타일: Tailwind CSS<br>
+    - 데이터베이스: Supabase (PostgreSQL)<br>
+    - 테이블 구조: users(id, email, role, company_id) / companies(id, name, budget) / accommodations(id, name, location, price, image_url) / bookings(id, user_id, accommodation_id, start_date, end_date, total_price, status)<br>
+    - 내가 담당하는 화면: <span style="color:#FCD34D;">[여기에 본인 담당 페이지 적기]</span><br>
+    <br>
+    이 구조에 맞게 [만들고 싶은 화면 설명] 만들어줘.
+  </div>
+  <div style="font-size:12px; color:var(--muted);">
+    💡 <strong style="color:#CBD5E1;">왜 이게 필요한가?</strong> Claude는 매 대화를 처음부터 시작함. 위 정보를 붙이지 않으면 다른 사람이 만든 코드와 전혀 다른 방식으로 만들어줘서 합칠 때 문제가 생김.
+  </div>
+</div>
+
+<!-- ── Bottom note ── -->
+<div class="bottom-note">
+  <div class="bn-title">⚠️ 막히면 이렇게 하세요</div>
+  <div class="bn-grid">
+
+    <div class="bn-card">
+      <div class="bn-card-title" style="color:#93C5FD;">🔧 코딩 담당이 막힐 때</div>
+      <ul class="bn-list">
+        <li>클로드에게 오류 메시지 그대로 붙여넣기</li>
+        <li>막히면 바로 팀에 공유 — 혼자 2시간 이상 붙잡지 말기</li>
+        <li>기능이 복잡하면 더 작게 쪼개서 하나씩</li>
+        <li>안 되면 그 기능 빼고 진행 — 완벽보다 동작이 먼저</li>
+      </ul>
+    </div>
+
+    <div class="bn-card">
+      <div class="bn-card-title" style="color:#C4B5FD;">🎨 디자인 담당이 늦을 때</div>
+      <ul class="bn-list">
+        <li>예쁜 디자인보다 뼈대 스케치 먼저</li>
+        <li>코딩 담당이 기다리면 안 되니까 초안 먼저 공유</li>
+        <li>디테일은 코딩이 진행되면서 같이 다듬으면 됨</li>
+      </ul>
+    </div>
+
+    <div class="bn-card">
+      <div class="bn-card-title" style="color:#6EE7B7;">📊 데이터가 부족할 때</div>
+      <ul class="bn-list">
+        <li>숙소 사진 없으면 임시 이미지로 대체</li>
+        <li>숙소 3개만 있어도 개발은 시작 가능</li>
+        <li>예약 이력은 직접 만들어서 넣어도 됨</li>
+        <li>실제 숙소 섭외는 나중에 — 지금은 데모 우선</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

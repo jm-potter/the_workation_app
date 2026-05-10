@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>더 워케이션 — 1주일 스프린트 로드맵</title>
+<style>
+  :root {
+    --dev:        #2563EB;
+    --dev-light:  #EFF6FF;
+    --dev-mid:    #BFDBFE;
+    --des:        #7C3AED;
+    --des-light:  #F5F3FF;
+    --des-mid:    #DDD6FE;
+    --qa:         #059669;
+    --qa-light:   #ECFDF5;
+    --qa-mid:     #A7F3D0;
+
+    --day3:       #FEF3C7;
+    --day3-border:#F59E0B;
+    --day7:       #D1FAE5;
+    --day7-border:#059669;
+
+    --gray-50:  #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-300: #D1D5DB;
+    --gray-400: #9CA3AF;
+    --gray-600: #4B5563;
+    --gray-800: #1F2937;
+    --gray-900: #111827;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #EEF2F7;
+    color: var(--gray-900);
+    padding: 24px 20px 40px;
+    min-width: 1100px;
+  }
+
+  /* ── 헤더 ── */
+  .page-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .page-title h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.3px; }
+  .page-title p  { font-size: 13px; color: var(--gray-400); margin-top: 3px; }
+
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 5px 12px;
+    border-radius: 100px; letter-spacing: 0.3px;
+  }
+  .badge-dev { background: var(--dev); color: white; }
+  .badge-des { background: var(--des); color: white; }
+  .badge-qa  { background: var(--qa);  color: white; }
+  .badge-out { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+
+  /* ── 기술 스택 배너 ── */
+  .stack-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    flex-wrap: wrap;
+  }
+  .stack-label { font-size: 11px; font-weight: 800; color: var(--gray-400); letter-spacing: 0.5px; margin-right: 4px; }
+  .stack-chip {
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--gray-100); color: var(--gray-800);
+    border: 1px solid var(--gray-200);
+  }
+  .stack-chip.highlight { background: #EFF6FF; color: var(--dev); border-color: #BFDBFE; }
+  .stack-sep { color: var(--gray-300); font-size: 14px; }
+
+  /* ── 메인 그리드 ── */
+  .roadmap {
+    display: grid;
+    grid-template-columns: 110px repeat(7, 1fr);
+    gap: 3px;
+    background: var(--gray-300);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+  }
+
+  /* 빈 코너 */
+  .corner-cell {
+    background: var(--gray-900);
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 8px;
+  }
+  .corner-cell span { font-size: 10px; color: var(--gray-400); font-weight: 700; text-align: center; line-height: 1.4; }
+
+  /* 날짜 헤더 */
+  .day-header {
+    background: var(--gray-900);
+    padding: 12px 10px 10px;
+    text-align: center;
+    position: relative;
+  }
+  .day-header.star { background: #78350F; }
+  .day-header.finish { background: #064E3B; }
+
+  .day-num { font-size: 11px; font-weight: 700; color: var(--gray-400); margin-bottom: 1px; }
+  .day-name { font-size: 15px; font-weight: 800; color: white; }
+  .day-tag {
+    display: inline-block; margin-top: 5px;
+    font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 100px; letter-spacing: 0.2px;
+  }
+  .tag-normal { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+  .tag-star   { background: #F59E0B; color: #1C1917; }
+  .tag-finish { background: #10B981; color: #022C22; }
+
+  /* 역할 라벨 */
+  .role-label {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 7px; padding: 16px 8px; text-align: center;
+  }
+  .role-emoji { font-size: 26px; }
+  .role-chip {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
+    padding: 3px 8px; border-radius: 100px; color: white;
+  }
+  .role-name { font-size: 11px; font-weight: 600; color: var(--gray-600); line-height: 1.4; }
+
+  .dev-label { background: var(--dev-light); }
+  .des-label { background: var(--des-light); }
+  .qa-label  { background: var(--qa-light);  }
+
+  /* 작업 셀 */
+  .task-cell {
+    background: white;
+    padding: 10px 9px;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .task-cell.day3-col { background: #FFFBEB; }
+  .task-cell.day7-col { background: #F0FDF4; }
+
+  /* 작업 아이템 */
+  .task {
+    display: flex; align-items: flex-start; gap: 5px;
+    padding: 5px 8px; border-radius: 7px;
+    font-size: 11.5px; line-height: 1.4; font-weight: 500;
+  }
+  .task-icon { font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+
+  .dev-task { background: var(--dev-light); color: #1E3A8A; }
+  .des-task { background: var(--des-light); color: #4C1D95; }
+  .qa-task  { background: var(--qa-light);  color: #064E3B; }
+
+  .warn-task { background: #FFF7ED; color: #92400E; border: 1px solid #FDE68A; }
+
+  /* 주의 배지 */
+  .bottleneck {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px;
+    background: #FEF3C7; color: #92400E;
+    border: 1px solid #FCD34D;
+    align-self: flex-start; margin-bottom: 2px;
+  }
+
+  /* 마일스톤 행 */
+  .milestone-corner {
+    background: var(--gray-800);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .milestone-corner span { font-size: 10px; color: var(--gray-400); font-weight: 700; }
+
+  .milestone-cell {
+    padding: 10px 10px;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .ms-normal { background: var(--gray-800); }
+  .ms-star   { background: #78350F; }
+  .ms-finish { background: #064E3B; }
+
+  .ms-icon  { font-size: 18px; }
+  .ms-text  { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.9); }
+  .ms-sub   { font-size: 10px; color: rgba(255,255,255,0.5); }
+
+  /* ── 하단 2칸 ── */
+  .bottom-wrap {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+  }
+
+  /* 완성 기준 */
+  .done-card {
+    background: white; border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .done-title { font-size: 12px; font-weight: 800; color: var(--gray-800); margin-bottom: 12px; }
+  .done-list  { display: flex; flex-wrap: wrap; gap: 8px; }
+  .done-item  {
+    font-size: 12px; font-weight: 600;
+    padding: 6px 12px; border-radius: 8px;
+    background: var(--gray-100); color: var(--gray-800);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .done-item.must { background: #D1FAE5; color: #064E3B; }
+
+  /* 절대 하지 말 것 */
+  .nope-card {
+    background: #FFF1F2; border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1px solid #FECDD3;
+  }
+  .nope-title { font-size: 12px; font-weight: 800; color: #991B1B; margin-bottom: 12px; }
+  .nope-item  {
+    font-size: 11.5px; font-weight: 500;
+    padding: 4px 0; color: #9F1239;
+    display: flex; align-items: center; gap: 6px;
+    border-bottom: 1px solid #FCE7F3;
+  }
+  .nope-item:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<div class="page-top">
+  <div class="page-title">
+    <h1>더 워케이션 — 1주일 스프린트 로드맵</h1>
+    <p>3인 · 7일 · 완성 목표: 투자자·지자체에 보여줄 수 있는 작동하는 데모 웹사이트</p>
+  </div>
+  <div class="badges">
+    <span class="badge badge-dev">👨‍💻 DEV 개발</span>
+    <span class="badge badge-des">🎨 DES 디자인</span>
+    <span class="badge badge-qa">🔍 QA 테스트·데이터</span>
+  </div>
+</div>
+
+<!-- ── 기술 스택 배너 ── -->
+<div class="stack-bar">
+  <span class="stack-label">STACK</span>
+  <span class="stack-chip highlight">Next.js</span>
+  <span class="stack-chip highlight">Tailwind CSS</span>
+  <span class="stack-chip highlight">Supabase</span>
+  <span class="stack-chip highlight">Vercel</span>
+  <span class="stack-chip highlight">카카오맵 API</span>
+  <span class="stack-sep">|</span>
+  <span class="stack-label">노코드 대안</span>
+  <span class="stack-chip">Bubble.io</span>
+  <span class="stack-chip">Airtable</span>
+  <span class="stack-chip">Google Maps</span>
+</div>
+
+<!-- ── 메인 로드맵 그리드 ── -->
+<div class="roadmap">
+
+  <!-- 헤더 행 -->
+  <div class="corner-cell"><span>역할 /<br>날짜</span></div>
+
+  <div class="day-header">
+    <div class="day-num">DAY 1</div>
+    <div class="day-name">월요일</div>
+    <div class="day-tag tag-normal">기반 세팅</div>
+  </div>
+  <div class="day-header">
+    <div class="day-num">DAY 2</div>
+    <div class="day-name">화요일</div>
+    <div class="day-tag tag-normal">회원 시스템</div>
+  </div>
+  <div class="day-header star">
+    <div class="day-num">DAY 3 ⭐</div>
+    <div class="day-name">수요일</div>
+    <div class="day-tag tag-star">핵심 기능 데이</div>
+  </div>
+  <div class="day-header">
+    <div class="day-num">DAY 4</div>
+    <div class="day-name">목요일</div>
+    <div class="day-tag tag-normal">예약 흐름</div>
+  </div>
+  <div class="day-header">
+    <div class="day-num">DAY 5</div>
+    <div class="day-name">금요일</div>
+    <div class="day-tag tag-normal">대시보드</div>
+  </div>
+  <div class="day-header">
+    <div class="day-num">DAY 6</div>
+    <div class="day-name">토요일</div>
+    <div class="day-tag tag-normal">버그 수정</div>
+  </div>
+  <div class="day-header finish">
+    <div class="day-num">DAY 7 🚀</div>
+    <div class="day-name">일요일</div>
+    <div class="day-tag tag-finish">배포 완료</div>
+  </div>
+
+  <!-- ── DEV 행 ── -->
+  <div class="role-label dev-label">
+    <span class="role-emoji">👨‍💻</span>
+    <span class="role-chip" style="background:var(--dev)">DEV</span>
+    <span class="role-name">개발<br>담당</span>
+  </div>
+
+  <div class="task-cell">
+    <div class="task dev-task"><span class="task-icon">📁</span>GitHub 레포 생성</div>
+    <div class="task dev-task"><span class="task-icon">🗄️</span>Supabase 프로젝트 세팅</div>
+    <div class="task dev-task"><span class="task-icon">⚡</span>Next.js 초기 세팅</div>
+    <div class="task dev-task"><span class="task-icon">🗺️</span>카카오맵 API 키 발급</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task dev-task"><span class="task-icon">🗃️</span>DB 테이블 설계·생성</div>
+    <div class="task dev-task"><span class="task-icon">👤</span>회원가입 화면 개발</div>
+    <div class="task dev-task"><span class="task-icon">🔐</span>로그인 화면 개발</div>
+    <div class="task dev-task"><span class="task-icon">🏢</span>기업 정보 등록 화면</div>
+  </div>
+
+  <div class="task-cell day3-col">
+    <div class="bottleneck">⭐ 오늘이 핵심!</div>
+    <div class="task dev-task"><span class="task-icon">📋</span>숙소 목록 화면 (DB 연동)</div>
+    <div class="task dev-task"><span class="task-icon">📍</span>지도 위 숙소 핀 표시</div>
+    <div class="task dev-task"><span class="task-icon">🔎</span>지역·날짜·인원 필터</div>
+    <div class="task dev-task"><span class="task-icon">🏠</span>숙소 상세 페이지</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task dev-task"><span class="task-icon">1️⃣</span>개별 예약 화면 (3단계)</div>
+    <div class="task dev-task"><span class="task-icon">👥</span>단체 예약 화면 (HR용)</div>
+    <div class="task dev-task"><span class="task-icon">💾</span>예약 DB 저장 연동</div>
+    <div class="task dev-task"><span class="task-icon">✅</span>예약 확인 페이지</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="bottleneck">⚠️ 병목 주의</div>
+    <div class="task dev-task"><span class="task-icon">📊</span>HR 대시보드 개발</div>
+    <div class="task dev-task"><span class="task-icon">🏡</span>ADM 숙소 등록 화면</div>
+    <div class="task dev-task"><span class="task-icon">📩</span>직원 초대 링크 기능</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task dev-task"><span class="task-icon">🐛</span>누적 버그 전체 수정</div>
+    <div class="task dev-task"><span class="task-icon">📱</span>모바일 반응형 적용</div>
+    <div class="task dev-task"><span class="task-icon">🧮</span>지원금 비용 계산기</div>
+    <div class="task dev-task"><span class="task-icon">⚡</span>로딩 속도 최적화</div>
+  </div>
+
+  <div class="task-cell day7-col">
+    <div class="task dev-task"><span class="task-icon">🚀</span>Vercel 배포</div>
+    <div class="task dev-task"><span class="task-icon">🔑</span>환경변수 프로덕션 설정</div>
+    <div class="task dev-task"><span class="task-icon">🔧</span>최종 버그 수정</div>
+    <div class="task dev-task"><span class="task-icon">🔗</span>도메인 연결</div>
+  </div>
+
+  <!-- ── DES 행 ── -->
+  <div class="role-label des-label">
+    <span class="role-emoji">🎨</span>
+    <span class="role-chip" style="background:var(--des)">DES</span>
+    <span class="role-name">기획·<br>디자인</span>
+  </div>
+
+  <div class="task-cell">
+    <div class="task des-task"><span class="task-icon">📐</span>전체 화면 목록 확정</div>
+    <div class="task des-task"><span class="task-icon">🎨</span>컬러·폰트 시스템 정의</div>
+    <div class="task des-task"><span class="task-icon">🧩</span>공통 컴포넌트 5개 완성</div>
+    <div class="task des-task"><span class="task-icon">📋</span>화면별 우선순위 정리</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task des-task"><span class="task-icon">🖼️</span>회원가입·로그인 Figma</div>
+    <div class="task des-task"><span class="task-icon">🔎</span>숙소 검색 화면 Figma</div>
+    <div class="task des-task"><span class="task-icon">🃏</span>숙소 카드 컴포넌트</div>
+  </div>
+
+  <div class="task-cell day3-col">
+    <div class="bottleneck">⭐ DEV에 빠르게 전달!</div>
+    <div class="task des-task"><span class="task-icon">🏠</span>숙소 상세 페이지 Figma</div>
+    <div class="task des-task"><span class="task-icon">📊</span>HR 대시보드 Figma</div>
+    <div class="task des-task"><span class="task-icon">📅</span>예약 흐름 3단계 Figma</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task des-task"><span class="task-icon">👤</span>EMP 마이페이지 Figma</div>
+    <div class="task des-task"><span class="task-icon">⚙️</span>ADM 숙소 등록 Figma</div>
+    <div class="task des-task"><span class="task-icon">📱</span>모바일 레이아웃 정의</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task des-task"><span class="task-icon">🧮</span>비용 계산기 화면 Figma</div>
+    <div class="task des-task"><span class="task-icon">🏛️</span>GOV·PRT 화면 Figma(UI만)</div>
+    <div class="task des-task"><span class="task-icon">📌</span>전체 화면 Figma 완성</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task des-task"><span class="task-icon">✏️</span>더미 텍스트 → 실제 콘텐츠</div>
+    <div class="task des-task"><span class="task-icon">🌐</span>랜딩 페이지 디자인·개발</div>
+    <div class="task des-task"><span class="task-icon">🏷️</span>로고·파비콘 적용</div>
+  </div>
+
+  <div class="task-cell day7-col">
+    <div class="task des-task"><span class="task-icon">📊</span>발표 자료 PPT 완성</div>
+    <div class="task des-task"><span class="task-icon">🎬</span>데모 시연 순서 정리</div>
+    <div class="task des-task"><span class="task-icon">📸</span>스크린샷·영상 캡처</div>
+  </div>
+
+  <!-- ── QA 행 ── -->
+  <div class="role-label qa-label">
+    <span class="role-emoji">🔍</span>
+    <span class="role-chip" style="background:var(--qa)">QA</span>
+    <span class="role-name">데이터·<br>테스트</span>
+  </div>
+
+  <div class="task-cell">
+    <div class="task qa-task"><span class="task-icon">🏠</span>숙소 5곳 정보 수집</div>
+    <div class="task qa-task"><span class="task-icon">📸</span>숙소 사진 수집·정리</div>
+    <div class="task qa-task"><span class="task-icon">📝</span>테스트 시나리오 작성</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task qa-task"><span class="task-icon">🗄️</span>숙소 5곳 DB에 직접 입력</div>
+    <div class="task qa-task"><span class="task-icon">👤</span>테스트 계정 3개 준비</div>
+    <div class="task qa-task"><span class="task-icon">🔗</span>Supabase 데이터 확인</div>
+  </div>
+
+  <div class="task-cell day3-col">
+    <div class="task qa-task"><span class="task-icon">🖼️</span>사진 용량 최적화</div>
+    <div class="task qa-task"><span class="task-icon">🔎</span>필터 동작 1차 테스트</div>
+    <div class="task qa-task"><span class="task-icon">📋</span>오류 목록 문서화</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task qa-task"><span class="task-icon">🔄</span>예약 흐름 전체 테스트</div>
+    <div class="task qa-task"><span class="task-icon">📋</span>오류 목록 업데이트</div>
+    <div class="task qa-task"><span class="task-icon">📩</span>오류 DEV에 즉시 전달</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task qa-task"><span class="task-icon">🔁</span>전체 흐름 통합 테스트</div>
+    <div class="task qa-task"><span class="task-icon">🎭</span>발표 시나리오 스크립트</div>
+    <div class="task qa-task"><span class="task-icon">📊</span>PPT 초안 작성 시작</div>
+  </div>
+
+  <div class="task-cell">
+    <div class="task qa-task"><span class="task-icon">🏠</span>숙소 10곳으로 데이터 보강</div>
+    <div class="task qa-task"><span class="task-icon">✅</span>전체 화면 최종 QA</div>
+    <div class="task qa-task"><span class="task-icon">📊</span>PPT 최종 완성</div>
+  </div>
+
+  <div class="task-cell day7-col">
+    <div class="task qa-task"><span class="task-icon">🌐</span>배포 URL 전체 테스트</div>
+    <div class="task qa-task"><span class="task-icon">📱</span>모바일·PC·태블릿 확인</div>
+    <div class="task qa-task"><span class="task-icon">🎯</span>데모 최종 리허설</div>
+  </div>
+
+  <!-- ── 마일스톤 행 ── -->
+  <div class="milestone-corner"><span>🎯 오늘<br>목표</span></div>
+
+  <div class="milestone-cell ms-normal">
+    <div class="ms-icon">🔧</div>
+    <div class="ms-text">환경 세팅</div>
+    <div class="ms-sub">로컬 실행 성공</div>
+  </div>
+  <div class="milestone-cell ms-normal">
+    <div class="ms-icon">👤</div>
+    <div class="ms-text">회원 시스템</div>
+    <div class="ms-sub">로그인 성공</div>
+  </div>
+  <div class="milestone-cell ms-star">
+    <div class="ms-icon">🗺️</div>
+    <div class="ms-text">지도 연동!</div>
+    <div class="ms-sub">핀 5개 표시</div>
+  </div>
+  <div class="milestone-cell ms-normal">
+    <div class="ms-icon">📅</div>
+    <div class="ms-text">예약 완성</div>
+    <div class="ms-sub">DB 저장 성공</div>
+  </div>
+  <div class="milestone-cell ms-normal">
+    <div class="ms-icon">📊</div>
+    <div class="ms-text">대시보드</div>
+    <div class="ms-sub">현황 조회</div>
+  </div>
+  <div class="milestone-cell ms-normal">
+    <div class="ms-icon">🐛</div>
+    <div class="ms-text">버그 0개</div>
+    <div class="ms-sub">콘텐츠 완성</div>
+  </div>
+  <div class="milestone-cell ms-finish">
+    <div class="ms-icon">🚀</div>
+    <div class="ms-text">배포 완료!</div>
+    <div class="ms-sub">URL 공유 가능</div>
+  </div>
+
+</div><!-- /roadmap -->
+
+<!-- ── 하단 2칸 ── -->
+<div class="bottom-wrap">
+
+  <!-- 완성 기준 -->
+  <div class="done-card">
+    <div class="done-title">✅ 1주일 후 완성되는 화면 13개 — 반드시 되어야 할 것 (초록) / 있으면 좋은 것 (회색)</div>
+    <div class="done-list">
+      <div class="done-item must">🌐 랜딩 페이지</div>
+      <div class="done-item must">👤 회원가입·로그인</div>
+      <div class="done-item must">🏢 기업 정보 등록</div>
+      <div class="done-item must">🔎 숙소 검색 목록</div>
+      <div class="done-item must">🗺️ 지도 탐색</div>
+      <div class="done-item must">🏠 숙소 상세 페이지</div>
+      <div class="done-item must">📅 예약 흐름 (3단계)</div>
+      <div class="done-item must">✅ 예약 확인 페이지</div>
+      <div class="done-item must">📊 HR 현황판</div>
+      <div class="done-item must">🧮 비용 미리 보기</div>
+      <div class="done-item">⚙️ ADM 숙소 등록</div>
+      <div class="done-item">🏛️ GOV 화면 (UI만)</div>
+      <div class="done-item">🏡 PRT 화면 (UI만)</div>
+    </div>
+  </div>
+
+  <!-- 절대 하지 말 것 -->
+  <div class="nope-card">
+    <div class="nope-title">🚫 이번 주 절대 하지 말아야 할 것</div>
+    <div class="nope-item"><span>💳</span> 실제 결제 연동 → "결제 완료" 버튼으로 모킹</div>
+    <div class="nope-item"><span>📧</span> 이메일 자동 발송 시스템 구축</div>
+    <div class="nope-item"><span>🤖</span> AI·OCR 기능 개발</div>
+    <div class="nope-item"><span>📱</span> 앱스토어 출시 (웹 먼저)</div>
+    <div class="nope-item"><span>🎨</span> 픽셀 퍼펙트 디자인 집착</div>
+    <div class="nope-item"><span>♾️</span> 범위 추가 (Scope Creep)</div>
+  </div>
+
+</div>
+
+</body>
+</html>

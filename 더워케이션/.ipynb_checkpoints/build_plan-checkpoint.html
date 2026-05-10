@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>더 워케이션 — 개발 순서 & 역할 분담</title>
+<style>
+  :root {
+    --dev: #3B82F6; --dev-bg: rgba(59,130,246,0.10);
+    --des: #8B5CF6; --des-bg: rgba(139,92,246,0.10);
+    --qa:  #10B981; --qa-bg:  rgba(16,185,129,0.10);
+    --warn: #F59E0B;
+    --bg:   #0F172A;
+    --card: #1E293B;
+    --card2:#263548;
+    --border:#334155;
+    --text: #F1F5F9;
+    --muted:#94A3B8;
+    --dim:  #64748B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    padding: 44px 40px;
+    min-width: 1100px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 44px; }
+  .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .header p  { color: var(--muted); font-size: 13px; }
+
+  /* ── Role cards ── */
+  .roles {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 44px;
+  }
+  .role-card {
+    background: var(--card); border-radius: 10px;
+    padding: 16px 18px; border-top: 3px solid;
+  }
+  .role-card.dev { border-color: var(--dev); }
+  .role-card.des { border-color: var(--des); }
+  .role-card.qa  { border-color: var(--qa);  }
+  .role-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .role-card.dev .role-title { color: #93C5FD; }
+  .role-card.des .role-title { color: #C4B5FD; }
+  .role-card.qa  .role-title { color: #6EE7B7; }
+  .role-sub  { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .role-skills { display: flex; flex-wrap: wrap; gap: 5px; }
+  .skill {
+    font-size: 10px; padding: 2px 7px; border-radius: 4px;
+    background: var(--card2); color: var(--muted);
+  }
+
+  /* ── Phase block ── */
+  .phase {
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .phase-head {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 20px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .ph-num {
+    font-size: 28px; font-weight: 900; color: var(--dim);
+    flex-shrink: 0; min-width: 32px;
+  }
+  .ph-info { flex: 1; }
+  .ph-name { font-size: 16px; font-weight: 700; }
+  .ph-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .ph-gate {
+    flex-shrink: 0;
+    font-size: 11px; padding: 5px 12px;
+    border-radius: 6px;
+    background: rgba(245,158,11,0.10);
+    border: 1px solid rgba(245,158,11,0.35);
+    color: #FCD34D;
+    max-width: 280px; text-align: right;
+  }
+  .ph-gate strong { display: block; font-size: 10px; color: var(--warn); margin-bottom: 2px; letter-spacing:0.05em; }
+
+  /* ── Phase columns ── */
+  .phase-body {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .phase-col {
+    padding: 14px 16px;
+    border-right: 1px solid var(--border);
+  }
+  .phase-col:last-child { border-right: none; }
+
+  .col-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding-bottom: 10px; margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .col-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dev-col .col-dot { background: var(--dev); }
+  .des-col .col-dot { background: var(--des); }
+  .qa-col  .col-dot { background: var(--qa);  }
+  .dev-col .col-label { color: #93C5FD; }
+  .des-col .col-label { color: #C4B5FD; }
+  .qa-col  .col-label { color: #6EE7B7; }
+
+  /* ── Task card ── */
+  .task {
+    background: var(--card2);
+    border-left: 3px solid;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .task:last-child { margin-bottom: 0; }
+  .dev-col .task { border-color: var(--dev); }
+  .des-col .task { border-color: var(--des); }
+  .qa-col  .task { border-color: var(--qa);  }
+  .task.critical { border-color: var(--warn) !important; background: rgba(245,158,11,0.06); }
+
+  .t-name { font-weight: 600; margin-bottom: 4px; }
+  .t-desc { font-size: 11px; color: var(--muted); margin-bottom: 7px; line-height: 1.55; }
+  .t-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+  .tag {
+    font-size: 9px; font-weight: 700;
+    padding: 2px 6px; border-radius: 3px; flex-shrink: 0;
+  }
+  .tag-effort { background: rgba(100,116,139,0.25); color: var(--muted); }
+  .tag-blocks { background: rgba(239,68,68,0.18); color: #FCA5A5; }
+  .tag-needs  { background: rgba(245,158,11,0.18); color: #FCD34D; }
+  .tag-output { background: rgba(16,185,129,0.18); color: #6EE7B7; }
+  .tag-star   { background: rgba(245,158,11,0.25); color: var(--warn); }
+
+  /* ── Critical path ── */
+  .cp-section {
+    margin-top: 32px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .cp-title {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #FCA5A5; margin-bottom: 6px;
+  }
+  .cp-subtitle {
+    font-size: 12px; color: var(--muted); margin-bottom: 18px;
+  }
+  .cp-chain {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 24px;
+  }
+  .cp-node {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .cp-node.must { border-color: var(--warn); }
+  .cp-node-name { font-size: 12px; font-weight: 600; }
+  .cp-node-who  {
+    font-size: 10px; padding: 1px 5px; border-radius: 3px;
+    font-weight: 700; display: inline-block; width: fit-content;
+  }
+  .by-dev { background: var(--dev-bg); color: #93C5FD; }
+  .by-des { background: var(--des-bg); color: #C4B5FD; }
+  .by-qa  { background: var(--qa-bg);  color: #6EE7B7; }
+  .cp-arrow { font-size: 16px; color: var(--dim); }
+
+  /* ── Blocking rules ── */
+  .block-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-top: 0;
+  }
+  .block-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .block-card-title {
+    font-size: 11px; font-weight: 700; color: #FCA5A5;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .block-list { list-style: none; font-size: 12px; color: var(--muted); line-height: 2; }
+  .block-list li::before { content: "→ "; color: var(--dim); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>더 워케이션 — 개발 순서 & 역할 분담</h1>
+  <p>아래로 내려갈수록 나중에 만드는 것 · 위가 완성돼야 아래를 시작할 수 있음</p>
+</div>
+
+<!-- ── ROLES ── -->
+<div class="roles">
+  <div class="role-card dev">
+    <div class="role-title">🔧 개발 (DEV)</div>
+    <div class="role-sub">백엔드 + 프론트엔드 코딩 담당 · 가장 병목이 되는 역할</div>
+    <div class="role-skills">
+      <span class="skill">Next.js</span>
+      <span class="skill">Supabase</span>
+      <span class="skill">DB 설계</span>
+      <span class="skill">API 개발</span>
+      <span class="skill">카카오맵</span>
+      <span class="skill">Vercel 배포</span>
+    </div>
+  </div>
+  <div class="role-card des">
+    <div class="role-title">🎨 기획·디자인 (DES)</div>
+    <div class="role-sub">화면 설계 + 디자인 + 콘텐츠 작성 담당</div>
+    <div class="role-skills">
+      <span class="skill">Figma</span>
+      <span class="skill">화면 설계</span>
+      <span class="skill">콘텐츠 작성</span>
+      <span class="skill">로고·브랜딩</span>
+      <span class="skill">발표 자료</span>
+    </div>
+  </div>
+  <div class="role-card qa">
+    <div class="role-title">📊 데이터·QA</div>
+    <div class="role-sub">숙소 데이터 수집·입력 + 기능 테스트 + 버그 리포트</div>
+    <div class="role-skills">
+      <span class="skill">데이터 수집</span>
+      <span class="skill">DB 직접 입력</span>
+      <span class="skill">시나리오 테스트</span>
+      <span class="skill">엑셀·스프레드시트</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PHASE 0 — 기반 설정
+════════════════════════════════════ -->
+<div class="phase">
+  <div class="phase-head">
+    <div class="ph-num">0</div>
+    <div class="ph-info">
+      <div class="ph-name">기반 설정</div>
+      <div class="ph-desc">모든 개발의 전제 조건 · 이것 없이는 아무것도 만들 수 없음</div>
+    </div>
+    <div class="ph-gate">
+      <strong>⛔ 다음 단계 진입 조건</strong>
+      로컬에서 "Hello World" 뜸<br>
+      DB 테이블 4개 생성 완료<br>
+      Figma 와이어프레임 공유됨
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="phase-col dev-col">
+      <div class="col-label"><span class="col-dot"></span>개발 (DEV)</div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ 프로젝트 초기 설정</div>
+        <div class="t-desc">GitHub 레포 생성, Next.js + Tailwind 초기화, Supabase 프로젝트 연동, 환경변수 설정</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-blocks">이 없으면 아무것도 못 만듦</span>
+        </div>
+      </div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ DB 테이블 4개 설계 + 생성</div>
+        <div class="t-desc">users · companies · accommodations · bookings<br>컬럼 정의, 관계(FK) 설정, RLS 정책 초안</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-blocks">모든 API 개발에 필요</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">Supabase Auth 설정</div>
+        <div class="t-desc">이메일/비밀번호 로그인, 역할별 권한 분리 (HR · EMP · ADM), 세션 관리</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-needs">DB 테이블 필요</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col des-col">
+      <div class="col-label"><span class="col-dot"></span>기획·디자인 (DES)</div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ 핵심 화면 와이어프레임</div>
+        <div class="t-desc">로그인 · 숙소 목록 · 숙소 상세 · 예약 3단계 · HR 현황판<br>뼈대만 먼저 — 디테일은 나중에</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절~하루</span>
+          <span class="tag tag-blocks">개발이 화면 없이 못 시작함</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">컬러·폰트·공통 컴포넌트</div>
+        <div class="t-desc">브랜드 컬러 2가지, 버튼 3종, 카드 컴포넌트, 입력 폼, 헤더/푸터</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-output">→ 개발자가 그대로 코딩</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col qa-col">
+      <div class="col-label"><span class="col-dot"></span>데이터·QA</div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ 숙소 5개 데이터 수집</div>
+        <div class="t-desc">이름 · 주소 · 대표 사진 2장 · 1박 가격 · 와이파이 여부 · 업무 공간 유무<br>엑셀로 정리해두면 DB 입력 빠름</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-blocks">숙소 화면 개발 전에 필요</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">테스트 시나리오 문서 작성</div>
+        <div class="t-desc">HR 예약 → EMP 예약 → HR 현황판 확인 순서로 클릭 흐름 작성<br>나중에 QA 체크리스트로 사용</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PHASE 1 — 인증 + 숙소
+════════════════════════════════════ -->
+<div class="phase">
+  <div class="phase-head">
+    <div class="ph-num">1</div>
+    <div class="ph-info">
+      <div class="ph-name">인증 + 숙소 화면</div>
+      <div class="ph-desc">로그인 + 기업 등록 + 숙소를 검색·지도에서 볼 수 있는 상태</div>
+    </div>
+    <div class="ph-gate">
+      <strong>⛔ 다음 단계 진입 조건</strong>
+      이메일로 로그인 성공<br>
+      숙소 5개 지도에 핀으로 표시됨<br>
+      숙소 카드 클릭 → 상세 페이지 이동
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="phase-col dev-col">
+      <div class="col-label"><span class="col-dot"></span>개발 (DEV)</div>
+
+      <div class="task">
+        <div class="t-name">회원가입 · 로그인 화면</div>
+        <div class="t-desc">이메일/비밀번호 입력, 로그인 후 역할에 따라 다른 화면으로 이동 (HR → 기업 등록, EMP → 숙소 검색)</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-needs">Auth 설정 완료 후</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">기업 정보 등록 화면 (HR)</div>
+        <div class="t-desc">회사명 · 담당자 · 직원 수 · 워케이션 예산 입력 → companies 테이블에 저장</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ 숙소 목록 API + 화면</div>
+        <div class="t-desc">accommodations 테이블에서 불러오기, 지역·날짜·인원 필터, 카드 형태로 목록 표시</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">하루</span>
+          <span class="tag tag-blocks">예약 흐름에 필요</span>
+        </div>
+      </div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ 카카오맵 + 숙소 상세</div>
+        <div class="t-desc">지도 위에 핀 표시 + 클릭 시 상세 페이지 이동, 사진·가격·편의시설·업무 환경 표시</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">하루</span>
+          <span class="tag tag-star">데모의 핵심 화면</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col des-col">
+      <div class="col-label"><span class="col-dot"></span>기획·디자인 (DES)</div>
+
+      <div class="task">
+        <div class="t-name">숙소 카드 + 목록 화면 디자인</div>
+        <div class="t-desc">사진 썸네일, 이름, 가격, 별점, 태그(와이파이·업무공간) 포함 카드 컴포넌트 완성</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">숙소 상세 페이지 디자인</div>
+        <div class="t-desc">사진 갤러리, 편의시설 아이콘, 업무 환경 섹션, "예약하기" CTA 버튼 위치 확정</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">예약 흐름 3단계 Figma</div>
+        <div class="t-desc">날짜 선택 → 인원 입력 → 최종 확인 각 화면 · 개발 전에 반드시 완성해야 함</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-blocks">Phase 2 개발 전에 필요</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col qa-col">
+      <div class="col-label"><span class="col-dot"></span>데이터·QA</div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ 숙소 5개 DB 직접 입력</div>
+        <div class="t-desc">Supabase 대시보드에서 accommodations 테이블에 직접 입력<br>사진은 Supabase Storage에 업로드</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-needs">Phase 0 DB 완성 후</span>
+          <span class="tag tag-blocks">지도 핀 표시에 필요</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">테스트 계정 생성</div>
+        <div class="t-desc">HR 계정 2개 (서로 다른 회사), EMP 계정 3개, ADM 계정 1개 직접 가입 후 역할 설정</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">1시간</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">1차 QA — 검색·필터 동작 확인</div>
+        <div class="t-desc">지역 필터, 날짜 선택, 인원 필터가 실제로 결과를 줄여주는지 확인 · 오류 목록 작성</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PHASE 2 — 예약 흐름
+════════════════════════════════════ -->
+<div class="phase">
+  <div class="phase-head">
+    <div class="ph-num">2</div>
+    <div class="ph-info">
+      <div class="ph-name">예약 흐름</div>
+      <div class="ph-desc">서비스의 핵심 · "예약하기" 버튼 → DB 저장 → 확인 페이지까지 완성</div>
+    </div>
+    <div class="ph-gate">
+      <strong>⛔ 다음 단계 진입 조건</strong>
+      EMP가 예약 → bookings 테이블에 저장됨<br>
+      HR이 단체 예약 완료<br>
+      예약 확인 페이지 표시됨
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="phase-col dev-col">
+      <div class="col-label"><span class="col-dot"></span>개발 (DEV)</div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ 개별 예약 흐름 (3단계)</div>
+        <div class="t-desc">
+          1단계: 날짜 선택 (달력 UI)<br>
+          2단계: 인원 수 + 특이사항 입력<br>
+          3단계: 금액 확인 + "예약 완료" 버튼 → bookings 저장
+        </div>
+        <div class="t-tags">
+          <span class="tag tag-effort">하루</span>
+          <span class="tag tag-needs">숙소 상세 페이지 완성 후</span>
+          <span class="tag tag-star">데모의 핵심</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">단체 예약 화면 (HR)</div>
+        <div class="t-desc">숙소 선택 + 날짜 + 참여 직원 수 입력, 총 비용 자동 계산, 일괄 예약 저장</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">예약 확인 · 완료 페이지</div>
+        <div class="t-desc">예약번호, 숙소명, 날짜, 금액 표시. "내 예약 목록 보기" 버튼 포함</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">예산 차감 로직</div>
+        <div class="t-desc">예약 저장 시 companies.budget에서 금액 차감 + 잔여 예산 실시간 표시</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-blocks">HR 현황판에 필요</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col des-col">
+      <div class="col-label"><span class="col-dot"></span>기획·디자인 (DES)</div>
+
+      <div class="task">
+        <div class="t-name">예약 완료 화면 + 에러 화면 디자인</div>
+        <div class="t-desc">성공 시 축하 메시지 + 예약 요약, 실패 시 에러 메시지 + 재시도 버튼</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">HR 현황판 Figma 완성</div>
+        <div class="t-desc">전체 예약 수 · 예산 사용률 게이지 · 참여 직원 수 · 이번 달 예약 리스트<br>Phase 3 개발 전에 완성 필요</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-blocks">Phase 3 개발 전에 필요</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">ADM 화면 Figma</div>
+        <div class="t-desc">숙소 등록 폼, 예약 목록, 회원 목록 화면 설계</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col qa-col">
+      <div class="col-label"><span class="col-dot"></span>데이터·QA</div>
+
+      <div class="task">
+        <div class="t-name">예약 시나리오 전체 테스트</div>
+        <div class="t-desc">
+          ① HR 로그인 → 단체 예약<br>
+          ② EMP 로그인 → 개별 예약<br>
+          ③ 두 예약 모두 DB에 저장됐는지 확인
+        </div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">숙소 10개로 데이터 보강</div>
+        <div class="t-desc">Phase 1의 5개에 추가로 5개 더 수집·입력. 지역 다양성 확보 (서울·강원·제주 등)</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">더미 예약 데이터 입력</div>
+        <div class="t-desc">HR 현황판에 채울 예약 이력 10건 직접 DB 입력. 날짜·금액 다양하게 설정</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-blocks">HR 현황판이 텅 비어 보이지 않게</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PHASE 3 — 대시보드 + ADM
+════════════════════════════════════ -->
+<div class="phase">
+  <div class="phase-head">
+    <div class="ph-num">3</div>
+    <div class="ph-info">
+      <div class="ph-name">HR 현황판 + ADM 관리 화면</div>
+      <div class="ph-desc">투자자·지자체에 보여줄 핵심 화면 · "얼마 썼는지, 누가 갔는지" 한눈에 보임</div>
+    </div>
+    <div class="ph-gate">
+      <strong>⛔ 다음 단계 진입 조건</strong>
+      HR 로그인 → 자기 회사 예약 현황 보임<br>
+      예산 사용률 % 표시<br>
+      ADM이 숙소 직접 등록 가능
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="phase-col dev-col">
+      <div class="col-label"><span class="col-dot"></span>개발 (DEV)</div>
+
+      <div class="task critical">
+        <div class="t-name">⭐ HR 현황판 (대시보드)</div>
+        <div class="t-desc">총 예약 수 · 예산 사용률(%) · 참여 직원 수 · 최근 예약 리스트<br>본인 회사 데이터만 보이도록 필터링</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">하루</span>
+          <span class="tag tag-star">투자자·지자체 데모 핵심</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">비용 미리 계산기</div>
+        <div class="t-desc">인원 수 + 숙소 가격 + 박수 입력 → 총 비용 + 1인당 비용 + 지원금 적용 시 비용 계산</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">ADM 숙소 등록 화면</div>
+        <div class="t-desc">이름·위치·사진·가격·편의시설 입력 폼 → accommodations 테이블에 저장</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">ADM 예약 목록 · 회원 목록</div>
+        <div class="t-desc">전체 예약 내역 테이블 뷰, 전체 회원 목록 + 역할 표시</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col des-col">
+      <div class="col-label"><span class="col-dot"></span>기획·디자인 (DES)</div>
+
+      <div class="task">
+        <div class="t-name">랜딩 페이지 디자인</div>
+        <div class="t-desc">서비스 소개, 주요 기능 3가지, 파트너 숙소 섹션, "지금 시작하기" CTA</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">하루</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">실제 콘텐츠로 교체</div>
+        <div class="t-desc">더미 텍스트 → 실제 숙소 소개글, 서비스 설명 문구 작성</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">발표 자료 초안 작성</div>
+        <div class="t-desc">데모 순서 정리, 주요 화면 스크린샷 삽입, 발표 스크립트 초안</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col qa-col">
+      <div class="col-label"><span class="col-dot"></span>데이터·QA</div>
+
+      <div class="task">
+        <div class="t-name">전체 흐름 통합 테스트</div>
+        <div class="t-desc">
+          HR 회원가입 → 기업 등록<br>
+          → EMP 예약 → HR 현황판 확인<br>
+          → ADM 예약 목록 확인
+        </div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">버그 목록 최종 정리</div>
+        <div class="t-desc">Phase 1~3 동안 발견된 버그 전부 리스트업. 심각도 분류 (높음/중간/낮음)</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+          <span class="tag tag-output">→ DEV가 Phase 4에서 수정</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PHASE 4 — 배포 + 마무리
+════════════════════════════════════ -->
+<div class="phase">
+  <div class="phase-head">
+    <div class="ph-num">4</div>
+    <div class="ph-info">
+      <div class="ph-name">배포 + 마무리</div>
+      <div class="ph-desc">링크 하나로 누구나 접속 · 데모 준비 완료</div>
+    </div>
+    <div class="ph-gate">
+      <strong>✅ 완료 조건</strong>
+      URL 공유하면 누구나 접속 가능<br>
+      PC·모바일 모두 정상 표시<br>
+      발표 자료 완성
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="phase-col dev-col">
+      <div class="col-label"><span class="col-dot"></span>개발 (DEV)</div>
+
+      <div class="task">
+        <div class="t-name">Vercel 배포</div>
+        <div class="t-desc">GitHub 연결 → 자동 배포 설정, 환경변수 프로덕션 설정, 커스텀 도메인 연결 (선택)</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">1~2시간</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">버그 수정 + 로딩 처리</div>
+        <div class="t-desc">QA가 전달한 버그 목록 수정, 로딩 스피너 추가, 빈 상태(데이터 없을 때) 처리</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">랜딩 페이지 개발</div>
+        <div class="t-desc">DES가 설계한 랜딩 페이지를 실제로 코딩</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col des-col">
+      <div class="col-label"><span class="col-dot"></span>기획·디자인 (DES)</div>
+
+      <div class="task">
+        <div class="t-name">로고 · 파비콘 적용</div>
+        <div class="t-desc">로고 SVG 파일, 브라우저 파비콘, OG 이미지 (SNS 공유 시 미리보기 이미지)</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">1~2시간</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">발표 자료 최종 완성</div>
+        <div class="t-desc">데모 시연 순서, 화면별 설명 스크립트, 주요 지표 슬라이드</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-col qa-col">
+      <div class="col-label"><span class="col-dot"></span>데이터·QA</div>
+
+      <div class="task">
+        <div class="t-name">배포 URL 최종 테스트</div>
+        <div class="t-desc">로컬이 아닌 실제 배포 URL에서 전 기기(PC·아이폰·안드로이드) 테스트</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">반나절</span>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="t-name">데모용 시나리오 리허설</div>
+        <div class="t-desc">발표 당일 보여줄 순서대로 직접 클릭해보며 막히는 곳 없는지 확인</div>
+        <div class="t-tags">
+          <span class="tag tag-effort">1~2시간</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     CRITICAL PATH
+════════════════════════════════════ -->
+<div class="cp-section">
+  <div class="cp-title">⚠ 크리티컬 패스 — 이 순서가 막히면 전체가 멈춤</div>
+  <div class="cp-subtitle">개발(DEV)이 가장 병목 · 아래 순서가 막히면 다음 단계를 시작할 수 없음</div>
+
+  <div class="cp-chain">
+    <div class="cp-node must">
+      <div class="cp-node-name">DB 테이블 생성</div>
+      <span class="cp-node-who by-dev">DEV</span>
+    </div>
+    <div class="cp-arrow">→</div>
+    <div class="cp-node must">
+      <div class="cp-node-name">Auth 설정</div>
+      <span class="cp-node-who by-dev">DEV</span>
+    </div>
+    <div class="cp-arrow">→</div>
+    <div class="cp-node must">
+      <div class="cp-node-name">숙소 DB 입력</div>
+      <span class="cp-node-who by-qa">DATA</span>
+    </div>
+    <div class="cp-arrow">→</div>
+    <div class="cp-node must">
+      <div class="cp-node-name">숙소 목록 API</div>
+      <span class="cp-node-who by-dev">DEV</span>
+    </div>
+    <div class="cp-arrow">→</div>
+    <div class="cp-node must">
+      <div class="cp-node-name">카카오맵 연동</div>
+      <span class="cp-node-who by-dev">DEV</span>
+    </div>
+    <div class="cp-arrow">→</div>
+    <div class="cp-node must">
+      <div class="cp-node-name">예약 흐름 개발</div>
+      <span class="cp-node-who by-dev">DEV</span>
+    </div>
+    <div class="cp-arrow">→</div>
+    <div class="cp-node must">
+      <div class="cp-node-name">HR 현황판</div>
+      <span class="cp-node-who by-dev">DEV</span>
+    </div>
+    <div class="cp-arrow">→</div>
+    <div class="cp-node must">
+      <div class="cp-node-name">Vercel 배포</div>
+      <span class="cp-node-who by-dev">DEV</span>
+    </div>
+  </div>
+
+  <div class="block-grid">
+    <div class="block-card">
+      <div class="block-card-title">🔧 DEV가 막히면</div>
+      <ul class="block-list">
+        <li>DES는 독립 작업 (Figma) 계속</li>
+        <li>DATA는 숙소 데이터 수집 계속</li>
+        <li>블로킹 이슈 즉시 팀에 공유</li>
+        <li>막히면 기능 줄이고 진행</li>
+      </ul>
+    </div>
+    <div class="block-card">
+      <div class="block-card-title">🎨 DES가 늦으면</div>
+      <ul class="block-list">
+        <li>와이어프레임 없이 코딩 못 함</li>
+        <li>Phase 0에서 뼈대만 먼저 완성</li>
+        <li>디테일 디자인은 나중에 채워도 됨</li>
+        <li>DEV에게 먼저 할 화면 우선순위 알려줌</li>
+      </ul>
+    </div>
+    <div class="block-card">
+      <div class="block-card-title">📊 DATA가 늦으면</div>
+      <ul class="block-list">
+        <li>숙소 화면이 텅 빈 채로 개발됨</li>
+        <li>최소 3개만 입력해도 개발 시작 가능</li>
+        <li>사진 없으면 임시 이미지로 대체</li>
+        <li>더미 예약 데이터는 SQL로 일괄 삽입 가능</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

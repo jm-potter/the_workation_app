@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>더 워케이션 — 기능 연결 구조</title>
+<style>
+  :root {
+    --hr:    #3B82F6; --hr-bg:  rgba(59,130,246,0.12);
+    --emp:   #10B981; --emp-bg: rgba(16,185,129,0.12);
+    --adm:   #EF4444; --adm-bg: rgba(239,68,68,0.12);
+    --prt:   #EC4899; --prt-bg: rgba(236,72,153,0.12);
+    --gov:   #F59E0B; --gov-bg: rgba(245,158,11,0.12);
+    --db:    #8B5CF6; --db-bg:  rgba(139,92,246,0.15);
+    --bg:    #0F172A;
+    --card:  #1E293B;
+    --border:#334155;
+    --text:  #F1F5F9;
+    --muted: #94A3B8;
+    --dim:   #64748B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    padding: 44px 40px;
+    min-width: 1120px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 52px; }
+  .header h1 {
+    font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 12px;
+  }
+  .header .tagline {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--db-bg);
+    border: 1px solid rgba(139,92,246,0.4);
+    border-radius: 24px;
+    padding: 7px 18px;
+    font-size: 13px; color: #C4B5FD;
+  }
+
+  /* ── Section Title ── */
+  .section-title {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 18px; margin-top: 52px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ──────────────────────────────────────────
+     SECTION 1 — 핵심 데이터 흐름
+  ────────────────────────────────────────── */
+  .flows { display: flex; flex-direction: column; gap: 14px; }
+
+  .flow-row {
+    display: flex; align-items: stretch;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .flow-label {
+    background: #0A1120;
+    padding: 0 12px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--dim);
+    display: flex; align-items: center; justify-content: center;
+    min-width: 38px;
+  }
+
+  .flow-steps {
+    display: flex; align-items: center;
+    padding: 18px 20px; gap: 10px; flex: 1;
+  }
+
+  .step {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    min-width: 108px;
+  }
+  .step-badge {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  .step-action { font-size: 13px; font-weight: 600; text-align: center; }
+  .step-sub    { font-size: 11px; color: var(--muted); text-align: center; }
+
+  .arrow { font-size: 16px; color: var(--dim); flex-shrink: 0; padding: 0 2px; }
+
+  .plus-label {
+    font-size: 10px; font-weight: 700; color: var(--dim);
+    flex-shrink: 0; padding: 0 2px;
+  }
+
+  .db-pill {
+    background: var(--db-bg);
+    border: 2px solid rgba(139,92,246,0.5);
+    border-radius: 10px;
+    padding: 10px 16px; text-align: center;
+    min-width: 140px; flex-shrink: 0;
+  }
+  .db-pill-name   { font-size: 13px; font-weight: 700; color: #C4B5FD; }
+  .db-pill-en     { font-size: 10px; color: var(--dim); margin-top: 3px; }
+
+  /* badge colors */
+  .b-hr  { background: var(--hr-bg);  color: #93C5FD; border: 1px solid rgba(59,130,246,0.4); }
+  .b-emp { background: var(--emp-bg); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.4); }
+  .b-adm { background: var(--adm-bg); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.4); }
+  .b-prt { background: var(--prt-bg); color: #F9A8D4; border: 1px solid rgba(236,72,153,0.4); }
+  .b-gov { background: var(--gov-bg); color: #FCD34D; border: 1px solid rgba(245,158,11,0.4); }
+
+  /* ──────────────────────────────────────────
+     SECTION 2 — DB 공유 매트릭스
+  ────────────────────────────────────────── */
+  .matrix {
+    display: grid;
+    grid-template-columns: 200px repeat(5, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .mc {
+    padding: 12px 14px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .mc:last-child { border-right: none; }
+  .mc.last-row   { border-bottom: none; }
+
+  .mc.head {
+    background: #0A1120;
+    font-size: 11px; font-weight: 700;
+    text-align: center; color: var(--dim);
+    letter-spacing: 0.07em; text-transform: uppercase;
+  }
+
+  .mc.row-head {
+    background: var(--db-bg);
+    border-left: 3px solid var(--db);
+  }
+  .rt { font-size: 13px; font-weight: 700; color: #C4B5FD; margin-bottom: 4px; }
+  .rf { font-size: 10px; color: var(--dim); line-height: 1.6; }
+
+  .tag-w {
+    display: inline-block;
+    background: rgba(239,68,68,0.15); color: #FCA5A5;
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 4px; padding: 1px 6px;
+    font-size: 10px; font-weight: 700; margin-bottom: 3px;
+  }
+  .tag-r {
+    display: inline-block;
+    background: rgba(16,185,129,0.15); color: #6EE7B7;
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 4px; padding: 1px 6px;
+    font-size: 10px; font-weight: 700; margin-bottom: 3px;
+  }
+  .tag-none { color: var(--dim); font-size: 11px; }
+  .desc { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .cbt-note { font-size: 9px; color: var(--dim); margin-left: 2px; }
+
+  /* ──────────────────────────────────────────
+     SECTION 3 — 사용자별 화면 목록
+  ────────────────────────────────────────── */
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+
+  .sc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .sc-head {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sc-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .sc-role { font-size: 11px; color: var(--muted); }
+
+  .sc.hr  .sc-head { border-top: 3px solid var(--hr); }
+  .sc.emp .sc-head { border-top: 3px solid var(--emp); }
+  .sc.adm .sc-head { border-top: 3px solid var(--adm); }
+  .sc.prt .sc-head { border-top: 3px solid var(--prt); }
+  .sc.gov .sc-head { border-top: 3px solid var(--gov); }
+
+  .sc.hr  .sc-name { color: #93C5FD; }
+  .sc.emp .sc-name { color: #6EE7B7; }
+  .sc.adm .sc-name { color: #FCA5A5; }
+  .sc.prt .sc-name { color: #F9A8D4; }
+  .sc.gov .sc-name { color: #FCD34D; }
+
+  .sl { list-style: none; padding: 6px 0; }
+  .si {
+    padding: 6px 14px;
+    font-size: 12px; color: var(--muted);
+    border-bottom: 1px solid rgba(51,65,85,0.5);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .si:last-child { border-bottom: none; }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .sc.hr  .dot { background: var(--hr); }
+  .sc.emp .dot { background: var(--emp); }
+  .sc.adm .dot { background: var(--adm); }
+  .sc.prt .dot { background: var(--prt); }
+  .sc.gov .dot { background: var(--gov); }
+
+  .ph {
+    margin-left: auto; flex-shrink: 0;
+    font-size: 9px; font-weight: 700;
+    padding: 2px 5px; border-radius: 3px;
+  }
+  .mvp { background: rgba(59,130,246,0.2); color: #93C5FD; }
+  .cbt { background: rgba(245,158,11,0.2); color: #FCD34D; }
+
+  .si.note { color: var(--dim); font-style: italic; font-size: 11px; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 48px; padding-top: 22px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: center; align-items: center; gap: 28px;
+    font-size: 12px; color: var(--dim);
+  }
+  .legend-item { display: flex; align-items: center; gap: 7px; }
+  .lbadge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <h1>더 워케이션 — 기능 연결 구조</h1>
+  <div class="tagline">
+    <span>💡</span>
+    화면은 사용자마다 달라도 · 데이터베이스는 하나 · 같은 데이터를 역할에 맞게 다르게 본다
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────
+     SECTION 1 — 핵심 데이터 흐름
+──────────────────────────────────────────────── -->
+<div class="section-title">핵심 데이터 흐름 — 누가 넣고 누가 보나</div>
+
+<div class="flows">
+
+  <!-- Flow A: 숙소 흐름 -->
+  <div class="flow-row">
+    <div class="flow-label">숙소 흐름</div>
+    <div class="flow-steps">
+      <div class="step">
+        <span class="step-badge b-adm">ADM</span>
+        <span class="step-action">숙소 등록</span>
+        <span class="step-sub">이름·위치·사진·가격</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="db-pill">
+        <div class="db-pill-name">🏠 숙소 테이블</div>
+        <div class="db-pill-en">accommodations</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-hr">HR</span>
+        <span class="step-action">검색 · 필터</span>
+        <span class="step-sub">지역·날짜·인원</span>
+      </div>
+      <div class="plus-label">&</div>
+      <div class="step">
+        <span class="step-badge b-emp">EMP</span>
+        <span class="step-action">검색 · 상세 보기</span>
+        <span class="step-sub">같은 숙소 데이터</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="db-pill">
+        <div class="db-pill-name">📋 예약 테이블</div>
+        <div class="db-pill-en">bookings</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-prt">PRT</span>
+        <span class="step-action">예약 확인·승인</span>
+        <span class="step-sub">본인 숙소만 보임</span>
+      </div>
+      <div class="plus-label">&</div>
+      <div class="step">
+        <span class="step-badge b-adm">ADM</span>
+        <span class="step-action">전체 모니터링</span>
+        <span class="step-sub">모든 예약 보임</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flow B: 기업·직원 흐름 -->
+  <div class="flow-row">
+    <div class="flow-label">기업·직원</div>
+    <div class="flow-steps">
+      <div class="step">
+        <span class="step-badge b-hr">HR</span>
+        <span class="step-action">기업 등록</span>
+        <span class="step-sub">회사명·담당자</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="db-pill">
+        <div class="db-pill-name">🏢 기업 테이블</div>
+        <div class="db-pill-en">companies</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-adm">ADM</span>
+        <span class="step-action">가입 승인</span>
+        <span class="step-sub">기업 심사</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-hr">HR</span>
+        <span class="step-action">직원 초대</span>
+        <span class="step-sub">링크 또는 이메일</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="db-pill">
+        <div class="db-pill-name">👤 사용자 테이블</div>
+        <div class="db-pill-en">users</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-emp">EMP</span>
+        <span class="step-action">로그인 · 예약</span>
+        <span class="step-sub">회사 예산으로 결제</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flow C: 예산·현황 흐름 -->
+  <div class="flow-row">
+    <div class="flow-label">예산·현황</div>
+    <div class="flow-steps">
+      <div class="step">
+        <span class="step-badge b-hr">HR</span>
+        <span class="step-action">예산 설정</span>
+        <span class="step-sub">연간·분기 한도</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="db-pill">
+        <div class="db-pill-name">💰 예산 (기업 테이블 내)</div>
+        <div class="db-pill-en">companies.budget</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-emp">EMP</span>
+        <span class="step-action">예약 시 자동 차감</span>
+        <span class="step-sub">잔여 예산 실시간 표시</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-hr">HR</span>
+        <span class="step-action">현황판 확인</span>
+        <span class="step-sub">사용률·참여율</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <span class="step-badge b-gov">GOV</span>
+        <span class="step-action">지원 효과 확인</span>
+        <span class="step-sub">지자체 성과 리포트</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ───────────────────────────────────────────────
+     SECTION 2 — 공유 데이터베이스 매트릭스
+──────────────────────────────────────────────── -->
+<div class="section-title">공유 데이터베이스 — 같은 테이블, 다른 권한</div>
+
+<div class="matrix">
+
+  <!-- Header row -->
+  <div class="mc head" style="text-align:left; color:var(--muted);">테이블 / DB</div>
+  <div class="mc head" style="color:#93C5FD;">HR<br><small style="font-weight:400;color:var(--dim)">인사담당자</small></div>
+  <div class="mc head" style="color:#6EE7B7;">EMP<br><small style="font-weight:400;color:var(--dim)">직원</small></div>
+  <div class="mc head" style="color:#FCA5A5;">ADM<br><small style="font-weight:400;color:var(--dim)">운영팀</small></div>
+  <div class="mc head" style="color:#F9A8D4;">PRT<br><small style="font-weight:400;color:var(--dim)">숙소 사장님</small></div>
+  <div class="mc head" style="color:#FCD34D;">GOV<br><small style="font-weight:400;color:var(--dim)">지자체</small></div>
+
+  <!-- Row 1: 숙소 -->
+  <div class="mc row-head">
+    <div class="rt">🏠 숙소 (accommodations)</div>
+    <div class="rf">이름 · 위치 · 사진<br>가격 · 편의시설 · 업무환경</div>
+  </div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">검색 · 상세 보기</span></div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">검색 · 상세 보기</span></div>
+  <div class="mc"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">등록 · 수정 · 전체 관리</span></div>
+  <div class="mc"><span class="tag-w">WRITE</span><span class="cbt-note">CBT~</span> <span class="tag-r">READ</span><span class="desc">본인 숙소 등록·수정</span></div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">지역별 숙소 현황</span></div>
+
+  <!-- Row 2: 예약 -->
+  <div class="mc row-head">
+    <div class="rt">📋 예약 (bookings)</div>
+    <div class="rf">숙소ID · 사용자ID · 날짜<br>인원 · 상태 · 결제금액</div>
+  </div>
+  <div class="mc"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">단체 예약 · 현황 확인</span></div>
+  <div class="mc"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">개별 예약 · 내역 확인</span></div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">전체 예약 모니터링</span></div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">본인 숙소 예약만 확인</span></div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">워케이션 참여 통계</span></div>
+
+  <!-- Row 3: 기업 -->
+  <div class="mc row-head">
+    <div class="rt">🏢 기업 (companies)</div>
+    <div class="rf">기업명 · 담당자 · 예산<br>직원수 · 승인상태</div>
+  </div>
+  <div class="mc"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">기업 등록 · 예산 관리</span></div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">회사 잔여 예산 확인</span></div>
+  <div class="mc"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">가입 승인 · 정보 관리</span></div>
+  <div class="mc"><span class="tag-none">—</span></div>
+  <div class="mc"><span class="tag-r">READ</span><span class="desc">지역 기업 참여 현황</span></div>
+
+  <!-- Row 4: 사용자 (마지막 행) -->
+  <div class="mc row-head last-row">
+    <div class="rt">👤 사용자 (users)</div>
+    <div class="rf">이름 · 이메일 · 역할<br>소속기업 · 가입일</div>
+  </div>
+  <div class="mc last-row"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">직원 초대 · 현황 확인</span></div>
+  <div class="mc last-row"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">회원가입 · 프로필 수정</span></div>
+  <div class="mc last-row"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">전체 회원 관리</span></div>
+  <div class="mc last-row"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">파트너 계정 등록</span></div>
+  <div class="mc last-row"><span class="tag-w">WRITE</span> <span class="tag-r">READ</span><span class="desc">GOV 계정 등록</span></div>
+
+</div>
+
+<!-- ───────────────────────────────────────────────
+     SECTION 3 — 사용자별 화면 목록
+──────────────────────────────────────────────── -->
+<div class="section-title">사용자별 화면 목록</div>
+
+<div class="screens">
+
+  <!-- HR -->
+  <div class="sc hr">
+    <div class="sc-head">
+      <div class="sc-name">HR 인사담당자</div>
+      <div class="sc-role">기업 대표 · 예산 관리</div>
+    </div>
+    <ul class="sl">
+      <li class="si"><span class="dot"></span>회원가입 · 로그인<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>기업 정보 등록<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>숙소 검색 · 지도<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>단체 예약<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>예약 현황판<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>비용 미리 계산기<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>직원 초대 관리<span class="ph cbt">CBT</span></li>
+    </ul>
+  </div>
+
+  <!-- EMP -->
+  <div class="sc emp">
+    <div class="sc-head">
+      <div class="sc-name">EMP 직원</div>
+      <div class="sc-role">일반 사용자 · 개인 예약</div>
+    </div>
+    <ul class="sl">
+      <li class="si"><span class="dot"></span>로그인 (초대 링크)<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>숙소 검색 · 지도<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>숙소 상세 보기<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>개별 예약 (3단계)<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>예약 확인 · 내역<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>마이페이지<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>후기 작성<span class="ph cbt">CBT</span></li>
+    </ul>
+  </div>
+
+  <!-- ADM -->
+  <div class="sc adm">
+    <div class="sc-head">
+      <div class="sc-name">ADM 운영팀</div>
+      <div class="sc-role">내부 관리자 · 전체 권한</div>
+    </div>
+    <ul class="sl">
+      <li class="si"><span class="dot"></span>숙소 등록 · 수정<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>예약 알림 · 현황<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>회원 관리<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>기업 심사 · 승인<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>파트너 정산<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>수수료 관리<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>매출 현황판<span class="ph cbt">CBT</span></li>
+    </ul>
+  </div>
+
+  <!-- PRT -->
+  <div class="sc prt">
+    <div class="sc-head">
+      <div class="sc-name">PRT 숙소 파트너</div>
+      <div class="sc-role">숙소 사장님 · CBT부터</div>
+    </div>
+    <ul class="sl">
+      <li class="si note"><span class="dot"></span>MVP: ADM이 대신 등록<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>파트너 가입 · 로그인<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>숙소 정보 등록<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>가격 · 날짜 설정<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>예약 확인 · 승인<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>정산 내역 확인<span class="ph cbt">CBT</span></li>
+    </ul>
+  </div>
+
+  <!-- GOV -->
+  <div class="sc gov">
+    <div class="sc-head">
+      <div class="sc-name">GOV 지자체</div>
+      <div class="sc-role">지방자치단체 담당자</div>
+    </div>
+    <ul class="sl">
+      <li class="si note"><span class="dot"></span>MVP: 데이터만 수집<span class="ph mvp">MVP</span></li>
+      <li class="si"><span class="dot"></span>GOV 로그인<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>워케이션 현황 보기<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>참여 기업 · 인원<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>지역 경제 효과<span class="ph cbt">CBT</span></li>
+      <li class="si"><span class="dot"></span>지원금 집행 확인<span class="ph cbt">CBT</span></li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="legend-item">
+    <span class="lbadge" style="background:rgba(59,130,246,0.2);color:#93C5FD;">MVP</span>
+    지금 만들어야 할 것
+  </div>
+  <div class="legend-item">
+    <span class="lbadge" style="background:rgba(245,158,11,0.2);color:#FCD34D;">CBT</span>
+    시범운영 때 추가
+  </div>
+  <div class="legend-item">
+    <span class="lbadge" style="background:rgba(239,68,68,0.15);color:#FCA5A5;">WRITE</span>
+    데이터를 생성·수정
+  </div>
+  <div class="legend-item">
+    <span class="lbadge" style="background:rgba(16,185,129,0.15);color:#6EE7B7;">READ</span>
+    데이터를 조회
+  </div>
+  <span style="margin-left:8px;">더 워케이션 © 2026</span>
+</div>
+
+</body>
+</html>

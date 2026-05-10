@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>더 워케이션 — 팀 작업 흐름</title>
+<style>
+  :root {
+    --coder: #3B82F6; --coder-bg: rgba(59,130,246,0.12);
+    --des:   #8B5CF6; --des-bg:   rgba(139,92,246,0.12);
+    --data:  #10B981; --data-bg:  rgba(16,185,129,0.12);
+    --merge: #F59E0B; --merge-bg: rgba(245,158,11,0.12);
+    --bg:    #0F172A;
+    --card:  #1E293B;
+    --card2: #263548;
+    --border:#334155;
+    --text:  #F1F5F9;
+    --muted: #94A3B8;
+    --dim:   #64748B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    padding: 44px 40px; min-width: 1100px; line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 52px; }
+  .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+  .header p  { font-size: 14px; color: var(--muted); }
+
+  /* ── Section title ── */
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--dim);
+    margin-bottom: 20px; margin-top: 52px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ════════════════════════════════
+     SECTION 1 — 전체 흐름
+  ════════════════════════════════ */
+  .timeline {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 8px;
+  }
+  .tl-node {
+    flex: 1; background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 14px;
+    text-align: center;
+  }
+  .tl-node.merge {
+    background: var(--merge-bg);
+    border-color: rgba(245,158,11,0.4);
+    flex: 0.7;
+  }
+  .tl-node.demo {
+    background: rgba(16,185,129,0.1);
+    border-color: rgba(16,185,129,0.4);
+    flex: 0.6;
+  }
+  .tl-num  { font-size: 10px; color: var(--dim); font-weight: 700; margin-bottom: 4px; letter-spacing:0.08em; }
+  .tl-name { font-size: 14px; font-weight: 700; }
+  .tl-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .tl-arrow { font-size: 20px; color: var(--dim); flex-shrink: 0; padding: 0 6px; }
+  .tl-node.merge .tl-name { color: #FCD34D; }
+  .tl-node.demo  .tl-name { color: #6EE7B7; }
+
+  /* ════════════════════════════════
+     SECTION 2 — 역할 카드
+  ════════════════════════════════ */
+  .roles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .role-card {
+    background: var(--card); border-radius: 14px;
+    padding: 20px; border-top: 3px solid;
+  }
+  .role-card.coder { border-color: var(--coder); }
+  .role-card.des   { border-color: var(--des); }
+  .role-card.data  { border-color: var(--data); }
+
+  .rc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .rc-icon { font-size: 24px; }
+  .rc-name { font-size: 15px; font-weight: 700; }
+  .role-card.coder .rc-name { color: #93C5FD; }
+  .role-card.des   .rc-name { color: #C4B5FD; }
+  .role-card.data  .rc-name { color: #6EE7B7; }
+  .rc-tool {
+    font-size: 11px; padding: 3px 8px; border-radius: 5px;
+    background: var(--card2); color: var(--muted); margin-left: auto;
+  }
+
+  .rc-list { list-style: none; }
+  .rc-list li {
+    font-size: 13px; color: var(--muted);
+    padding: 6px 0; border-bottom: 1px solid rgba(51,65,85,0.5);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .rc-list li:last-child { border-bottom: none; }
+  .rc-list li .dot { font-size: 10px; margin-top: 4px; flex-shrink: 0; }
+
+  /* ════════════════════════════════
+     SECTION 3 — 스윔레인
+  ════════════════════════════════ */
+  .swimlane {
+    display: grid;
+    grid-template-columns: 110px 1fr 1fr 140px 1fr 140px;
+    grid-template-rows: auto auto auto auto;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  /* header row */
+  .sl-head {
+    background: #0A1120; padding: 10px 14px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--dim);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .sl-head.merge-col { background: var(--merge-bg); color: #FCD34D; }
+
+  /* role label */
+  .sl-label {
+    padding: 16px 12px; border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: flex-start; gap: 6px; padding-top: 20px;
+  }
+  .sl-label.last { border-bottom: none; }
+  .sl-label-icon { font-size: 20px; }
+  .sl-label-name { font-size: 11px; font-weight: 700; text-align: center; }
+  .coder-label .sl-label-name { color: #93C5FD; }
+  .des-label   .sl-label-name { color: #C4B5FD; }
+  .data-label  .sl-label-name { color: #6EE7B7; }
+
+  /* task cell */
+  .sl-cell {
+    padding: 14px 12px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .sl-cell.last { border-bottom: none; }
+  .sl-cell.merge-cell {
+    background: var(--merge-bg);
+    border-color: rgba(245,158,11,0.25);
+    align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .sl-cell.empty { background: rgba(0,0,0,0.1); }
+
+  /* task pill */
+  .task-pill {
+    border-radius: 7px; padding: 7px 10px;
+    font-size: 12px; font-weight: 600;
+    border-left: 3px solid;
+    background: var(--card2);
+    line-height: 1.4;
+  }
+  .task-pill.c { border-color: var(--coder); }
+  .task-pill.d { border-color: var(--des); }
+  .task-pill.q { border-color: var(--data); }
+  .task-pill.star { border-color: #F59E0B; background: rgba(245,158,11,0.08); }
+  .task-pill small { display: block; font-size: 10px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+
+  /* merge cell content */
+  .merge-icon { font-size: 24px; margin-bottom: 4px; }
+  .merge-label { font-size: 12px; font-weight: 700; color: #FCD34D; }
+  .merge-desc  { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* ════════════════════════════════
+     SECTION 4 — GitHub 설명
+  ════════════════════════════════ */
+  .github-section {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+  .gh-header {
+    padding: 16px 22px; background: #0A1120;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .gh-header h3 { font-size: 15px; font-weight: 700; }
+  .gh-header p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .gh-body { padding: 24px; }
+
+  /* flow */
+  .gh-flow {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 28px;
+  }
+  .gh-node {
+    flex: 1; background: var(--card2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; text-align: center;
+  }
+  .gh-node-icon { font-size: 28px; margin-bottom: 6px; }
+  .gh-node-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .gh-node-desc { font-size: 11px; color: var(--muted); }
+  .gh-arrow-block {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px; padding: 0 10px; flex-shrink: 0;
+  }
+  .gh-arrow-label { font-size: 10px; font-weight: 700; color: var(--dim); white-space: nowrap; }
+  .gh-arrow-icon  { font-size: 18px; color: var(--dim); }
+
+  /* steps */
+  .gh-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .gh-step {
+    background: var(--card2); border-radius: 10px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .gh-step-num {
+    font-size: 11px; font-weight: 900; color: var(--dim);
+    margin-bottom: 8px;
+  }
+  .gh-step-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .gh-step-desc  { font-size: 11px; color: var(--muted); line-height: 1.6; }
+  .gh-step-code  {
+    margin-top: 6px; background: #0A1120; border-radius: 5px;
+    padding: 5px 8px; font-family: monospace; font-size: 11px;
+    color: #93C5FD; border: 1px solid var(--border);
+  }
+  .gh-step.highlight { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.05); }
+  .gh-step.highlight .gh-step-title { color: #FCD34D; }
+
+  /* ════════════════════════════════
+     SECTION 5 — 합치기 포인트
+  ════════════════════════════════ */
+  .merge-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .merge-card {
+    background: var(--card); border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 14px; overflow: hidden;
+  }
+  .mc-head {
+    background: var(--merge-bg); padding: 14px 18px;
+    border-bottom: 1px solid rgba(245,158,11,0.2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .mc-head-icon { font-size: 20px; }
+  .mc-head-title { font-size: 14px; font-weight: 700; color: #FCD34D; }
+  .mc-head-sub   { font-size: 11px; color: var(--muted); }
+  .mc-body { padding: 16px 18px; }
+  .mc-list { list-style: none; }
+  .mc-list li {
+    font-size: 13px; color: var(--muted);
+    padding: 7px 0; border-bottom: 1px solid rgba(51,65,85,0.5);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .mc-list li:last-child { border-bottom: none; }
+  .mc-list li .check { color: #6EE7B7; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <h1>더 워케이션 — 팀 작업 흐름</h1>
+  <p>3명이 각자 시간에 작업하고 중간에 두 번 합치는 방식</p>
+</div>
+
+<!-- ════════════════════
+     전체 흐름
+════════════════════ -->
+<div class="section-title">전체 흐름</div>
+<div class="timeline">
+  <div class="tl-node">
+    <div class="tl-num">STEP 1</div>
+    <div class="tl-name">🏗 기반 파일 만들기</div>
+    <div class="tl-sub">코더가 먼저 혼자<br>GitHub에 올림</div>
+  </div>
+  <div class="tl-arrow">→</div>
+  <div class="tl-node">
+    <div class="tl-num">STEP 2</div>
+    <div class="tl-name">🔀 각자 작업 시작</div>
+    <div class="tl-sub">3명이 동시에<br>독립적으로 진행</div>
+  </div>
+  <div class="tl-arrow">→</div>
+  <div class="tl-node merge">
+    <div class="tl-num">STEP 3</div>
+    <div class="tl-name">🤝 1차 합치기</div>
+    <div class="tl-sub">같이 보고<br>방향 조정</div>
+  </div>
+  <div class="tl-arrow">→</div>
+  <div class="tl-node">
+    <div class="tl-num">STEP 4</div>
+    <div class="tl-name">⚡ 마무리 작업</div>
+    <div class="tl-sub">피드백 반영<br>완성도 높이기</div>
+  </div>
+  <div class="tl-arrow">→</div>
+  <div class="tl-node merge">
+    <div class="tl-num">STEP 5</div>
+    <div class="tl-name">🤝 2차 합치기</div>
+    <div class="tl-sub">최종 점검<br>데모 준비</div>
+  </div>
+  <div class="tl-arrow">→</div>
+  <div class="tl-node demo">
+    <div class="tl-num">STEP 6</div>
+    <div class="tl-name">🚀 데모!</div>
+    <div class="tl-sub">투자자·지자체<br>시연</div>
+  </div>
+</div>
+
+<!-- ════════════════════
+     3명 역할
+════════════════════ -->
+<div class="section-title">3명 역할</div>
+<div class="roles">
+
+  <div class="role-card coder">
+    <div class="rc-top">
+      <div class="rc-icon">🔧</div>
+      <div>
+        <div class="rc-name">코더</div>
+      </div>
+      <div class="rc-tool">Claude + GitHub Desktop</div>
+    </div>
+    <ul class="rc-list">
+      <li><span class="dot">🏗</span>제일 먼저: 기반 파일 만들어서 GitHub에 올리기</li>
+      <li><span class="dot">🖥</span>모든 화면을 Claude로 만들기</li>
+      <li><span class="dot">📤</span>작업할 때마다 GitHub에 올려서 팀원이 볼 수 있게</li>
+      <li><span class="dot">🔧</span>합치기 때: 디자인·데이터 피드백 반영해서 수정</li>
+    </ul>
+  </div>
+
+  <div class="role-card des">
+    <div class="rc-top">
+      <div class="rc-icon">🎨</div>
+      <div>
+        <div class="rc-name">디자인·기획</div>
+      </div>
+      <div class="rc-tool">배포 URL + 문서</div>
+    </div>
+    <ul class="rc-list">
+      <li><span class="dot">📋</span>처음: 화면에 들어갈 텍스트 내용 미리 작성</li>
+      <li><span class="dot">👀</span>코더가 올린 화면 보고 피드백 정리</li>
+      <li><span class="dot">✏️</span>피드백 형식: "숙소 카드 가격 글씨 더 크게" 처럼 구체적으로</li>
+      <li><span class="dot">📊</span>발표 자료 + 데모 시나리오 작성</li>
+    </ul>
+  </div>
+
+  <div class="role-card data">
+    <div class="rc-top">
+      <div class="rc-icon">📊</div>
+      <div>
+        <div class="rc-name">데이터·테스트</div>
+      </div>
+      <div class="rc-tool">Supabase 대시보드</div>
+    </div>
+    <ul class="rc-list">
+      <li><span class="dot">🏨</span>코더 기다릴 필요 없이: 숙소 데이터 수집·입력</li>
+      <li><span class="dot">👤</span>테스트 계정 만들기 (HR 2개, 직원 3개, 운영팀 1개)</li>
+      <li><span class="dot">🧪</span>배포된 URL로 전체 흐름 테스트</li>
+      <li><span class="dot">🐛</span>오류 발견하면 구체적으로 기록해서 코더에게 전달</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ════════════════════
+     스윔레인
+════════════════════ -->
+<div class="section-title">누가 언제 무엇을 하나</div>
+<div class="swimlane">
+
+  <!-- Header row -->
+  <div class="sl-head">역할</div>
+  <div class="sl-head">기반 만들기<br><span style="font-weight:400;color:var(--dim)">코더 혼자 먼저</span></div>
+  <div class="sl-head">각자 작업</div>
+  <div class="sl-head merge-col">1차<br>합치기</div>
+  <div class="sl-head">마무리</div>
+  <div class="sl-head merge-col">2차<br>합치기</div>
+
+  <!-- 코더 row -->
+  <div class="sl-label coder-label">
+    <span class="sl-label-icon">🔧</span>
+    <span class="sl-label-name">코더</span>
+  </div>
+  <div class="sl-cell">
+    <div class="task-pill star">🏗 기반 파일 만들기<small>DB·로그인·공통 컴포넌트</small></div>
+    <div class="task-pill star">📤 GitHub에 올리기<small>팀원들이 여기서 시작</small></div>
+  </div>
+  <div class="sl-cell">
+    <div class="task-pill c">🚪 로그인·회원가입</div>
+    <div class="task-pill c">🏢 회사 등록 화면</div>
+    <div class="task-pill c">🏨 숙소 목록·지도</div>
+    <div class="task-pill c">📄 숙소 상세 페이지</div>
+    <div class="task-pill c">📋 예약 흐름 3단계</div>
+  </div>
+  <div class="sl-cell merge-cell">
+    <div class="merge-icon">🤝</div>
+    <div class="merge-label">화면 리뷰</div>
+    <div class="merge-desc">만든 화면 같이 보고<br>방향 조정</div>
+  </div>
+  <div class="sl-cell">
+    <div class="task-pill c">📊 HR 현황판</div>
+    <div class="task-pill c">🖥 운영팀 화면</div>
+    <div class="task-pill c">🌐 서비스 소개 첫 화면</div>
+    <div class="task-pill c">🐛 피드백 반영·수정</div>
+  </div>
+  <div class="sl-cell merge-cell">
+    <div class="merge-icon">🚀</div>
+    <div class="merge-label">데모 준비</div>
+    <div class="merge-desc">최종 테스트<br>발표 순서 맞추기</div>
+  </div>
+
+  <!-- 디자인 row -->
+  <div class="sl-label des-label">
+    <span class="sl-label-icon">🎨</span>
+    <span class="sl-label-name">디자인<br>기획</span>
+  </div>
+  <div class="sl-cell">
+    <div class="task-pill d">✍️ 화면 텍스트 준비<small>숙소 설명·서비스 소개 문구</small></div>
+    <div class="task-pill d">📋 피드백 양식 만들기<small>"이 화면은 이렇게 바꿔" 정리법</small></div>
+  </div>
+  <div class="sl-cell">
+    <div class="task-pill d">👀 만들어진 화면 보기<small>배포 URL 접속</small></div>
+    <div class="task-pill d">📝 피드백 정리·전달<small>구체적으로: 색·크기·위치</small></div>
+    <div class="task-pill d">✍️ 실제 문구 작성<small>서비스 소개·숙소 설명</small></div>
+  </div>
+  <div class="sl-cell merge-cell">
+    <div class="merge-icon">💬</div>
+    <div class="merge-label">피드백 전달</div>
+    <div class="merge-desc">정리한 피드백을<br>코더에게 넘김</div>
+  </div>
+  <div class="sl-cell">
+    <div class="task-pill d">📊 발표 자료 완성</div>
+    <div class="task-pill d">🎬 데모 시나리오 작성<small>어떤 순서로 보여줄지</small></div>
+  </div>
+  <div class="sl-cell merge-cell last">
+    <div class="merge-icon">🎯</div>
+    <div class="merge-label">발표 리허설</div>
+    <div class="merge-desc">순서대로 한 번<br>해보기</div>
+  </div>
+
+  <!-- 데이터 row -->
+  <div class="sl-label data-label last">
+    <span class="sl-label-icon">📊</span>
+    <span class="sl-label-name">데이터<br>테스트</span>
+  </div>
+  <div class="sl-cell last">
+    <div class="task-pill q">🏨 숙소 데이터 수집<small>이름·주소·가격·사진</small></div>
+    <div class="task-pill q">👤 테스트 계정 준비</div>
+  </div>
+  <div class="sl-cell last">
+    <div class="task-pill q">⬆️ Supabase에 입력<small>코더 없이 독립 작업 가능</small></div>
+    <div class="task-pill q">🧪 기능 테스트<small>배포 URL로 직접 눌러보기</small></div>
+    <div class="task-pill q">🐛 오류 목록 기록</div>
+  </div>
+  <div class="sl-cell merge-cell last">
+    <div class="merge-icon">📋</div>
+    <div class="merge-label">오류 전달</div>
+    <div class="merge-desc">발견한 오류<br>코더에게 넘김</div>
+  </div>
+  <div class="sl-cell last">
+    <div class="task-pill q">🏨 숙소 10개로 보강</div>
+    <div class="task-pill q">🔄 전체 흐름 재테스트</div>
+    <div class="task-pill q">📱 폰·PC 모두 확인</div>
+  </div>
+  <div class="sl-cell merge-cell last">
+    <div class="merge-icon">✅</div>
+    <div class="merge-label">최종 확인</div>
+    <div class="merge-desc">데모 화면<br>오류 없는지 체크</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════
+     GitHub 설명
+════════════════════ -->
+<div class="section-title">GitHub — 코드 공유하는 방법</div>
+<div class="github-section">
+  <div class="gh-header">
+    <div>
+      <h3>GitHub = 코드용 구글 드라이브</h3>
+      <p>코더가 작업한 코드를 올려두면 팀원이 볼 수 있고, 배포까지 자동으로 됨</p>
+    </div>
+  </div>
+  <div class="gh-body">
+
+    <div class="gh-flow">
+      <div class="gh-node">
+        <div class="gh-node-icon">💻</div>
+        <div class="gh-node-name">내 컴퓨터</div>
+        <div class="gh-node-desc">Claude로 코드 작성</div>
+      </div>
+      <div class="gh-arrow-block">
+        <div class="gh-arrow-label">저장 후 올리기</div>
+        <div class="gh-arrow-icon">→</div>
+        <div class="gh-arrow-label">(push)</div>
+      </div>
+      <div class="gh-node">
+        <div class="gh-node-icon">☁️</div>
+        <div class="gh-node-name">GitHub</div>
+        <div class="gh-node-desc">코드 보관·공유 공간</div>
+      </div>
+      <div class="gh-arrow-block">
+        <div class="gh-arrow-label">자동 배포</div>
+        <div class="gh-arrow-icon">→</div>
+        <div class="gh-arrow-label">(Vercel 연결)</div>
+      </div>
+      <div class="gh-node">
+        <div class="gh-node-icon">🌐</div>
+        <div class="gh-node-name">배포 URL</div>
+        <div class="gh-node-desc">누구나 브라우저에서 접속</div>
+      </div>
+      <div class="gh-arrow-block">
+        <div class="gh-arrow-label">피드백·테스트</div>
+        <div class="gh-arrow-icon">→</div>
+        <div class="gh-arrow-label"></div>
+      </div>
+      <div class="gh-node">
+        <div class="gh-node-icon">👥</div>
+        <div class="gh-node-name">디자인·데이터 팀원</div>
+        <div class="gh-node-desc">결과물을 보고 피드백</div>
+      </div>
+    </div>
+
+    <div class="gh-steps">
+      <div class="gh-step highlight">
+        <div class="gh-step-num">STEP 1 — 코더만</div>
+        <div class="gh-step-title">🏗 레포 만들고 기반 올리기</div>
+        <div class="gh-step-desc">GitHub에서 새 레포 만들고, 기반 파일 완성 후 업로드. 팀원 2명을 초대.</div>
+        <div class="gh-step-code">GitHub Desktop → Publish Repository</div>
+      </div>
+      <div class="gh-step">
+        <div class="gh-step-num">STEP 2 — 코더 반복</div>
+        <div class="gh-step-title">📤 작업하면 올리기</div>
+        <div class="gh-step-desc">화면 하나 완성할 때마다 GitHub에 올림. 올라가면 배포 URL에 자동 반영됨.</div>
+        <div class="gh-step-code">GitHub Desktop → Commit → Push</div>
+      </div>
+      <div class="gh-step">
+        <div class="gh-step-num">STEP 3 — 디자인·데이터</div>
+        <div class="gh-step-title">👀 배포 URL로 확인</div>
+        <div class="gh-step-desc">코더가 올릴 때마다 배포 URL이 업데이트됨. 설치 없이 브라우저에서 바로 확인.</div>
+        <div class="gh-step-code">Vercel URL 북마크해두기</div>
+      </div>
+      <div class="gh-step">
+        <div class="gh-step-num">합치기 때</div>
+        <div class="gh-step-title">🤝 VS Code Live Share</div>
+        <div class="gh-step-desc">합치기 미팅 때 코더가 화면 공유하고 같이 수정. 화상통화 켜놓고 실시간으로.</div>
+        <div class="gh-step-code">VS Code → Live Share → 링크 공유</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════
+     합치기 포인트
+════════════════════ -->
+<div class="section-title">합치기 포인트 — 2번</div>
+<div class="merge-cards">
+
+  <div class="merge-card">
+    <div class="mc-head">
+      <div class="mc-head-icon">🤝</div>
+      <div>
+        <div class="mc-head-title">1차 합치기 — 기본 화면 완성 후</div>
+        <div class="mc-head-sub">코더가 주요 화면들을 올렸을 때 · 30~60분</div>
+      </div>
+    </div>
+    <div class="mc-body">
+      <ul class="mc-list">
+        <li><span class="check">✅</span>배포 URL을 셋이 같이 열어봄</li>
+        <li><span class="check">✅</span>디자인 담당이 정리한 피드백 목록 공유</li>
+        <li><span class="check">✅</span>데이터 담당이 발견한 오류 목록 공유</li>
+        <li><span class="check">✅</span>우선순위 정해서 코더가 수정할 것 결정</li>
+        <li><span class="check">✅</span>나머지 기간 계획 조정</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="merge-card">
+    <div class="mc-head">
+      <div class="mc-head-icon">🚀</div>
+      <div>
+        <div class="mc-head-title">2차 합치기 — 데모 직전</div>
+        <div class="mc-head-sub">모든 화면 완성 후 · 1~2시간</div>
+      </div>
+    </div>
+    <div class="mc-body">
+      <ul class="mc-list">
+        <li><span class="check">✅</span>데모 시나리오 순서대로 전체 흐름 테스트</li>
+        <li><span class="check">✅</span>막히는 곳 없는지 확인 + 즉시 수정</li>
+        <li><span class="check">✅</span>숙소 데이터 충분한지 확인 (10개 이상)</li>
+        <li><span class="check">✅</span>발표 자료 최종 확인</li>
+        <li><span class="check">✅</span>누가 어떤 화면 설명할지 역할 분담</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
