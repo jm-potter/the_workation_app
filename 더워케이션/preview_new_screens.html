@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>더워케이션 — 새 화면 미리보기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #0F172A; color: #F1F5F9; font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; }
+    .tab-btn { cursor: pointer; transition: all 0.2s; }
+    .tab-btn.active { background: #3B82F6; color: #fff; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    input, select, textarea { outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: #3B82F6 !important; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- 탭 네비게이션 -->
+  <div class="sticky top-0 z-50 bg-[#0F172A] border-b border-[#334155] px-6 py-3 flex items-center gap-3">
+    <span class="text-sm font-black text-blue-400 mr-4">더워케이션 미리보기</span>
+    <button class="tab-btn active px-4 py-1.5 rounded-lg text-sm font-medium bg-[#1E293B] border border-[#334155]"
+      onclick="showScreen('members', this)">👥 임직원 초대·관리</button>
+    <button class="tab-btn px-4 py-1.5 rounded-lg text-sm font-medium bg-[#1E293B] border border-[#334155]"
+      onclick="showScreen('booking-manage', this)">📅 예약 변경·취소</button>
+    <button class="tab-btn px-4 py-1.5 rounded-lg text-sm font-medium bg-[#1E293B] border border-[#334155]"
+      onclick="showScreen('dashboard', this)">📊 대시보드 (퀵메뉴)</button>
+  </div>
+
+  <!-- ① 임직원 초대·관리 -->
+  <div id="screen-members" class="screen active max-w-4xl mx-auto px-6 py-8">
+    <div class="mb-8">
+      <div class="text-xs text-[#64748B] mb-2">← 대시보드</div>
+      <h1 class="text-2xl font-black mb-1">임직원 관리</h1>
+      <p class="text-sm text-[#94A3B8]">초대 링크 발송 및 부서·권한 설정</p>
+    </div>
+
+    <div class="flex flex-col gap-5">
+      <!-- 일괄 초대 카드 -->
+      <div class="bg-[#1E293B] border border-[#334155] rounded-2xl p-6">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-lg">✉️</span>
+          <h2 class="font-bold">임직원 일괄 초대</h2>
+        </div>
+        <p class="text-xs text-[#64748B] mb-4">이메일을 입력하면 초대 링크를 일괄 발송합니다 (쉼표 또는 줄 바꿈으로 구분)</p>
+
+        <div class="flex flex-col gap-3">
+          <textarea rows="3" id="invite-emails"
+            placeholder="jisoo@company.com&#10;minjun@company.com, seoyeon@company.com"
+            class="w-full bg-[#263548] border border-[#334155] rounded-xl px-4 py-3 text-sm text-[#F1F5F9] placeholder-[#64748B] resize-none font-mono"></textarea>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-[#94A3B8] mb-1.5 block">부서 배정</label>
+              <select class="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2.5 text-sm text-[#F1F5F9]">
+                <option>개발팀</option><option>마케팅팀</option><option>디자인팀</option><option>영업팀</option><option>인사팀</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-[#94A3B8] mb-1.5 block">권한</label>
+              <select class="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2.5 text-sm text-[#F1F5F9]">
+                <option>임직원 (일반)</option><option>HR 담당자</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="handleInvite()"
+            class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl text-sm transition-colors">
+            초대 링크 발송
+          </button>
+          <div id="invite-success" class="hidden bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-sm text-emerald-400 text-center">
+            ✅ 초대 메일 발송 완료
+          </div>
+        </div>
+      </div>
+
+      <!-- 멤버 현황 -->
+      <div class="bg-[#1E293B] border border-[#334155] rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold">멤버 현황 <span class="text-sm font-normal text-[#64748B]">5명</span></h2>
+          <div class="flex items-center gap-3">
+            <input placeholder="이름·이메일 검색"
+              class="bg-[#263548] border border-[#334155] rounded-xl px-3 py-2 text-sm text-[#F1F5F9] placeholder-[#64748B] w-44" />
+            <div class="flex gap-1.5">
+              <button class="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-500 text-white">전체</button>
+              <button class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#263548] border border-[#334155] text-[#94A3B8]">개발팀</button>
+              <button class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#263548] border border-[#334155] text-[#94A3B8]">마케팅팀</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-xs text-[#64748B] border-b border-[#334155]">
+                <th class="text-left py-2 pr-4 font-medium">이름</th>
+                <th class="text-left py-2 pr-4 font-medium">이메일</th>
+                <th class="text-left py-2 pr-4 font-medium">부서</th>
+                <th class="text-left py-2 pr-4 font-medium">권한</th>
+                <th class="text-left py-2 pr-4 font-medium">상태</th>
+                <th class="py-2 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody id="member-tbody">
+              <tr class="border-b border-[#1E293B] hover:bg-[#263548]/50">
+                <td class="py-3 pr-4 font-medium">김지수</td>
+                <td class="py-3 pr-4 text-[#64748B] font-mono text-xs">jisoo@company.com</td>
+                <td class="py-3 pr-4 text-[#94A3B8]">개발팀</td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-[#263548] text-[#94A3B8]">임직원</span></td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400">활성</span></td>
+                <td></td>
+              </tr>
+              <tr class="border-b border-[#1E293B] hover:bg-[#263548]/50">
+                <td class="py-3 pr-4 font-medium">박민준</td>
+                <td class="py-3 pr-4 text-[#64748B] font-mono text-xs">minjun@company.com</td>
+                <td class="py-3 pr-4 text-[#94A3B8]">마케팅팀</td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-[#263548] text-[#94A3B8]">임직원</span></td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400">활성</span></td>
+                <td></td>
+              </tr>
+              <tr class="border-b border-[#1E293B] hover:bg-[#263548]/50">
+                <td class="py-3 pr-4 font-medium">이서연</td>
+                <td class="py-3 pr-4 text-[#64748B] font-mono text-xs">seoyeon@company.com</td>
+                <td class="py-3 pr-4 text-[#94A3B8]">디자인팀</td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-[#263548] text-[#94A3B8]">임직원</span></td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400">활성</span></td>
+                <td></td>
+              </tr>
+              <tr class="border-b border-[#1E293B] hover:bg-[#263548]/50">
+                <td class="py-3 pr-4 font-medium">최준혁</td>
+                <td class="py-3 pr-4 text-[#64748B] font-mono text-xs">junhyeok@company.com</td>
+                <td class="py-3 pr-4 text-[#94A3B8]">영업팀</td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-[#263548] text-[#94A3B8]">임직원</span></td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400">초대 대기</span></td>
+                <td class="py-3 text-right"><button class="text-xs text-[#64748B] hover:text-red-400">취소</button></td>
+              </tr>
+              <tr class="hover:bg-[#263548]/50">
+                <td class="py-3 pr-4 font-medium">홍길동</td>
+                <td class="py-3 pr-4 text-[#64748B] font-mono text-xs">gildong@company.com</td>
+                <td class="py-3 pr-4 text-[#94A3B8]">인사팀</td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300">HR 담당자</span></td>
+                <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400">활성</span></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 예약 변경·취소 -->
+  <div id="screen-booking-manage" class="screen max-w-4xl mx-auto px-6 py-8">
+    <div class="mb-8">
+      <div class="text-xs text-[#64748B] mb-2">← 대시보드</div>
+      <h1 class="text-2xl font-black mb-1">예약 변경·취소</h1>
+      <p class="text-sm text-[#94A3B8]">예약 일정 수정 또는 취소 처리</p>
+    </div>
+
+    <div class="grid grid-cols-5 gap-5">
+      <!-- 예약 목록 -->
+      <div class="col-span-3 flex flex-col gap-3">
+        <button onclick="selectBooking('wk10')"
+          class="booking-card w-full text-left bg-[#1E293B] border border-blue-500/60 rounded-2xl p-5">
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <div class="font-bold text-sm">강릉 씨사이드 워크스테이션</div>
+              <div class="text-xs text-[#64748B] mt-0.5">📍 강원도 강릉 · WK-0010</div>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400">예약 확정</span>
+          </div>
+          <div class="flex items-center gap-4 text-xs text-[#94A3B8]">
+            <span>📅 2026-06-10 ~ 2026-06-13 (3박)</span>
+            <span>👥 4명</span>
+            <span>💰 1,020,000원</span>
+          </div>
+        </button>
+
+        <button onclick="selectBooking('wk09')"
+          class="booking-card w-full text-left bg-[#1E293B] border border-[#334155] hover:border-[#475569] rounded-2xl p-5">
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <div class="font-bold text-sm">제주 한달살기 스튜디오</div>
+              <div class="text-xs text-[#64748B] mt-0.5">📍 제주도 서귀포 · WK-0009</div>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400">예약 확정</span>
+          </div>
+          <div class="flex items-center gap-4 text-xs text-[#94A3B8]">
+            <span>📅 2026-06-05 ~ 2026-06-08 (3박)</span>
+            <span>👥 2명</span>
+            <span>💰 570,000원</span>
+          </div>
+        </button>
+
+        <button onclick="selectBooking('wk07')"
+          class="booking-card w-full text-left bg-[#1E293B] border border-[#334155] rounded-2xl p-5 opacity-50">
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <div class="font-bold text-sm">여수 오션뷰 코워킹</div>
+              <div class="text-xs text-[#64748B] mt-0.5">📍 전라남도 여수 · WK-0007</div>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-[#263548] text-[#64748B]">취소됨</span>
+          </div>
+          <div class="flex items-center gap-4 text-xs text-[#94A3B8]">
+            <span>📅 2026-05-20 ~ 2026-05-23 (3박)</span>
+            <span>👥 3명</span>
+            <span>💰 675,000원</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- 상세 패널 -->
+      <div class="col-span-2">
+        <!-- 기본 패널 (선택 전) -->
+        <div id="panel-default" class="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 text-center text-sm text-[#64748B]">
+          예약을 선택하면<br/>변경·취소 옵션이 나타납니다
+        </div>
+
+        <!-- wk10 패널 -->
+        <div id="panel-wk10" class="hidden bg-[#1E293B] border border-[#334155] rounded-2xl p-5 flex flex-col gap-4">
+          <div>
+            <div class="font-bold mb-1">강릉 씨사이드 워크스테이션</div>
+            <span class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400">예약 확정</span>
+          </div>
+          <div class="text-xs text-[#64748B] bg-[#263548] rounded-xl p-3">
+            취소 정책: 체크인 7일 전까지 전액 환불
+          </div>
+          <div id="wk10-actions" class="flex flex-col gap-2">
+            <button onclick="showEdit('wk10')"
+              class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold transition-colors">
+              📅 날짜·인원 변경
+            </button>
+            <button onclick="showCancelConfirm('wk10')"
+              class="w-full py-2.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl text-sm font-medium transition-colors">
+              🚫 예약 취소
+            </button>
+          </div>
+          <div id="wk10-edit" class="hidden flex flex-col gap-3">
+            <div>
+              <label class="text-xs text-[#94A3B8] mb-1 block">체크인</label>
+              <input type="date" value="2026-06-10" class="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2 text-sm text-[#F1F5F9]" />
+            </div>
+            <div>
+              <label class="text-xs text-[#94A3B8] mb-1 block">체크아웃</label>
+              <input type="date" value="2026-06-13" class="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2 text-sm text-[#F1F5F9]" />
+            </div>
+            <div>
+              <label class="text-xs text-[#94A3B8] mb-1 block">인원</label>
+              <select class="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2 text-sm text-[#F1F5F9]">
+                <option>1명</option><option>2명</option><option>3명</option><option selected>4명</option><option>5명</option>
+              </select>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="hideEdit('wk10')" class="flex-1 py-2.5 bg-[#263548] border border-[#334155] text-[#94A3B8] rounded-xl text-sm">취소</button>
+              <button onclick="showChanged('wk10')" class="flex-1 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold">변경 확정</button>
+            </div>
+          </div>
+          <div id="wk10-cancel-confirm" class="hidden flex flex-col gap-3">
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-[#94A3B8]">
+              <div class="font-semibold text-red-400 mb-1">예약을 취소하시겠어요?</div>
+              <div class="text-xs text-[#64748B]">취소 정책: 체크인 7일 전까지 전액 환불</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="hideCancelConfirm('wk10')" class="flex-1 py-2.5 bg-[#263548] border border-[#334155] text-[#94A3B8] rounded-xl text-sm">돌아가기</button>
+              <button onclick="showCancelled('wk10')" class="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-semibold">취소 확정</button>
+            </div>
+          </div>
+          <div id="wk10-changed" class="hidden bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-sm text-emerald-400">✅ 예약이 변경됐어요</div>
+          <div id="wk10-cancelled" class="hidden bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-sm text-red-400">🚫 예약이 취소됐어요</div>
+        </div>
+
+        <!-- wk09 패널 -->
+        <div id="panel-wk09" class="hidden bg-[#1E293B] border border-[#334155] rounded-2xl p-5 flex flex-col gap-4">
+          <div>
+            <div class="font-bold mb-1">제주 한달살기 스튜디오</div>
+            <span class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400">예약 확정</span>
+          </div>
+          <div class="text-xs text-[#64748B] bg-[#263548] rounded-xl p-3">취소 정책: 체크인 3일 전까지 50% 환불</div>
+          <div class="flex flex-col gap-2">
+            <button class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold">📅 날짜·인원 변경</button>
+            <button class="w-full py-2.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl text-sm font-medium">🚫 예약 취소</button>
+          </div>
+        </div>
+
+        <!-- wk07 패널 -->
+        <div id="panel-wk07" class="hidden bg-[#1E293B] border border-[#334155] rounded-2xl p-5">
+          <div class="font-bold mb-1">여수 오션뷰 코워킹</div>
+          <span class="text-xs px-2 py-0.5 rounded-md bg-[#263548] text-[#64748B]">취소됨</span>
+          <div class="mt-4 text-sm text-[#64748B]">이미 취소된 예약입니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 대시보드 퀵메뉴 -->
+  <div id="screen-dashboard" class="screen max-w-5xl mx-auto px-6 py-8">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-1">워케이션 현황판</h1>
+      <p class="text-sm text-[#94A3B8]">삼성전자 · 2026년 상반기</p>
+    </div>
+
+    <!-- 요약 카드 -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
+        <p class="text-xs text-[#64748B] mb-2">총 예약</p>
+        <p class="text-2xl font-black text-blue-400 mb-1">12건</p>
+        <p class="text-xs text-[#94A3B8]">이번 분기</p>
+      </div>
+      <div class="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
+        <p class="text-xs text-[#64748B] mb-2">참여 직원</p>
+        <p class="text-2xl font-black text-emerald-400 mb-1">28명</p>
+        <p class="text-xs text-[#94A3B8]">전체 45명</p>
+      </div>
+      <div class="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
+        <p class="text-xs text-[#64748B] mb-2">예산 사용률</p>
+        <p class="text-2xl font-black text-amber-400 mb-1">37%</p>
+        <p class="text-xs text-[#94A3B8]">1,850,000원 사용</p>
+      </div>
+      <div class="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
+        <p class="text-xs text-[#64748B] mb-2">평균 만족도</p>
+        <p class="text-2xl font-black text-purple-400 mb-1">4.7점</p>
+        <p class="text-xs text-[#94A3B8]">직원 설문</p>
+      </div>
+    </div>
+
+    <!-- 예약 내역 테이블 -->
+    <div class="bg-[#1E293B] border border-[#334155] rounded-xl overflow-hidden mb-5">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-[#334155]">
+        <span class="font-semibold text-sm">최근 예약 내역</span>
+        <span class="text-xs text-blue-400 cursor-pointer hover:text-blue-300">변경·취소 →</span>
+      </div>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-xs text-[#64748B] border-b border-[#334155]">
+            <th class="text-left px-5 py-3 font-medium">예약번호</th>
+            <th class="text-left px-5 py-3 font-medium">직원</th>
+            <th class="text-left px-5 py-3 font-medium">숙소</th>
+            <th class="text-left px-5 py-3 font-medium">날짜</th>
+            <th class="text-left px-5 py-3 font-medium">금액</th>
+            <th class="text-left px-5 py-3 font-medium">상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-[#334155]/50 hover:bg-[#263548]/50">
+            <td class="px-5 py-3 text-[#64748B] text-xs">WK-0010</td>
+            <td class="px-5 py-3 font-medium">김지수</td>
+            <td class="px-5 py-3 text-[#94A3B8] text-xs">강릉 씨사이드 워크스테이션</td>
+            <td class="px-5 py-3 text-[#94A3B8] text-xs">6/10 – 6/13</td>
+            <td class="px-5 py-3">255,000원</td>
+            <td class="px-5 py-3"><span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400">확정</span></td>
+          </tr>
+          <tr class="border-b border-[#334155]/50 hover:bg-[#263548]/50">
+            <td class="px-5 py-3 text-[#64748B] text-xs">WK-0009</td>
+            <td class="px-5 py-3 font-medium">박민준</td>
+            <td class="px-5 py-3 text-[#94A3B8] text-xs">제주 한달살기 스튜디오</td>
+            <td class="px-5 py-3 text-[#94A3B8] text-xs">6/5 – 6/8</td>
+            <td class="px-5 py-3">285,000원</td>
+            <td class="px-5 py-3"><span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400">확정</span></td>
+          </tr>
+          <tr class="hover:bg-[#263548]/50">
+            <td class="px-5 py-3 text-[#64748B] text-xs">WK-0007</td>
+            <td class="px-5 py-3 font-medium">최준혁</td>
+            <td class="px-5 py-3 text-[#94A3B8] text-xs">여수 오션뷰 코워킹</td>
+            <td class="px-5 py-3 text-[#94A3B8] text-xs">5/20 – 5/23</td>
+            <td class="px-5 py-3">225,000원</td>
+            <td class="px-5 py-3"><span class="text-xs px-2.5 py-1 rounded-lg bg-[#263548] text-[#64748B]">취소</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 퀵 메뉴 (NEW) -->
+    <div class="grid grid-cols-3 gap-4">
+      <div class="flex items-center gap-3 bg-[#1E293B] border border-[#334155] hover:border-blue-500/50 rounded-xl p-4 cursor-pointer transition-colors"
+        onclick="showScreen('members', document.querySelectorAll('.tab-btn')[0])">
+        <span class="text-xl">👥</span>
+        <span class="text-sm font-medium">임직원 초대·관리</span>
+      </div>
+      <div class="flex items-center gap-3 bg-[#1E293B] border border-[#334155] hover:border-blue-500/50 rounded-xl p-4 cursor-pointer transition-colors"
+        onclick="showScreen('booking-manage', document.querySelectorAll('.tab-btn')[1])">
+        <span class="text-xl">📅</span>
+        <span class="text-sm font-medium">예약 변경·취소</span>
+      </div>
+      <div class="flex items-center gap-3 bg-[#1E293B] border border-[#334155] hover:border-blue-500/50 rounded-xl p-4 cursor-pointer transition-colors">
+        <span class="text-xl">⚙️</span>
+        <span class="text-sm font-medium">회사 설정</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function showScreen(id, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('active', 'bg-blue-500', 'text-white');
+      b.classList.add('bg-[#1E293B]');
+    });
+    document.getElementById('screen-' + id).classList.add('active');
+    if (btn) {
+      btn.classList.add('active');
+    }
+  }
+
+  let currentBooking = 'wk10';
+
+  function selectBooking(id) {
+    currentBooking = id;
+    document.querySelectorAll('.booking-card').forEach(c => {
+      c.classList.remove('border-blue-500/60');
+      c.classList.add('border-[#334155]');
+    });
+    event.currentTarget.classList.remove('border-[#334155]');
+    event.currentTarget.classList.add('border-blue-500/60');
+
+    ['panel-default','panel-wk10','panel-wk09','panel-wk07'].forEach(p => {
+      const el = document.getElementById(p);
+      if (el) el.classList.add('hidden');
+    });
+    document.getElementById('panel-' + id).classList.remove('hidden');
+  }
+
+  function showEdit(id) {
+    document.getElementById(id + '-actions').classList.add('hidden');
+    document.getElementById(id + '-edit').classList.remove('hidden');
+  }
+  function hideEdit(id) {
+    document.getElementById(id + '-edit').classList.add('hidden');
+    document.getElementById(id + '-actions').classList.remove('hidden');
+  }
+  function showChanged(id) {
+    document.getElementById(id + '-edit').classList.add('hidden');
+    document.getElementById(id + '-changed').classList.remove('hidden');
+  }
+  function showCancelConfirm(id) {
+    document.getElementById(id + '-actions').classList.add('hidden');
+    document.getElementById(id + '-cancel-confirm').classList.remove('hidden');
+  }
+  function hideCancelConfirm(id) {
+    document.getElementById(id + '-cancel-confirm').classList.add('hidden');
+    document.getElementById(id + '-actions').classList.remove('hidden');
+  }
+  function showCancelled(id) {
+    document.getElementById(id + '-cancel-confirm').classList.add('hidden');
+    document.getElementById(id + '-cancelled').classList.remove('hidden');
+  }
+
+  function handleInvite() {
+    const emails = document.getElementById('invite-emails').value.trim();
+    if (!emails) return;
+    document.getElementById('invite-success').classList.remove('hidden');
+    document.getElementById('invite-emails').value = '';
+    setTimeout(() => document.getElementById('invite-success').classList.add('hidden'), 3000);
+  }
+</script>
+</body>
+</html>
