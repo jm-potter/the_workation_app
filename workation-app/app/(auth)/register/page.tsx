@@ -27,14 +27,14 @@ export default function RegisterPage() {
     }
     setError('')
     setLoading(true)
-    const { error } = await supabase.auth.signUp({
+    const { error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { name, role } },
     })
     setLoading(false)
-    if (error) {
-      setError(error.message)
+    if (authError) {
+      setError(authError.message)
     } else {
       router.push('/company-setup')
     }
