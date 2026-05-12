@@ -10,12 +10,28 @@ const BOOKINGS = [
   { id: 'WK-0007', name: '최준혁', accommodation: '여수 오션뷰 코워킹',          dates: '5/20 – 5/23', amount: 225000, status: 'cancelled' as const },
 ]
 
+const SUBSIDIES = [
+  { name: '강원도 워케이션 유치 지원금', region: '강원도', amount: 100000, unit: '1인당', condition: '2박 이상', matched: true,  deadline: '2026-06-30' },
+  { name: '제주 기업 유치 특별 지원',    region: '제주도', amount: 150000, unit: '1인당', condition: '3박 이상', matched: true,  deadline: '2026-07-31' },
+  { name: '전라남도 워케이션 활성화',    region: '전라남도', amount: 80000, unit: '1인당', condition: '2박 이상', matched: false, deadline: '2026-05-31' },
+]
+
+const PERFORMANCE = [
+  { label: '업무 집중도',  before: 68, after: 84, unit: '%' },
+  { label: '팀 결속력',   before: 72, after: 91, unit: '%' },
+  { label: '직원 만족도', before: 74, after: 92, unit: '%' },
+  { label: '이직 의향',   before: 38, after: 19, unit: '%', reverse: true },
+]
+
 const statusLabel = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
 
 export default function DashboardPage() {
   const budgetTotal = 5000000
   const budgetUsed  = 1850000
   const budgetPct   = Math.round((budgetUsed / budgetTotal) * 100)
+
+  const matchedSubsidies = SUBSIDIES.filter(s => s.matched)
+  const subsidyTotal     = matchedSubsidies.reduce((sum, s) => sum + s.amount * 4, 0)
 
   return (
     <div className="min-h-screen bg-[#0F172A]">
@@ -55,11 +71,102 @@ export default function DashboardPage() {
             <span className="text-xs text-[#64748B]">{budgetUsed.toLocaleString()}원 / {budgetTotal.toLocaleString()}원</span>
           </div>
           <div className="h-3 bg-[#263548] rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all" style={{ width: `${budgetPct}%` }} />
+            <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full" style={{ width: `${budgetPct}%` }} />
           </div>
           <div className="flex justify-between mt-2 text-xs text-[#64748B]">
             <span>{budgetPct}% 사용</span>
             <span>잔여 {(budgetTotal - budgetUsed).toLocaleString()}원</span>
+          </div>
+        </div>
+
+        {/* 지원금 자동 매칭 */}
+        <div className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-xl p-5 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">💰</span>
+              <h2 className="font-bold text-sm">지원금 자동 매칭</h2>
+              <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">자동 분석 완료</span>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-[#64748B]">최대 수령 가능 금액</div>
+              <div className="text-lg font-black text-emerald-400">{subsidyTotal.toLocaleString()}원</div>
+            </div>
+          </div>
+          <p className="text-xs text-[#94A3B8] mb-4">삼성전자 · 45명 규모 기준으로 신청 가능한 지원금을 자동으로 찾았어요</p>
+
+          <div className="flex flex-col gap-3">
+            {SUBSIDIES.map((s) => (
+              <div key={s.name} className={`flex items-center justify-between p-3 rounded-xl border ${
+                s.matched
+                  ? 'bg-emerald-500/10 border-emerald-500/20'
+                  : 'bg-[#1E293B] border-[#334155] opacity-50'
+              }`}>
+                <div className="flex items-center gap-3">
+                  <span className={`text-lg ${s.matched ? '' : 'grayscale'}`}>{s.matched ? '✅' : '❌'}</span>
+                  <div>
+                    <div className="font-medium text-sm">{s.name}</div>
+                    <div className="text-xs text-[#64748B]">{s.condition} · 마감 {s.deadline}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-sm text-emerald-400">{s.amount.toLocaleString()}원</div>
+                  <div className="text-xs text-[#64748B]">{s.unit}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button className="mt-4 w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors">
+            매칭된 지원금 신청하기 →
+          </button>
+        </div>
+
+        {/* 성과 예측 */}
+        <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl p-5 mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">📈</span>
+            <h2 className="font-bold text-sm">워케이션 성과 예측</h2>
+            <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/30">AI 분석</span>
+          </div>
+          <p className="text-xs text-[#94A3B8] mb-5">28명 참여 기준 · 과거 데이터 및 업계 평균 기반 예측</p>
+
+          <div className="grid grid-cols-4 gap-4 mb-5">
+            {PERFORMANCE.map((p) => {
+              const diff = p.reverse ? p.before - p.after : p.after - p.before
+              return (
+                <div key={p.label} className="bg-[#1E293B] rounded-xl p-4">
+                  <div className="text-xs text-[#64748B] mb-3">{p.label}</div>
+                  <div className="flex items-end gap-2 mb-3">
+                    <div className="flex-1">
+                      <div className="text-xs text-[#64748B] mb-1">이전</div>
+                      <div className="h-16 bg-[#263548] rounded-lg flex items-end overflow-hidden">
+                        <div className="w-full bg-[#334155] rounded-lg transition-all" style={{ height: `${p.before}%` }} />
+                      </div>
+                      <div className="text-xs text-center mt-1 text-[#94A3B8]">{p.before}{p.unit}</div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xs text-[#64748B] mb-1">예측</div>
+                      <div className="h-16 bg-[#263548] rounded-lg flex items-end overflow-hidden">
+                        <div className="w-full bg-purple-500/60 rounded-lg transition-all" style={{ height: `${p.after}%` }} />
+                      </div>
+                      <div className="text-xs text-center mt-1 text-purple-300">{p.after}{p.unit}</div>
+                    </div>
+                  </div>
+                  <div className={`text-xs font-bold text-center ${p.reverse ? 'text-emerald-400' : 'text-emerald-400'}`}>
+                    {p.reverse ? '▼' : '▲'} {diff}{p.unit} 개선
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="bg-[#1E293B] rounded-xl p-4 text-sm">
+            <div className="font-semibold mb-2 text-purple-300">💡 AI 종합 분석</div>
+            <p className="text-xs text-[#94A3B8] leading-relaxed">
+              이번 분기 워케이션 참여 직원 28명 기준, 업무 집중도 <strong className="text-white">+16%</strong>, 팀 결속력 <strong className="text-white">+19%</strong> 향상이 예측됩니다.
+              특히 이직 의향이 <strong className="text-emerald-400">19%p 감소</strong>하여 인재 유지 효과가 클 것으로 분석됩니다.
+              예상 ROI는 투자 비용 대비 <strong className="text-white">약 3.2배</strong>입니다.
+            </p>
           </div>
         </div>
 
