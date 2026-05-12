@@ -174,7 +174,7 @@ export default function DashboardPage() {
         <div className="bg-[#1E293B] border border-[#334155] rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-[#334155]">
             <span className="font-semibold text-sm">최근 예약 내역</span>
-            <span className="text-xs text-[#64748B]">전체 보기 →</span>
+            <Link href="/booking/manage" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">변경·취소 →</Link>
           </div>
           <table className="w-full text-sm">
             <thead>
@@ -197,6 +197,21 @@ export default function DashboardPage() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* 퀵 메뉴 */}
+        <div className="grid grid-cols-3 gap-4 mt-5">
+          {[
+            { href: '/members',        icon: '👥', label: '임직원 초대·관리' },
+            { href: '/booking/manage', icon: '📅', label: '예약 변경·취소' },
+            { href: '/settings',       icon: '⚙️', label: '회사 설정' },
+          ].map(q => (
+            <Link key={q.href} href={q.href}
+              className="flex items-center gap-3 bg-[#1E293B] border border-[#334155] rounded-xl p-4 hover:border-blue-500/50 transition-colors">
+              <span className="text-xl">{q.icon}</span>
+              <span className="text-sm font-medium">{q.label}</span>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
