@@ -22,7 +22,6 @@ export default function RegisterPage() {
   const [loading, setLoading]   = useState(false)
 
   async function handleRegister() {
-    alert('클릭됨! role=' + role + ' / email=' + email)
     if (!role || !name || !email || !password) {
       setError('모든 항목을 입력해주세요')
       return
