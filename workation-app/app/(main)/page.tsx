@@ -7,6 +7,12 @@ export default function LandingPage() {
       {/* 헤더 */}
       <header className="px-6 py-5 flex justify-between items-center max-w-6xl mx-auto">
         <span className="text-lg font-bold">더 워케이션</span>
+        <nav className="flex items-center gap-6">
+          <Link href="/workation" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">워케이션이란?</Link>
+          <Link href="/accommodations" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">숙소 찾기</Link>
+          <Link href="/subsidy" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">지원금 안내</Link>
+          <Link href="/partner" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">파트너 등록</Link>
+        </nav>
         <div className="flex gap-3">
           <Link href="/login">
             <Button variant="ghost" size="sm">로그인</Button>
