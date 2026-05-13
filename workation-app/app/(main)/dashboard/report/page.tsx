@@ -1,5 +1,7 @@
+'use client'
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
+import { useHrOnly } from '@/lib/useHrOnly'
 
 const BEFORE_AFTER = [
   { label: '업무 집중도',   before: 68, after: 84, unit: '%',  icon: '🎯' },
@@ -19,6 +21,7 @@ const CARBON = {
 const carbonSaved = Math.round(CARBON.avgCommute * 2 * CARBON.days * CARBON.people * CARBON.coefficient)
 
 export default function ReportPage() {
+  useHrOnly()
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Header role="hr" userName="홍길동 팀장" />

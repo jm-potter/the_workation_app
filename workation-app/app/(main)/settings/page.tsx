@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
+import { useHrOnly } from '@/lib/useHrOnly'
 
 const TOOLS = [
   { id: 'slack',   name: 'Slack',            icon: '💬', desc: '메시지 응답속도·채널 활동 분석', connected: true,  scope: '메시지 읽기 권한' },
@@ -14,6 +15,7 @@ const INDUSTRIES = ['IT·소프트웨어', '제조·엔지니어링', '금융·�
 const PURPOSES   = ['팀 결속력 강화', '집중 업무 환경', '번아웃 회복', '신규 프로젝트 킥오프', '전략 워크숍', '채용·온보딩']
 
 export default function SettingsPage() {
+  useHrOnly()
   const [industry, setIndustry]   = useState('IT·소프트웨어')
   const [purposes, setPurposes]   = useState<string[]>(['팀 결속력 강화'])
   const [saved, setSaved]         = useState(false)

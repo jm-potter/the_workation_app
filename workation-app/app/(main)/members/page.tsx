@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
+import { useHrOnly } from '@/lib/useHrOnly'
 
 const MEMBERS = [
   { id: 1, name: '김지수', email: 'jisoo@company.com',   dept: '개발팀', role: 'emp', status: 'active'   as const },
@@ -15,6 +16,7 @@ const MEMBERS = [
 const DEPTS = ['전체', '개발팀', '마케팅팀', '디자인팀', '영업팀', '인사팀']
 
 export default function MembersPage() {
+  useHrOnly()
   const [members, setMembers]     = useState(MEMBERS)
   const [dept, setDept]           = useState('전체')
   const [search, setSearch]       = useState('')

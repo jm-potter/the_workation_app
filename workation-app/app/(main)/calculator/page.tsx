@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Header from '@/components/ui/Header'
+import { useHrOnly } from '@/lib/useHrOnly'
 
 const ACCOMMODATIONS = [
   { name: '강릉 씨사이드 워크스테이션', price: 85000 },
@@ -12,6 +13,7 @@ const ACCOMMODATIONS = [
 ]
 
 export default function CalculatorPage() {
+  useHrOnly()
   const [nights, setNights]   = useState(3)
   const [people, setPeople]   = useState(4)
   const [accIdx, setAccIdx]   = useState(0)

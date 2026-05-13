@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
+import { useHrOnly } from '@/lib/useHrOnly'
 
 type BookingStatus = 'confirmed' | 'pending' | 'cancelled'
 
@@ -58,6 +59,7 @@ const STATUS_COLOR: Record<BookingStatus, string> = {
 }
 
 export default function BookingManagePage() {
+  useHrOnly()
   const [bookings, setBookings] = useState(MOCK_BOOKINGS)
   const [selected, setSelected] = useState<string | null>(null)
   const [editMode, setEditMode] = useState(false)
