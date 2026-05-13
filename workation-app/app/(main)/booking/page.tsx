@@ -52,7 +52,7 @@ function BookingContent() {
   async function handleBookingComplete() {
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
-    await supabase.from('bookings').insert({
+    const { error } = await supabase.from('bookings').insert({
       user_id:          user?.id ?? null,
       accommodation_id: accId,
       check_in:         checkIn  || '2026-06-10',
@@ -63,6 +63,10 @@ function BookingContent() {
       status:           'confirmed',
     })
     setSaving(false)
+    if (error) {
+      alert('예약 저장 실패: ' + error.message)
+      return
+    }
     router.push('/booking/confirm')
   }
 
