@@ -59,7 +59,7 @@ export default function LandingPage() {
 
       {/* 기능 3가지 */}
       <section className="max-w-5xl mx-auto px-6 py-20">
-        <h2 className="text-2xl font-bold text-center mb-12">인사담당자가 좋아하는 이유</h2>
+        <h2 className="text-2xl font-bold text-center mb-12">더워케이션의 장점</h2>
         <div className="grid grid-cols-3 gap-6">
           {[
             {
