@@ -55,11 +55,10 @@ function BookingContent() {
     const { error } = await supabase.from('bookings').insert({
       user_id:          user?.id ?? null,
       accommodation_id: accId,
-      check_in:         checkIn  || '2026-06-10',
-      check_out:        checkOut || '2026-06-13',
+      start_date:       checkIn  || '2026-06-10',
+      end_date:         checkOut || '2026-06-13',
       guests,
-      total_amount:     finalTotal,
-      subsidy_amount:   subsidyTotal,
+      total_price:      finalTotal,
       status:           'confirmed',
     })
     setSaving(false)

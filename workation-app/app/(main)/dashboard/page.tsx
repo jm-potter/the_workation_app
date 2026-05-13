@@ -24,11 +24,10 @@ const statusLabel: Record<string, string> = { confirmed: '확정', pending: '대
 
 type Booking = {
   id: string
-  check_in: string
-  check_out: string
+  start_date: string
+  end_date: string
   guests: number
-  total_amount: number
-  subsidy_amount: number
+  total_price: number
   status: string
   accommodations: { name: string; region: string } | null
 }
@@ -57,9 +56,8 @@ export default function DashboardPage() {
   }, [])
 
   const confirmedBookings = bookings.filter(b => b.status === 'confirmed')
-  const totalAmount       = confirmedBookings.reduce((s, b) => s + (b.total_amount ?? 0), 0)
+  const totalAmount       = confirmedBookings.reduce((s, b) => s + (b.total_price ?? 0), 0)
   const totalGuests       = confirmedBookings.reduce((s, b) => s + (b.guests ?? 0), 0)
-  const totalSubsidy      = confirmedBookings.reduce((s, b) => s + (b.subsidy_amount ?? 0), 0)
 
   const budgetTotal = 5000000
   const budgetUsed  = totalAmount || 1850000
@@ -88,7 +86,7 @@ export default function DashboardPage() {
             { label: '총 예약',     value: `${bookings.length}건`,  sub: '전체 예약 수',  color: 'text-blue-500' },
             { label: '참여 직원',   value: `${totalGuests}명`,       sub: '누적 참여',     color: 'text-emerald-500' },
             { label: '예산 사용률', value: `${budgetPct}%`,          sub: `${budgetUsed.toLocaleString()}원 사용`, color: 'text-amber-500' },
-            { label: '절감 지원금', value: `${totalSubsidy.toLocaleString()}원`, sub: '지원금 합계', color: 'text-purple-500' },
+            { label: '절감 지원금', value: `${matchedSubsidyTotal.toLocaleString()}원`, sub: '지원금 합계', color: 'text-purple-500' },
           ].map((s) => (
             <div key={s.label} className="bg-white border border-[#E2E8F0] rounded-xl p-5">
               <p className="text-xs text-[#94A3B8] mb-2">{s.label}</p>
@@ -223,10 +221,10 @@ export default function DashboardPage() {
                   <tr key={b.id} className="border-b border-[#E2E8F0]/50 hover:bg-[#F1F5F9]/50 transition-colors">
                     <td className="px-5 py-3 font-medium text-sm">{b.accommodations?.name ?? '-'}</td>
                     <td className="px-5 py-3 text-[#475569] text-xs">{b.accommodations?.region ?? '-'}</td>
-                    <td className="px-5 py-3 text-[#475569] text-xs">{b.check_in}</td>
-                    <td className="px-5 py-3 text-[#475569] text-xs">{b.check_out}</td>
+                    <td className="px-5 py-3 text-[#475569] text-xs">{b.start_date}</td>
+                    <td className="px-5 py-3 text-[#475569] text-xs">{b.end_date}</td>
                     <td className="px-5 py-3 text-[#475569] text-xs">{b.guests}명</td>
-                    <td className="px-5 py-3 text-sm">{b.total_amount?.toLocaleString()}원</td>
+                    <td className="px-5 py-3 text-sm">{b.total_price?.toLocaleString()}원</td>
                     <td className="px-5 py-3"><Badge variant={b.status as any}>{statusLabel[b.status] ?? b.status}</Badge></td>
                   </tr>
                 ))}
