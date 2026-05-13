@@ -28,16 +28,23 @@ export default function RegisterPage() {
     }
     setError('')
     setLoading(true)
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name, role } },
-    })
-    setLoading(false)
-    if (authError) {
-      setError(authError.message)
-    } else {
-      router.push('/company-setup')
+    try {
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name, role } },
+      })
+      setLoading(false)
+      if (authError) {
+        setError(authError.message)
+      } else if (data.user) {
+        router.push('/dashboard')
+      } else {
+        setError('가입 처리 중 오류가 발생했어요. 다시 시도해주세요.')
+      }
+    } catch (e: unknown) {
+      setLoading(false)
+      setError('연결 오류: ' + (e instanceof Error ? e.message : String(e)))
     }
   }
 
