@@ -8,17 +8,24 @@ import { useAuthOnly } from '@/lib/useAuthOnly'
 
 const STEPS = ['날짜·인원 선택', '지원금 확인', '최종 확인']
 
-const MATCHED_SUBSIDIES = [
-  { name: '강원도 워케이션 유치 지원금', amount: 100000, unit: '1인당', region: '강원도' },
-  { name: '강릉시 기업 유치 특별 지원',  amount: 50000,  unit: '1인당', region: '강원도 강릉' },
-]
-
 type Accommodation = {
   id: string
   name: string
   region: string
   price_per_night: number
   image_url?: string
+}
+
+type Subsidy = {
+  id: string
+  region: string
+  name: string
+  amount_per_person: number
+  min_nights: number
+  unit: string
+  conditions: string
+  deadline: string
+  provider: string
 }
 
 function BookingContent() {
@@ -28,6 +35,7 @@ function BookingContent() {
   const accId        = searchParams.get('id')
 
   const [acc, setAcc]               = useState<Accommodation | null>(null)
+  const [subsidies, setSubsidies]   = useState<Subsidy[]>([])
   const [step, setStep]             = useState(0)
   const [guests, setGuests]         = useState(4)
   const [checkIn, setCheckIn]       = useState('')
@@ -38,14 +46,25 @@ function BookingContent() {
   useEffect(() => {
     if (!accId) return
     supabase.from('accommodations').select('*').eq('id', accId).single()
-      .then(({ data }) => { if (data) setAcc(data) })
+      .then(({ data }) => {
+        if (data) {
+          setAcc(data)
+          // 숙소 지역에 맞는 지원금 자동 매칭
+          supabase.from('subsidies').select('*').then(({ data: subs }) => {
+            if (subs) {
+              const matched = subs.filter(s => data.region.includes(s.region) || s.region.includes(data.region.split(' ')[0]))
+              setSubsidies(matched)
+            }
+          })
+        }
+      })
   }, [accId])
 
   const pricePerNight  = acc?.price_per_night ?? 85000
   const nights         = checkIn && checkOut
     ? Math.max(1, Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
     : 3
-  const subsidyPerHead = MATCHED_SUBSIDIES.reduce((s, m) => s + m.amount, 0)
+  const subsidyPerHead = subsidies.reduce((s, m) => s + m.amount_per_person, 0)
   const subsidyTotal   = useSubsidy ? subsidyPerHead * guests : 0
   const finalTotal     = pricePerNight * nights * guests - subsidyTotal
 
@@ -143,20 +162,27 @@ function BookingContent() {
             </div>
             <p className="text-xs text-[#475569]">{acc?.region} 워케이션 기준 · {guests}명</p>
 
-            <div className="flex flex-col gap-2">
-              {MATCHED_SUBSIDIES.map(s => (
-                <div key={s.name} className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
-                  <div>
-                    <div className="text-sm font-medium">{s.name}</div>
-                    <div className="text-xs text-[#94A3B8]">📍 {s.region}</div>
+            {subsidies.length === 0 ? (
+              <div className="bg-[#F1F5F9] rounded-xl p-4 text-sm text-[#94A3B8] text-center">
+                이 지역에 매칭된 지원금이 없어요
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {subsidies.map(s => (
+                  <div key={s.id} className="flex items-start justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
+                    <div>
+                      <div className="text-sm font-medium">{s.name}</div>
+                      <div className="text-xs text-[#94A3B8] mt-0.5">📍 {s.provider}</div>
+                      <div className="text-xs text-[#94A3B8]">최소 {s.min_nights}박 이상 · {s.conditions}</div>
+                    </div>
+                    <div className="text-right ml-3 shrink-0">
+                      <div className="font-bold text-emerald-500">{s.amount_per_person.toLocaleString()}원</div>
+                      <div className="text-xs text-[#94A3B8]">{s.unit}</div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold text-emerald-400">{s.amount.toLocaleString()}원</div>
-                    <div className="text-xs text-[#94A3B8]">{s.unit}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <div className="bg-[#F1F5F9] rounded-xl p-4">
               <div className="flex items-center justify-between mb-4">
@@ -171,7 +197,7 @@ function BookingContent() {
                   <span>숙박비 ({nights}박)</span>
                   <span>{(pricePerNight * nights * guests).toLocaleString()}원</span>
                 </div>
-                {useSubsidy && (
+                {useSubsidy && subsidies.length > 0 && (
                   <div className="flex justify-between text-emerald-500">
                     <span>지원금 차감 ({guests}명 × {subsidyPerHead.toLocaleString()}원)</span>
                     <span>- {subsidyTotal.toLocaleString()}원</span>
@@ -181,7 +207,7 @@ function BookingContent() {
                   <span>최종 결제 금액</span>
                   <span className="text-blue-500 text-lg">{finalTotal.toLocaleString()}원</span>
                 </div>
-                {useSubsidy && (
+                {useSubsidy && subsidies.length > 0 && (
                   <p className="text-xs text-emerald-500 text-right">💡 {subsidyTotal.toLocaleString()}원 절감</p>
                 )}
               </div>
@@ -214,9 +240,9 @@ function BookingContent() {
                   <span className="font-medium">{v}</span>
                 </div>
               ))}
-              {useSubsidy && (
+              {useSubsidy && subsidies.length > 0 && (
                 <div className="flex justify-between text-emerald-500">
-                  <span>지원금 선공제</span>
+                  <span>지원금 선공제 ({subsidies.length}개 매칭)</span>
                   <span>- {subsidyTotal.toLocaleString()}원</span>
                 </div>
               )}
