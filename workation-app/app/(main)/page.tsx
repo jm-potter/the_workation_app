@@ -3,7 +3,7 @@ import Button from '@/components/ui/Button'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-white">
       {/* 헤더 */}
       <header className="px-6 py-5 flex justify-between items-center max-w-6xl mx-auto">
         <span className="text-lg font-bold">더 워케이션</span>
@@ -17,7 +17,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* 히어로 */}
+      {/* 히어로 — 흰 배경 */}
       <section className="max-w-4xl mx-auto px-6 pt-24 pb-20 text-center">
         <div className="inline-block bg-blue-500/10 border border-blue-500/30 text-blue-600 text-xs font-bold px-3 py-1 rounded-full mb-6">
           기업 전용 워케이션 플랫폼
@@ -41,37 +41,60 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 수치 */}
-      <section className="border-y border-[#E2E8F0] py-12">
-        <div className="max-w-4xl mx-auto px-6 grid grid-cols-3 gap-8 text-center">
-          {[
-            { num: '200+', label: '제휴 숙소' },
-            { num: '50+', label: '파트너 기업' },
-            { num: '98%', label: '재이용률' },
-          ].map((item) => (
-            <div key={item.label}>
-              <div className="text-3xl font-black text-blue-400 mb-1">{item.num}</div>
-              <div className="text-sm text-[#475569]">{item.label}</div>
-            </div>
-          ))}
+      {/* 수치 — 회색 배경 */}
+      <section className="bg-[#F1F5F9] py-16">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex items-center gap-3 justify-center mb-8">
+            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+            <span className="text-sm font-bold text-[#475569] uppercase tracking-widest">지금까지의 성과</span>
+            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+          </div>
+          <div className="grid grid-cols-3 gap-8 text-center">
+            {[
+              { num: '200+', label: '제휴 숙소' },
+              { num: '50+', label: '파트너 기업' },
+              { num: '98%', label: '재이용률' },
+            ].map((item) => (
+              <div key={item.label}>
+                <div className="text-3xl font-black text-blue-400 mb-1">{item.num}</div>
+                <div className="text-sm text-[#475569]">{item.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 워케이션이란? 버튼 */}
-      <section className="max-w-5xl mx-auto px-6 py-10 text-center">
-        <p className="text-[#475569] mb-4">워케이션이 처음이신가요?</p>
-        <Link href="/workation">
-          <Button variant="secondary" size="lg">워케이션이란? →</Button>
-        </Link>
+      {/* 워케이션이란? — 흰 배경 */}
+      <section className="bg-white py-16">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex items-center gap-3 justify-center mb-8">
+            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+            <span className="text-sm font-bold text-[#475569] uppercase tracking-widest">워케이션 알아보기</span>
+            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+          </div>
+          <div className="text-center">
+            <p className="text-[#475569] mb-6">워케이션이 처음이신가요?</p>
+            <Link href="/workation">
+              <Button variant="secondary" size="lg">워케이션이란? →</Button>
+            </Link>
+          </div>
+        </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-white border-t border-[#E2E8F0] py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">지금 바로 시작해보세요</h2>
-        <p className="text-[#475569] mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
-        <Link href="/register">
-          <Button size="lg">무료로 시작하기</Button>
-        </Link>
+      {/* CTA — 파란 배경 */}
+      <section className="bg-blue-500 py-20 text-center">
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="flex items-center gap-3 justify-center mb-6">
+            <div className="w-8 h-1 bg-white/50 rounded-full" />
+            <span className="text-sm font-bold text-white/80 uppercase tracking-widest">지금 시작하기</span>
+            <div className="w-8 h-1 bg-white/50 rounded-full" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-4">지금 바로 시작해보세요</h2>
+          <p className="text-white/80 mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
+          <Link href="/register">
+            <Button size="lg">무료로 시작하기</Button>
+          </Link>
+        </div>
       </section>
 
       {/* 푸터 */}
