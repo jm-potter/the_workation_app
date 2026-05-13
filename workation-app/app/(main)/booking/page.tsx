@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
@@ -12,10 +12,20 @@ const MATCHED_SUBSIDIES = [
   { name: '강릉시 기업 유치 특별 지원',  amount: 50000,  unit: '1인당', region: '강원도 강릉' },
 ]
 
-const ACCOMMODATION_ID = null // 실제 예약 시 숙소 ID 연결 예정
+type Accommodation = {
+  id: string
+  name: string
+  region: string
+  price_per_night: number
+  image_url?: string
+}
 
 export default function BookingPage() {
-  const router = useRouter()
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const accId        = searchParams.get('id')
+
+  const [acc, setAcc]               = useState<Accommodation | null>(null)
   const [step, setStep]             = useState(0)
   const [guests, setGuests]         = useState(4)
   const [checkIn, setCheckIn]       = useState('')
@@ -23,28 +33,33 @@ export default function BookingPage() {
   const [useSubsidy, setUseSubsidy] = useState(true)
   const [saving, setSaving]         = useState(false)
 
-  const pricePerNight  = 85000
-  const nights         = 3
-  const roomTotal      = pricePerNight * nights
+  useEffect(() => {
+    if (!accId) return
+    supabase.from('accommodations').select('*').eq('id', accId).single()
+      .then(({ data }) => { if (data) setAcc(data) })
+  }, [accId])
+
+  const pricePerNight  = acc?.price_per_night ?? 85000
+  const nights         = checkIn && checkOut
+    ? Math.max(1, Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
+    : 3
   const subsidyPerHead = MATCHED_SUBSIDIES.reduce((s, m) => s + m.amount, 0)
   const subsidyTotal   = useSubsidy ? subsidyPerHead * guests : 0
-  const finalTotal     = roomTotal * guests - subsidyTotal
+  const finalTotal     = pricePerNight * nights * guests - subsidyTotal
 
   async function handleBookingComplete() {
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
-
     await supabase.from('bookings').insert({
-      user_id:           user?.id ?? null,
-      accommodation_id:  ACCOMMODATION_ID,
-      check_in:          checkIn  || '2026-06-10',
-      check_out:         checkOut || '2026-06-13',
+      user_id:          user?.id ?? null,
+      accommodation_id: accId,
+      check_in:         checkIn  || '2026-06-10',
+      check_out:        checkOut || '2026-06-13',
       guests,
-      total_amount:      finalTotal,
-      subsidy_amount:    subsidyTotal,
-      status:            'confirmed',
+      total_amount:     finalTotal,
+      subsidy_amount:   subsidyTotal,
+      status:           'confirmed',
     })
-
     setSaving(false)
     router.push('/booking/confirm')
   }
@@ -59,11 +74,11 @@ export default function BookingPage() {
           {STEPS.map((s, i) => (
             <div key={s} className="flex items-center gap-3">
               <div className={`flex items-center gap-2 text-sm font-medium transition-all ${
-                i === step ? 'text-blue-400' : i < step ? 'text-[#475569]' : 'text-[#CBD5E1]'
+                i === step ? 'text-blue-500' : i < step ? 'text-[#475569]' : 'text-[#CBD5E1]'
               }`}>
                 <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border transition-all ${
                   i === step   ? 'bg-blue-500 border-blue-500 text-white'
-                  : i < step   ? 'bg-[#334155] border-[#E2E8F0] text-[#475569]'
+                  : i < step   ? 'bg-[#E2E8F0] border-[#E2E8F0] text-[#475569]'
                   : 'bg-transparent border-[#E2E8F0] text-[#CBD5E1]'
                 }`}>{i + 1}</span>
                 {s}
@@ -79,10 +94,13 @@ export default function BookingPage() {
             <h2 className="font-bold text-lg">날짜와 인원을 선택해주세요</h2>
 
             <div className="bg-[#F1F5F9] rounded-xl p-4 flex items-center gap-3">
-              <span className="text-3xl">🏨</span>
+              {acc?.image_url
+                ? <img src={acc.image_url} alt={acc.name} className="w-12 h-12 rounded-lg object-cover" />
+                : <span className="text-3xl">🏨</span>
+              }
               <div>
-                <div className="font-medium text-sm">강릉 씨사이드 워크스테이션</div>
-                <div className="text-xs text-[#94A3B8]">강원도 강릉 · 85,000원/박</div>
+                <div className="font-medium text-sm">{acc?.name ?? '숙소 불러오는 중...'}</div>
+                <div className="text-xs text-[#94A3B8]">{acc?.region} · {pricePerNight.toLocaleString()}원/박</div>
               </div>
             </div>
 
@@ -118,7 +136,7 @@ export default function BookingPage() {
               <span className="text-lg">💰</span>
               <h2 className="font-bold text-lg">지원금 자동 매칭 결과</h2>
             </div>
-            <p className="text-xs text-[#475569]">강원도 강릉 워케이션 기준 · {guests}명</p>
+            <p className="text-xs text-[#475569]">{acc?.region} 워케이션 기준 · {guests}명</p>
 
             <div className="flex flex-col gap-2">
               {MATCHED_SUBSIDIES.map(s => (
@@ -139,27 +157,27 @@ export default function BookingPage() {
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-semibold">지원금 선공제 적용</span>
                 <button onClick={() => setUseSubsidy(!useSubsidy)}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${useSubsidy ? 'bg-emerald-500' : 'bg-[#334155]'}`}>
+                  className={`relative w-12 h-6 rounded-full transition-colors ${useSubsidy ? 'bg-emerald-500' : 'bg-[#E2E8F0]'}`}>
                   <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${useSubsidy ? 'left-6' : 'left-0.5'}`} />
                 </button>
               </div>
               <div className="flex flex-col gap-2 text-sm">
                 <div className="flex justify-between text-[#475569]">
-                  <span>숙박비</span>
+                  <span>숙박비 ({nights}박)</span>
                   <span>{(pricePerNight * nights * guests).toLocaleString()}원</span>
                 </div>
                 {useSubsidy && (
-                  <div className="flex justify-between text-emerald-400">
+                  <div className="flex justify-between text-emerald-500">
                     <span>지원금 차감 ({guests}명 × {subsidyPerHead.toLocaleString()}원)</span>
                     <span>- {subsidyTotal.toLocaleString()}원</span>
                   </div>
                 )}
                 <div className="border-t border-[#E2E8F0] pt-2 flex justify-between font-bold">
                   <span>최종 결제 금액</span>
-                  <span className="text-blue-400 text-lg">{finalTotal.toLocaleString()}원</span>
+                  <span className="text-blue-500 text-lg">{finalTotal.toLocaleString()}원</span>
                 </div>
                 {useSubsidy && (
-                  <p className="text-xs text-emerald-400 text-right">💡 {subsidyTotal.toLocaleString()}원 절감</p>
+                  <p className="text-xs text-emerald-500 text-right">💡 {subsidyTotal.toLocaleString()}원 절감</p>
                 )}
               </div>
             </div>
@@ -178,10 +196,11 @@ export default function BookingPage() {
 
             <div className="bg-[#F1F5F9] rounded-xl p-4 flex flex-col gap-3 text-sm">
               {[
-                ['숙소',      '강릉 씨사이드 워크스테이션'],
+                ['숙소',      acc?.name ?? ''],
+                ['지역',      acc?.region ?? ''],
                 ['체크인',    checkIn  || '2026-06-10'],
                 ['체크아웃',  checkOut || '2026-06-13'],
-                ['숙박 기간', '3박'],
+                ['숙박 기간', `${nights}박`],
                 ['인원',      `${guests}명`],
                 ['숙박비',    `${(pricePerNight * nights * guests).toLocaleString()}원`],
               ].map(([k, v]) => (
@@ -191,14 +210,14 @@ export default function BookingPage() {
                 </div>
               ))}
               {useSubsidy && (
-                <div className="flex justify-between text-emerald-400">
+                <div className="flex justify-between text-emerald-500">
                   <span>지원금 선공제</span>
                   <span>- {subsidyTotal.toLocaleString()}원</span>
                 </div>
               )}
               <div className="border-t border-[#E2E8F0] pt-3 flex justify-between font-bold">
                 <span>최종 결제 금액</span>
-                <span className="text-blue-400 text-lg">{finalTotal.toLocaleString()}원</span>
+                <span className="text-blue-500 text-lg">{finalTotal.toLocaleString()}원</span>
               </div>
               <p className="text-xs text-[#94A3B8] text-right">회사 예산에서 차감됩니다</p>
             </div>
