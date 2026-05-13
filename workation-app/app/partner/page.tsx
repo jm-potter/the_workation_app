@@ -16,19 +16,19 @@ export default function PartnerPage() {
   const avgRating = 4.8
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
-      <header className="sticky top-0 z-50 bg-[#0F172A]/90 backdrop-blur border-b border-[#334155] px-6 h-14 flex items-center justify-between">
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="font-black text-lg">더워케이션</span>
           <Badge variant="prt">파트너</Badge>
         </div>
-        <div className="text-sm text-[#64748B]">강릉 씨사이드 워크스테이션</div>
+        <div className="text-sm text-[#94A3B8]">강릉 씨사이드 워크스테이션</div>
       </header>
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-black mb-1">파트너 대시보드</h1>
-          <p className="text-sm text-[#94A3B8]">2026년 5월 기준</p>
+          <p className="text-sm text-[#475569]">2026년 5월 기준</p>
         </div>
 
         {/* 요약 카드 */}
@@ -39,24 +39,24 @@ export default function PartnerPage() {
             { label: '평균 평점',     value: `⭐ ${avgRating}`,                                 sub: '리뷰 38개',         color: 'text-amber-400'   },
             { label: '객실 점유율',   value: '73%',                                             sub: '이번 달 기준',      color: 'text-purple-400'  },
           ].map((s) => (
-            <div key={s.label} className="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
-              <p className="text-xs text-[#64748B] mb-2">{s.label}</p>
+            <div key={s.label} className="bg-white border border-[#E2E8F0] rounded-xl p-5">
+              <p className="text-xs text-[#94A3B8] mb-2">{s.label}</p>
               <p className={`text-2xl font-black ${s.color} mb-1`}>{s.value}</p>
-              <p className="text-xs text-[#94A3B8]">{s.sub}</p>
+              <p className="text-xs text-[#475569]">{s.sub}</p>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-3 gap-6">
           {/* 예약 현황 */}
-          <div className="col-span-2 bg-[#1E293B] border border-[#334155] rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#334155]">
+          <div className="col-span-2 bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0]">
               <span className="font-semibold text-sm">최근 예약</span>
-              <Link href="/partner/bookings" className="text-xs text-blue-400 hover:text-blue-300">전체 보기 →</Link>
+              <Link href="/partner/bookings" className="text-xs text-blue-400 hover:text-blue-600">전체 보기 →</Link>
             </div>
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-[#64748B] border-b border-[#334155]">
+                <tr className="text-xs text-[#94A3B8] border-b border-[#E2E8F0]">
                   {['예약번호', '예약자', '체크인', '체크아웃', '인원', '금액', '상태'].map(h => (
                     <th key={h} className="text-left px-4 py-3 font-medium">{h}</th>
                   ))}
@@ -64,12 +64,12 @@ export default function PartnerPage() {
               </thead>
               <tbody>
                 {RECENT_BOOKINGS.map((b) => (
-                  <tr key={b.id} className="border-b border-[#334155]/50 hover:bg-[#263548]/50 transition-colors">
-                    <td className="px-4 py-3 text-xs text-[#64748B]">{b.id}</td>
+                  <tr key={b.id} className="border-b border-[#E2E8F0]/50 hover:bg-[#F1F5F9]/50 transition-colors">
+                    <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.id}</td>
                     <td className="px-4 py-3 text-sm font-medium">{b.guest}</td>
-                    <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.checkIn}</td>
-                    <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.checkOut}</td>
-                    <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.people}명</td>
+                    <td className="px-4 py-3 text-xs text-[#475569]">{b.checkIn}</td>
+                    <td className="px-4 py-3 text-xs text-[#475569]">{b.checkOut}</td>
+                    <td className="px-4 py-3 text-xs text-[#475569]">{b.people}명</td>
                     <td className="px-4 py-3 text-sm">{b.amount.toLocaleString()}원</td>
                     <td className="px-4 py-3"><Badge variant={b.status}>{statusLabel[b.status]}</Badge></td>
                   </tr>
@@ -79,11 +79,11 @@ export default function PartnerPage() {
           </div>
 
           {/* 이번 달 달력 점유율 */}
-          <div className="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-5">
             <div className="font-semibold text-sm mb-4">6월 예약 현황</div>
             <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2">
               {['일','월','화','수','목','금','토'].map(d => (
-                <div key={d} className="text-[#64748B] py-1">{d}</div>
+                <div key={d} className="text-[#94A3B8] py-1">{d}</div>
               ))}
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-xs">
@@ -95,8 +95,8 @@ export default function PartnerPage() {
                 return (
                   <div key={d} className={`py-1.5 rounded-md font-medium transition-colors ${
                     today  ? 'bg-blue-500 text-white' :
-                    booked ? 'bg-blue-500/30 text-blue-300' :
-                    'text-[#94A3B8] hover:bg-[#263548]'
+                    booked ? 'bg-blue-500/30 text-blue-600' :
+                    'text-[#475569] hover:bg-[#F1F5F9]'
                   }`}>{d}</div>
                 )
               })}
@@ -116,11 +116,11 @@ export default function PartnerPage() {
             { label: '정산 내역',     icon: '💰', href: '#',                        desc: '월별 정산 확인' },
           ].map((m) => (
             <Link key={m.label} href={m.href}
-              className="bg-[#1E293B] border border-[#334155] rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-colors">
+              className="bg-white border border-[#E2E8F0] rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-colors">
               <span className="text-3xl">{m.icon}</span>
               <div>
                 <div className="font-semibold text-sm">{m.label}</div>
-                <div className="text-xs text-[#64748B] mt-0.5">{m.desc}</div>
+                <div className="text-xs text-[#94A3B8] mt-0.5">{m.desc}</div>
               </div>
             </Link>
           ))}

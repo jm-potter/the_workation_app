@@ -21,7 +21,7 @@ const statusLabel: Record<string, string> = { active: '운영중', pending: '검
 const statusColor: Record<string, string> = {
   active:   'bg-emerald-500/20 text-emerald-400',
   pending:  'bg-amber-500/20 text-amber-400',
-  inactive: 'bg-[#334155] text-[#64748B]',
+  inactive: 'bg-[#334155] text-[#94A3B8]',
 }
 
 export default function AdminAccommodationsPage() {
@@ -34,11 +34,11 @@ export default function AdminAccommodationsPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
-      <header className="sticky top-0 z-50 bg-[#0F172A]/90 backdrop-blur border-b border-[#334155] px-6 h-14 flex items-center justify-between">
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-[#64748B] hover:text-[#94A3B8] transition-colors">← 대시보드</Link>
-          <span className="text-[#334155]">/</span>
+          <Link href="/admin" className="text-[#94A3B8] hover:text-[#475569] transition-colors">← 대시보드</Link>
+          <span className="text-[#CBD5E1]">/</span>
           <span className="font-semibold">숙소 관리</span>
         </div>
         <button className="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
@@ -54,7 +54,7 @@ export default function AdminAccommodationsPage() {
             placeholder="숙소명 또는 지역 검색"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-[#1E293B] border border-[#334155] rounded-xl px-4 py-2.5 text-sm text-[#F1F5F9] placeholder-[#64748B] focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#0F172A] placeholder-[#64748B] focus:outline-none focus:border-blue-500"
           />
           <div className="flex gap-1.5">
             {(['all', 'active', 'pending', 'inactive'] as StatusFilter[]).map(s => (
@@ -62,7 +62,7 @@ export default function AdminAccommodationsPage() {
                 key={s}
                 onClick={() => setFilter(s)}
                 className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                  filter === s ? 'bg-blue-500 text-white' : 'bg-[#1E293B] border border-[#334155] text-[#94A3B8] hover:border-blue-500/50'
+                  filter === s ? 'bg-blue-500 text-white' : 'bg-white border border-[#E2E8F0] text-[#475569] hover:border-blue-500/50'
                 }`}
               >
                 {s === 'all' ? '전체' : statusLabel[s]}
@@ -72,10 +72,10 @@ export default function AdminAccommodationsPage() {
         </div>
 
         {/* 테이블 */}
-        <div className="bg-[#1E293B] border border-[#334155] rounded-xl overflow-hidden">
+        <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-xs text-[#64748B] border-b border-[#334155]">
+              <tr className="text-xs text-[#94A3B8] border-b border-[#E2E8F0]">
                 {['숙소명', '위치', '가격/박', '수용인원', '예약수', '평점', '상태', '액션'].map(h => (
                   <th key={h} className="text-left px-5 py-3 font-medium">{h}</th>
                 ))}
@@ -83,12 +83,12 @@ export default function AdminAccommodationsPage() {
             </thead>
             <tbody>
               {filtered.map((a) => (
-                <tr key={a.id} className="border-b border-[#334155]/50 hover:bg-[#263548]/50 transition-colors">
+                <tr key={a.id} className="border-b border-[#E2E8F0]/50 hover:bg-[#F1F5F9]/50 transition-colors">
                   <td className="px-5 py-4 font-medium">{a.name}</td>
-                  <td className="px-5 py-4 text-xs text-[#94A3B8]">📍 {a.location}</td>
+                  <td className="px-5 py-4 text-xs text-[#475569]">📍 {a.location}</td>
                   <td className="px-5 py-4">{a.price.toLocaleString()}원</td>
-                  <td className="px-5 py-4 text-[#94A3B8]">최대 {a.capacity}명</td>
-                  <td className="px-5 py-4 text-[#94A3B8]">{a.bookings}건</td>
+                  <td className="px-5 py-4 text-[#475569]">최대 {a.capacity}명</td>
+                  <td className="px-5 py-4 text-[#475569]">{a.bookings}건</td>
                   <td className="px-5 py-4">{a.rating > 0 ? `⭐ ${a.rating}` : '—'}</td>
                   <td className="px-5 py-4">
                     <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${statusColor[a.status]}`}>
@@ -105,8 +105,8 @@ export default function AdminAccommodationsPage() {
                       )}
                       {a.status !== 'pending' && (
                         <>
-                          <button className="text-xs px-2.5 py-1 bg-[#263548] text-[#94A3B8] rounded-lg hover:border hover:border-blue-500/50 transition-colors">수정</button>
-                          <button className="text-xs px-2.5 py-1 bg-[#263548] text-[#94A3B8] rounded-lg hover:border hover:border-red-500/50 transition-colors">
+                          <button className="text-xs px-2.5 py-1 bg-[#F1F5F9] text-[#475569] rounded-lg hover:border hover:border-blue-500/50 transition-colors">수정</button>
+                          <button className="text-xs px-2.5 py-1 bg-[#F1F5F9] text-[#475569] rounded-lg hover:border hover:border-red-500/50 transition-colors">
                             {a.status === 'active' ? '중단' : '재개'}
                           </button>
                         </>
@@ -117,7 +117,7 @@ export default function AdminAccommodationsPage() {
               ))}
             </tbody>
           </table>
-          <div className="px-5 py-3 border-t border-[#334155] text-xs text-[#64748B]">
+          <div className="px-5 py-3 border-t border-[#E2E8F0] text-xs text-[#94A3B8]">
             총 {filtered.length}개 숙소
           </div>
         </div>

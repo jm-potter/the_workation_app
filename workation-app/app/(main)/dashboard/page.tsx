@@ -34,14 +34,14 @@ export default function DashboardPage() {
   const subsidyTotal     = matchedSubsidies.reduce((sum, s) => sum + s.amount * 4, 0)
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
+    <div className="min-h-screen bg-[#F8FAFC]">
       <Header role="hr" userName="홍길동 팀장" />
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold mb-1">워케이션 현황판</h1>
-            <p className="text-sm text-[#94A3B8]">삼성전자 · 2026년 상반기</p>
+            <p className="text-sm text-[#475569]">삼성전자 · 2026년 상반기</p>
           </div>
           <Link href="/accommodations">
             <Button>+ 새 예약</Button>
@@ -56,24 +56,24 @@ export default function DashboardPage() {
             { label: '예산 사용률', value: `${budgetPct}%`, sub: `${budgetUsed.toLocaleString()}원 사용`, color: 'text-amber-400' },
             { label: '평균 만족도', value: '4.7점', sub: '직원 설문',  color: 'text-purple-400' },
           ].map((s) => (
-            <div key={s.label} className="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
-              <p className="text-xs text-[#64748B] mb-2">{s.label}</p>
+            <div key={s.label} className="bg-white border border-[#E2E8F0] rounded-xl p-5">
+              <p className="text-xs text-[#94A3B8] mb-2">{s.label}</p>
               <p className={`text-2xl font-black ${s.color} mb-1`}>{s.value}</p>
-              <p className="text-xs text-[#94A3B8]">{s.sub}</p>
+              <p className="text-xs text-[#475569]">{s.sub}</p>
             </div>
           ))}
         </div>
 
         {/* 예산 게이지 */}
-        <div className="bg-[#1E293B] border border-[#334155] rounded-xl p-5 mb-6">
+        <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 mb-6">
           <div className="flex justify-between items-center mb-3">
             <span className="font-semibold text-sm">예산 사용 현황</span>
-            <span className="text-xs text-[#64748B]">{budgetUsed.toLocaleString()}원 / {budgetTotal.toLocaleString()}원</span>
+            <span className="text-xs text-[#94A3B8]">{budgetUsed.toLocaleString()}원 / {budgetTotal.toLocaleString()}원</span>
           </div>
-          <div className="h-3 bg-[#263548] rounded-full overflow-hidden">
+          <div className="h-3 bg-[#F1F5F9] rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full" style={{ width: `${budgetPct}%` }} />
           </div>
-          <div className="flex justify-between mt-2 text-xs text-[#64748B]">
+          <div className="flex justify-between mt-2 text-xs text-[#94A3B8]">
             <span>{budgetPct}% 사용</span>
             <span>잔여 {(budgetTotal - budgetUsed).toLocaleString()}원</span>
           </div>
@@ -88,29 +88,29 @@ export default function DashboardPage() {
               <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">자동 분석 완료</span>
             </div>
             <div className="text-right">
-              <div className="text-xs text-[#64748B]">최대 수령 가능 금액</div>
+              <div className="text-xs text-[#94A3B8]">최대 수령 가능 금액</div>
               <div className="text-lg font-black text-emerald-400">{subsidyTotal.toLocaleString()}원</div>
             </div>
           </div>
-          <p className="text-xs text-[#94A3B8] mb-4">삼성전자 · 45명 규모 기준으로 신청 가능한 지원금을 자동으로 찾았어요</p>
+          <p className="text-xs text-[#475569] mb-4">삼성전자 · 45명 규모 기준으로 신청 가능한 지원금을 자동으로 찾았어요</p>
 
           <div className="flex flex-col gap-3">
             {SUBSIDIES.map((s) => (
               <div key={s.name} className={`flex items-center justify-between p-3 rounded-xl border ${
                 s.matched
                   ? 'bg-emerald-500/10 border-emerald-500/20'
-                  : 'bg-[#1E293B] border-[#334155] opacity-50'
+                  : 'bg-white border-[#E2E8F0] opacity-50'
               }`}>
                 <div className="flex items-center gap-3">
                   <span className={`text-lg ${s.matched ? '' : 'grayscale'}`}>{s.matched ? '✅' : '❌'}</span>
                   <div>
                     <div className="font-medium text-sm">{s.name}</div>
-                    <div className="text-xs text-[#64748B]">{s.condition} · 마감 {s.deadline}</div>
+                    <div className="text-xs text-[#94A3B8]">{s.condition} · 마감 {s.deadline}</div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-bold text-sm text-emerald-400">{s.amount.toLocaleString()}원</div>
-                  <div className="text-xs text-[#64748B]">{s.unit}</div>
+                  <div className="text-xs text-[#94A3B8]">{s.unit}</div>
                 </div>
               </div>
             ))}
@@ -126,30 +126,30 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">📈</span>
             <h2 className="font-bold text-sm">워케이션 성과 예측</h2>
-            <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/30">AI 분석</span>
+            <span className="text-xs bg-purple-500/20 text-purple-600 px-2 py-0.5 rounded-full border border-purple-500/30">AI 분석</span>
           </div>
-          <p className="text-xs text-[#94A3B8] mb-5">28명 참여 기준 · 과거 데이터 및 업계 평균 기반 예측</p>
+          <p className="text-xs text-[#475569] mb-5">28명 참여 기준 · 과거 데이터 및 업계 평균 기반 예측</p>
 
           <div className="grid grid-cols-4 gap-4 mb-5">
             {PERFORMANCE.map((p) => {
               const diff = p.reverse ? p.before - p.after : p.after - p.before
               return (
-                <div key={p.label} className="bg-[#1E293B] rounded-xl p-4">
-                  <div className="text-xs text-[#64748B] mb-3">{p.label}</div>
+                <div key={p.label} className="bg-white rounded-xl p-4">
+                  <div className="text-xs text-[#94A3B8] mb-3">{p.label}</div>
                   <div className="flex items-end gap-2 mb-3">
                     <div className="flex-1">
-                      <div className="text-xs text-[#64748B] mb-1">이전</div>
-                      <div className="h-16 bg-[#263548] rounded-lg flex items-end overflow-hidden">
+                      <div className="text-xs text-[#94A3B8] mb-1">이전</div>
+                      <div className="h-16 bg-[#F1F5F9] rounded-lg flex items-end overflow-hidden">
                         <div className="w-full bg-[#334155] rounded-lg transition-all" style={{ height: `${p.before}%` }} />
                       </div>
-                      <div className="text-xs text-center mt-1 text-[#94A3B8]">{p.before}{p.unit}</div>
+                      <div className="text-xs text-center mt-1 text-[#475569]">{p.before}{p.unit}</div>
                     </div>
                     <div className="flex-1">
-                      <div className="text-xs text-[#64748B] mb-1">예측</div>
-                      <div className="h-16 bg-[#263548] rounded-lg flex items-end overflow-hidden">
+                      <div className="text-xs text-[#94A3B8] mb-1">예측</div>
+                      <div className="h-16 bg-[#F1F5F9] rounded-lg flex items-end overflow-hidden">
                         <div className="w-full bg-purple-500/60 rounded-lg transition-all" style={{ height: `${p.after}%` }} />
                       </div>
-                      <div className="text-xs text-center mt-1 text-purple-300">{p.after}{p.unit}</div>
+                      <div className="text-xs text-center mt-1 text-purple-600">{p.after}{p.unit}</div>
                     </div>
                   </div>
                   <div className={`text-xs font-bold text-center ${p.reverse ? 'text-emerald-400' : 'text-emerald-400'}`}>
@@ -160,25 +160,25 @@ export default function DashboardPage() {
             })}
           </div>
 
-          <div className="bg-[#1E293B] rounded-xl p-4 text-sm">
-            <div className="font-semibold mb-2 text-purple-300">💡 AI 종합 분석</div>
-            <p className="text-xs text-[#94A3B8] leading-relaxed">
-              이번 분기 워케이션 참여 직원 28명 기준, 업무 집중도 <strong className="text-white">+16%</strong>, 팀 결속력 <strong className="text-white">+19%</strong> 향상이 예측됩니다.
+          <div className="bg-white rounded-xl p-4 text-sm">
+            <div className="font-semibold mb-2 text-purple-600">💡 AI 종합 분석</div>
+            <p className="text-xs text-[#475569] leading-relaxed">
+              이번 분기 워케이션 참여 직원 28명 기준, 업무 집중도 <strong className="text-blue-600">+16%</strong>, 팀 결속력 <strong className="text-blue-600">+19%</strong> 향상이 예측됩니다.
               특히 이직 의향이 <strong className="text-emerald-400">19%p 감소</strong>하여 인재 유지 효과가 클 것으로 분석됩니다.
-              예상 ROI는 투자 비용 대비 <strong className="text-white">약 3.2배</strong>입니다.
+              예상 ROI는 투자 비용 대비 <strong className="text-blue-600">약 3.2배</strong>입니다.
             </p>
           </div>
         </div>
 
         {/* 예약 목록 */}
-        <div className="bg-[#1E293B] border border-[#334155] rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#334155]">
+        <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0]">
             <span className="font-semibold text-sm">최근 예약 내역</span>
-            <Link href="/booking/manage" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">변경·취소 →</Link>
+            <Link href="/booking/manage" className="text-xs text-blue-400 hover:text-blue-600 transition-colors">변경·취소 →</Link>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-xs text-[#64748B] border-b border-[#334155]">
+              <tr className="text-xs text-[#94A3B8] border-b border-[#E2E8F0]">
                 {['예약번호', '직원', '숙소', '날짜', '금액', '상태'].map(h => (
                   <th key={h} className="text-left px-5 py-3 font-medium">{h}</th>
                 ))}
@@ -186,11 +186,11 @@ export default function DashboardPage() {
             </thead>
             <tbody>
               {BOOKINGS.map((b) => (
-                <tr key={b.id} className="border-b border-[#334155]/50 hover:bg-[#263548]/50 transition-colors">
-                  <td className="px-5 py-3 text-[#64748B] text-xs">{b.id}</td>
+                <tr key={b.id} className="border-b border-[#E2E8F0]/50 hover:bg-[#F1F5F9]/50 transition-colors">
+                  <td className="px-5 py-3 text-[#94A3B8] text-xs">{b.id}</td>
                   <td className="px-5 py-3 font-medium">{b.name}</td>
-                  <td className="px-5 py-3 text-[#94A3B8] text-xs">{b.accommodation}</td>
-                  <td className="px-5 py-3 text-[#94A3B8] text-xs">{b.dates}</td>
+                  <td className="px-5 py-3 text-[#475569] text-xs">{b.accommodation}</td>
+                  <td className="px-5 py-3 text-[#475569] text-xs">{b.dates}</td>
                   <td className="px-5 py-3">{b.amount.toLocaleString()}원</td>
                   <td className="px-5 py-3"><Badge variant={b.status}>{statusLabel[b.status]}</Badge></td>
                 </tr>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
             { href: '/settings',       icon: '⚙️', label: '회사 설정' },
           ].map(q => (
             <Link key={q.href} href={q.href}
-              className="flex items-center gap-3 bg-[#1E293B] border border-[#334155] rounded-xl p-4 hover:border-blue-500/50 transition-colors">
+              className="flex items-center gap-3 bg-white border border-[#E2E8F0] rounded-xl p-4 hover:border-blue-500/50 transition-colors">
               <span className="text-xl">{q.icon}</span>
               <span className="text-sm font-medium">{q.label}</span>
             </Link>

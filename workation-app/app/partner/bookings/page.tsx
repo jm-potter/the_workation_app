@@ -23,11 +23,11 @@ export default function PartnerBookingsPage() {
   const pendingCount = BOOKINGS.filter(b => b.status === 'pending').length
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
-      <header className="sticky top-0 z-50 bg-[#0F172A]/90 backdrop-blur border-b border-[#334155] px-6 h-14 flex items-center">
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center">
         <div className="flex items-center gap-3">
-          <Link href="/partner" className="text-[#64748B] hover:text-[#94A3B8] transition-colors">← 대시보드</Link>
-          <span className="text-[#334155]">/</span>
+          <Link href="/partner" className="text-[#94A3B8] hover:text-[#475569] transition-colors">← 대시보드</Link>
+          <span className="text-[#CBD5E1]">/</span>
           <span className="font-semibold">예약 관리</span>
           {pendingCount > 0 && (
             <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{pendingCount}</span>
@@ -45,7 +45,7 @@ export default function PartnerBookingsPage() {
                 key={s}
                 onClick={() => setFilter(s)}
                 className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                  filter === s ? 'bg-blue-500 text-white' : 'bg-[#1E293B] border border-[#334155] text-[#94A3B8] hover:border-blue-500/50'
+                  filter === s ? 'bg-blue-500 text-white' : 'bg-white border border-[#E2E8F0] text-[#475569] hover:border-blue-500/50'
                 }`}
               >
                 {s === 'all' ? '전체' : statusLabel[s]}
@@ -59,8 +59,8 @@ export default function PartnerBookingsPage() {
               <button
                 key={b.id}
                 onClick={() => setSelected(b)}
-                className={`w-full text-left bg-[#1E293B] border rounded-xl p-4 transition-colors ${
-                  selected?.id === b.id ? 'border-blue-500' : 'border-[#334155] hover:border-blue-500/40'
+                className={`w-full text-left bg-white border rounded-xl p-4 transition-colors ${
+                  selected?.id === b.id ? 'border-blue-500' : 'border-[#E2E8F0] hover:border-blue-500/40'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -70,7 +70,7 @@ export default function PartnerBookingsPage() {
                   </div>
                   <span className="text-sm font-bold text-blue-400">{b.amount.toLocaleString()}원</span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-[#64748B]">
+                <div className="flex items-center gap-4 text-xs text-[#94A3B8]">
                   <span>📅 {b.checkIn} – {b.checkOut}</span>
                   <span>👥 {b.people}명</span>
                   <span>🌙 {b.nights}박</span>
@@ -88,7 +88,7 @@ export default function PartnerBookingsPage() {
         {/* 상세 패널 */}
         {selected && (
           <div className="w-72 shrink-0">
-            <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5 sticky top-20">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sticky top-20">
               <div className="flex items-center justify-between mb-4">
                 <span className="font-bold text-sm">{selected.id}</span>
                 <Badge variant={selected.status}>{statusLabel[selected.status]}</Badge>
@@ -105,7 +105,7 @@ export default function PartnerBookingsPage() {
                   ['금액',    `${selected.amount.toLocaleString()}원`],
                 ].map(([k, v]) => (
                   <div key={k} className="flex justify-between">
-                    <span className="text-[#64748B]">{k}</span>
+                    <span className="text-[#94A3B8]">{k}</span>
                     <span className="font-medium">{v}</span>
                   </div>
                 ))}
@@ -127,7 +127,7 @@ export default function PartnerBookingsPage() {
                 </div>
               )}
               {selected.status === 'confirmed' && (
-                <button className="w-full py-2 bg-[#263548] hover:bg-[#2e3f56] text-[#94A3B8] text-sm font-medium rounded-xl transition-colors">
+                <button className="w-full py-2 bg-[#F1F5F9] hover:bg-[#2e3f56] text-[#475569] text-sm font-medium rounded-xl transition-colors">
                   예약 취소
                 </button>
               )}

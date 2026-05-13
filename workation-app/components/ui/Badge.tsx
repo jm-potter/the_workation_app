@@ -12,7 +12,7 @@ const styles = {
   pending:   'bg-amber-500/20 text-amber-300 border-amber-500/30',
   confirmed: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   cancelled: 'bg-red-500/20 text-red-300 border-red-500/30',
-  default:   'bg-[#263548] text-[#94A3B8] border-[#334155]',
+  default:   'bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]',
 }
 
 export default function Badge({ children, variant = 'default' }: BadgeProps) {

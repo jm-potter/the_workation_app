@@ -50,7 +50,7 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
+    <div className="min-h-screen bg-[#F8FAFC]">
       <Header />
 
       <div className="max-w-xl mx-auto px-6 py-10">
@@ -59,50 +59,50 @@ export default function BookingPage() {
           {STEPS.map((s, i) => (
             <div key={s} className="flex items-center gap-3">
               <div className={`flex items-center gap-2 text-sm font-medium transition-all ${
-                i === step ? 'text-blue-400' : i < step ? 'text-[#94A3B8]' : 'text-[#334155]'
+                i === step ? 'text-blue-400' : i < step ? 'text-[#475569]' : 'text-[#CBD5E1]'
               }`}>
                 <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border transition-all ${
                   i === step   ? 'bg-blue-500 border-blue-500 text-white'
-                  : i < step   ? 'bg-[#334155] border-[#334155] text-[#94A3B8]'
-                  : 'bg-transparent border-[#334155] text-[#334155]'
+                  : i < step   ? 'bg-[#334155] border-[#E2E8F0] text-[#475569]'
+                  : 'bg-transparent border-[#E2E8F0] text-[#CBD5E1]'
                 }`}>{i + 1}</span>
                 {s}
               </div>
-              {i < STEPS.length - 1 && <span className="text-[#334155]">—</span>}
+              {i < STEPS.length - 1 && <span className="text-[#CBD5E1]">—</span>}
             </div>
           ))}
         </div>
 
         {/* STEP 0 — 날짜·인원 */}
         {step === 0 && (
-          <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 flex flex-col gap-4">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 flex flex-col gap-4">
             <h2 className="font-bold text-lg">날짜와 인원을 선택해주세요</h2>
 
-            <div className="bg-[#263548] rounded-xl p-4 flex items-center gap-3">
+            <div className="bg-[#F1F5F9] rounded-xl p-4 flex items-center gap-3">
               <span className="text-3xl">🏨</span>
               <div>
                 <div className="font-medium text-sm">강릉 씨사이드 워크스테이션</div>
-                <div className="text-xs text-[#64748B]">강원도 강릉 · 85,000원/박</div>
+                <div className="text-xs text-[#94A3B8]">강원도 강릉 · 85,000원/박</div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-[#94A3B8] mb-1 block">체크인</label>
+                <label className="text-xs text-[#475569] mb-1 block">체크인</label>
                 <input type="date" value={checkIn} onChange={e => setCheckIn(e.target.value)}
-                  className="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2.5 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500" />
+                  className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500" />
               </div>
               <div>
-                <label className="text-xs text-[#94A3B8] mb-1 block">체크아웃</label>
+                <label className="text-xs text-[#475569] mb-1 block">체크아웃</label>
                 <input type="date" value={checkOut} onChange={e => setCheckOut(e.target.value)}
-                  className="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2.5 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500" />
+                  className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500" />
               </div>
             </div>
 
             <div>
-              <label className="text-xs text-[#94A3B8] mb-1 block">인원</label>
+              <label className="text-xs text-[#475569] mb-1 block">인원</label>
               <select value={guests} onChange={e => setGuests(Number(e.target.value))}
-                className="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2.5 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500">
+                className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500">
                 {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}명</option>)}
               </select>
             </div>
@@ -113,29 +113,29 @@ export default function BookingPage() {
 
         {/* STEP 1 — 지원금 */}
         {step === 1 && (
-          <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 flex flex-col gap-4">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 flex flex-col gap-4">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">💰</span>
               <h2 className="font-bold text-lg">지원금 자동 매칭 결과</h2>
             </div>
-            <p className="text-xs text-[#94A3B8]">강원도 강릉 워케이션 기준 · {guests}명</p>
+            <p className="text-xs text-[#475569]">강원도 강릉 워케이션 기준 · {guests}명</p>
 
             <div className="flex flex-col gap-2">
               {MATCHED_SUBSIDIES.map(s => (
                 <div key={s.name} className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
                   <div>
                     <div className="text-sm font-medium">{s.name}</div>
-                    <div className="text-xs text-[#64748B]">📍 {s.region}</div>
+                    <div className="text-xs text-[#94A3B8]">📍 {s.region}</div>
                   </div>
                   <div className="text-right">
                     <div className="font-bold text-emerald-400">{s.amount.toLocaleString()}원</div>
-                    <div className="text-xs text-[#64748B]">{s.unit}</div>
+                    <div className="text-xs text-[#94A3B8]">{s.unit}</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="bg-[#263548] rounded-xl p-4">
+            <div className="bg-[#F1F5F9] rounded-xl p-4">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-semibold">지원금 선공제 적용</span>
                 <button onClick={() => setUseSubsidy(!useSubsidy)}
@@ -144,7 +144,7 @@ export default function BookingPage() {
                 </button>
               </div>
               <div className="flex flex-col gap-2 text-sm">
-                <div className="flex justify-between text-[#94A3B8]">
+                <div className="flex justify-between text-[#475569]">
                   <span>숙박비</span>
                   <span>{(pricePerNight * nights * guests).toLocaleString()}원</span>
                 </div>
@@ -154,7 +154,7 @@ export default function BookingPage() {
                     <span>- {subsidyTotal.toLocaleString()}원</span>
                   </div>
                 )}
-                <div className="border-t border-[#334155] pt-2 flex justify-between font-bold">
+                <div className="border-t border-[#E2E8F0] pt-2 flex justify-between font-bold">
                   <span>최종 결제 금액</span>
                   <span className="text-blue-400 text-lg">{finalTotal.toLocaleString()}원</span>
                 </div>
@@ -173,10 +173,10 @@ export default function BookingPage() {
 
         {/* STEP 2 — 최종 확인 */}
         {step === 2 && (
-          <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 flex flex-col gap-4">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 flex flex-col gap-4">
             <h2 className="font-bold text-lg">예약 내용을 확인해주세요</h2>
 
-            <div className="bg-[#263548] rounded-xl p-4 flex flex-col gap-3 text-sm">
+            <div className="bg-[#F1F5F9] rounded-xl p-4 flex flex-col gap-3 text-sm">
               {[
                 ['숙소',      '강릉 씨사이드 워크스테이션'],
                 ['체크인',    checkIn  || '2026-06-10'],
@@ -186,7 +186,7 @@ export default function BookingPage() {
                 ['숙박비',    `${(pricePerNight * nights * guests).toLocaleString()}원`],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between">
-                  <span className="text-[#64748B]">{k}</span>
+                  <span className="text-[#94A3B8]">{k}</span>
                   <span className="font-medium">{v}</span>
                 </div>
               ))}
@@ -196,11 +196,11 @@ export default function BookingPage() {
                   <span>- {subsidyTotal.toLocaleString()}원</span>
                 </div>
               )}
-              <div className="border-t border-[#334155] pt-3 flex justify-between font-bold">
+              <div className="border-t border-[#E2E8F0] pt-3 flex justify-between font-bold">
                 <span>최종 결제 금액</span>
                 <span className="text-blue-400 text-lg">{finalTotal.toLocaleString()}원</span>
               </div>
-              <p className="text-xs text-[#64748B] text-right">회사 예산에서 차감됩니다</p>
+              <p className="text-xs text-[#94A3B8] text-right">회사 예산에서 차감됩니다</p>
             </div>
 
             <div className="flex gap-3">

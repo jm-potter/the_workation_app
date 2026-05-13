@@ -16,17 +16,17 @@ const MOCK_DETAIL = {
 
 export default function AccommodationDetailPage({ params }: { params: { id: string } }) {
   return (
-    <div className="min-h-screen bg-[#0F172A]">
+    <div className="min-h-screen bg-[#F8FAFC]">
       <Header />
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* 뒤로가기 */}
-        <Link href="/accommodations" className="text-sm text-[#64748B] hover:text-[#94A3B8] flex items-center gap-1 mb-6 transition-colors">
+        <Link href="/accommodations" className="text-sm text-[#94A3B8] hover:text-[#475569] flex items-center gap-1 mb-6 transition-colors">
           ← 숙소 목록으로
         </Link>
 
         {/* 이미지 */}
-        <div className="h-72 bg-[#1E293B] border border-[#334155] rounded-2xl flex items-center justify-center text-7xl mb-6">
+        <div className="h-72 bg-white border border-[#E2E8F0] rounded-2xl flex items-center justify-center text-7xl mb-6">
           🏨
         </div>
 
@@ -39,23 +39,23 @@ export default function AccommodationDetailPage({ params }: { params: { id: stri
                   <span className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">💻 업무공간</span>
                 )}
                 {MOCK_DETAIL.wifi && (
-                  <span className="text-xs bg-[#263548] text-[#94A3B8] px-2 py-0.5 rounded">📶 와이파이</span>
+                  <span className="text-xs bg-[#F1F5F9] text-[#475569] px-2 py-0.5 rounded">📶 와이파이</span>
                 )}
               </div>
               <h1 className="text-2xl font-bold mb-1">{MOCK_DETAIL.name}</h1>
-              <p className="text-sm text-[#94A3B8]">📍 {MOCK_DETAIL.address}</p>
+              <p className="text-sm text-[#475569]">📍 {MOCK_DETAIL.address}</p>
             </div>
 
-            <div className="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
+            <div className="bg-white border border-[#E2E8F0] rounded-xl p-5">
               <h2 className="font-semibold mb-3">숙소 소개</h2>
-              <p className="text-sm text-[#94A3B8] leading-relaxed">{MOCK_DETAIL.description}</p>
+              <p className="text-sm text-[#475569] leading-relaxed">{MOCK_DETAIL.description}</p>
             </div>
 
-            <div className="bg-[#1E293B] border border-[#334155] rounded-xl p-5">
+            <div className="bg-white border border-[#E2E8F0] rounded-xl p-5">
               <h2 className="font-semibold mb-3">편의시설</h2>
               <div className="grid grid-cols-2 gap-2">
                 {MOCK_DETAIL.amenities.map((a) => (
-                  <div key={a} className="flex items-center gap-2 text-sm text-[#94A3B8]">
+                  <div key={a} className="flex items-center gap-2 text-sm text-[#475569]">
                     <span className="text-emerald-500">✓</span> {a}
                   </div>
                 ))}
@@ -65,24 +65,24 @@ export default function AccommodationDetailPage({ params }: { params: { id: stri
 
           {/* 오른쪽: 예약 카드 */}
           <div className="col-span-1">
-            <div className="bg-[#1E293B] border border-[#334155] rounded-xl p-5 sticky top-6">
+            <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 sticky top-6">
               <div className="text-2xl font-black text-blue-400 mb-1">
                 {MOCK_DETAIL.price_per_night.toLocaleString()}원
               </div>
-              <div className="text-xs text-[#64748B] mb-5">1박 기준 · 세금 포함</div>
+              <div className="text-xs text-[#94A3B8] mb-5">1박 기준 · 세금 포함</div>
 
               <div className="flex flex-col gap-3 mb-4">
                 <div>
-                  <label className="text-xs text-[#94A3B8] mb-1 block">체크인</label>
-                  <input type="date" className="w-full bg-[#263548] border border-[#334155] rounded-lg px-3 py-2 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs text-[#475569] mb-1 block">체크인</label>
+                  <input type="date" className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500" />
                 </div>
                 <div>
-                  <label className="text-xs text-[#94A3B8] mb-1 block">체크아웃</label>
-                  <input type="date" className="w-full bg-[#263548] border border-[#334155] rounded-lg px-3 py-2 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs text-[#475569] mb-1 block">체크아웃</label>
+                  <input type="date" className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500" />
                 </div>
                 <div>
-                  <label className="text-xs text-[#94A3B8] mb-1 block">인원</label>
-                  <select className="w-full bg-[#263548] border border-[#334155] rounded-lg px-3 py-2 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500">
+                  <label className="text-xs text-[#475569] mb-1 block">인원</label>
+                  <select className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500">
                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n}>{n}명</option>)}
                   </select>
                 </div>
@@ -92,7 +92,7 @@ export default function AccommodationDetailPage({ params }: { params: { id: stri
                 <Button size="lg" className="w-full">예약하기</Button>
               </Link>
 
-              <p className="text-xs text-[#64748B] text-center mt-3">회사 예산에서 자동 차감됩니다</p>
+              <p className="text-xs text-[#94A3B8] text-center mt-3">회사 예산에서 자동 차감됩니다</p>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import Button from '@/components/ui/Button'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#0F172A]">
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* 헤더 */}
       <header className="px-6 py-5 flex justify-between items-center max-w-6xl mx-auto">
         <span className="text-lg font-bold">더 워케이션</span>
@@ -19,7 +19,7 @@ export default function LandingPage() {
 
       {/* 히어로 */}
       <section className="max-w-4xl mx-auto px-6 pt-24 pb-20 text-center">
-        <div className="inline-block bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-bold px-3 py-1 rounded-full mb-6">
+        <div className="inline-block bg-blue-500/10 border border-blue-500/30 text-blue-600 text-xs font-bold px-3 py-1 rounded-full mb-6">
           기업 전용 워케이션 플랫폼
         </div>
         <h1 className="text-5xl font-black leading-tight mb-6">
@@ -27,7 +27,7 @@ export default function LandingPage() {
           <span className="text-blue-400">한 번에 예약하고</span><br />
           자동으로 관리하세요
         </h1>
-        <p className="text-[#94A3B8] text-lg mb-10 max-w-xl mx-auto">
+        <p className="text-[#475569] text-lg mb-10 max-w-xl mx-auto">
           숙소 검색부터 단체 예약, 예산 관리, 성과 보고까지.
           인사담당자를 위한 올인원 워케이션 솔루션.
         </p>
@@ -42,7 +42,7 @@ export default function LandingPage() {
       </section>
 
       {/* 수치 */}
-      <section className="border-y border-[#334155] py-12">
+      <section className="border-y border-[#E2E8F0] py-12">
         <div className="max-w-4xl mx-auto px-6 grid grid-cols-3 gap-8 text-center">
           {[
             { num: '200+', label: '제휴 숙소' },
@@ -51,7 +51,7 @@ export default function LandingPage() {
           ].map((item) => (
             <div key={item.label}>
               <div className="text-3xl font-black text-blue-400 mb-1">{item.num}</div>
-              <div className="text-sm text-[#94A3B8]">{item.label}</div>
+              <div className="text-sm text-[#475569]">{item.label}</div>
             </div>
           ))}
         </div>
@@ -78,26 +78,26 @@ export default function LandingPage() {
               desc: '팀 전체를 한 번에 예약하세요. 직원 초대 링크를 보내면 각자 원하는 날짜에 예약할 수 있어요.',
             },
           ].map((f) => (
-            <div key={f.title} className="bg-[#1E293B] border border-[#334155] rounded-xl p-6">
+            <div key={f.title} className="bg-white border border-[#E2E8F0] rounded-xl p-6">
               <div className="text-3xl mb-4">{f.icon}</div>
               <div className="font-bold text-base mb-2">{f.title}</div>
-              <div className="text-sm text-[#94A3B8] leading-relaxed">{f.desc}</div>
+              <div className="text-sm text-[#475569] leading-relaxed">{f.desc}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="bg-[#1E293B] border-t border-[#334155] py-16 text-center">
+      <section className="bg-white border-t border-[#E2E8F0] py-16 text-center">
         <h2 className="text-2xl font-bold mb-4">지금 바로 시작해보세요</h2>
-        <p className="text-[#94A3B8] mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
+        <p className="text-[#475569] mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
         <Link href="/register">
           <Button size="lg">무료로 시작하기</Button>
         </Link>
       </section>
 
       {/* 푸터 */}
-      <footer className="px-6 py-8 text-center text-xs text-[#64748B]">
+      <footer className="px-6 py-8 text-center text-xs text-[#94A3B8]">
         © 2026 더 워케이션. All rights reserved.
       </footer>
     </div>

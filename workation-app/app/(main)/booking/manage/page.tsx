@@ -54,7 +54,7 @@ const STATUS_LABEL: Record<BookingStatus, string> = {
 const STATUS_COLOR: Record<BookingStatus, string> = {
   confirmed: 'bg-emerald-500/20 text-emerald-400',
   pending:   'bg-amber-500/20 text-amber-400',
-  cancelled: 'bg-[#263548] text-[#64748B]',
+  cancelled: 'bg-[#F1F5F9] text-[#94A3B8]',
 }
 
 export default function BookingManagePage() {
@@ -96,14 +96,14 @@ export default function BookingManagePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
+    <div className="min-h-screen bg-[#F8FAFC]">
       <Header role="hr" userName="홍길동 팀장" />
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <Link href="/dashboard" className="text-xs text-[#64748B] hover:text-[#94A3B8] mb-2 block">← 대시보드</Link>
+          <Link href="/dashboard" className="text-xs text-[#94A3B8] hover:text-[#475569] mb-2 block">← 대시보드</Link>
           <h1 className="text-2xl font-black mb-1">예약 변경·취소</h1>
-          <p className="text-sm text-[#94A3B8]">예약 일정 수정 또는 취소 처리</p>
+          <p className="text-sm text-[#475569]">예약 일정 수정 또는 취소 처리</p>
         </div>
 
         <div className="grid grid-cols-5 gap-5">
@@ -113,20 +113,20 @@ export default function BookingManagePage() {
               <button
                 key={b.id}
                 onClick={() => { setSelected(b.id); setEditMode(false); setConfirmCancel(false); setDone(null) }}
-                className={`w-full text-left bg-[#1E293B] border rounded-2xl p-5 transition-all ${
-                  selected === b.id ? 'border-blue-500/60' : 'border-[#334155] hover:border-[#475569]'
+                className={`w-full text-left bg-white border rounded-2xl p-5 transition-all ${
+                  selected === b.id ? 'border-blue-500/60' : 'border-[#E2E8F0] hover:border-[#94A3B8]'
                 } ${b.status === 'cancelled' ? 'opacity-50' : ''}`}
               >
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <div className="font-bold text-sm">{b.accommodation}</div>
-                    <div className="text-xs text-[#64748B] mt-0.5">📍 {b.region} · {b.id}</div>
+                    <div className="text-xs text-[#94A3B8] mt-0.5">📍 {b.region} · {b.id}</div>
                   </div>
                   <span className={`text-xs px-2.5 py-1 rounded-lg ${STATUS_COLOR[b.status]}`}>
                     {STATUS_LABEL[b.status]}
                   </span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-[#94A3B8]">
+                <div className="flex items-center gap-4 text-xs text-[#475569]">
                   <span>📅 {b.checkIn} ~ {b.checkOut} ({b.nights}박)</span>
                   <span>👥 {b.guests}명</span>
                   <span>💰 {(b.pricePerNight * b.nights * b.guests).toLocaleString()}원</span>
@@ -138,11 +138,11 @@ export default function BookingManagePage() {
           {/* 상세 패널 */}
           <div className="col-span-2">
             {!booking ? (
-              <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 text-center text-sm text-[#64748B]">
+              <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 text-center text-sm text-[#94A3B8]">
                 예약을 선택하면<br />변경·취소 옵션이 나타납니다
               </div>
             ) : (
-              <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5 flex flex-col gap-4">
+              <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 flex flex-col gap-4">
                 <div>
                   <div className="font-bold mb-0.5">{booking.accommodation}</div>
                   <span className={`text-xs px-2 py-0.5 rounded-md ${STATUS_COLOR[booking.status]}`}>
@@ -168,19 +168,19 @@ export default function BookingManagePage() {
                     {editMode ? (
                       <div className="flex flex-col gap-3">
                         <div>
-                          <label className="text-xs text-[#94A3B8] mb-1 block">체크인</label>
+                          <label className="text-xs text-[#475569] mb-1 block">체크인</label>
                           <input type="date" value={newCheckIn} onChange={e => setNewCheckIn(e.target.value)}
-                            className="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500" />
+                            className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500" />
                         </div>
                         <div>
-                          <label className="text-xs text-[#94A3B8] mb-1 block">체크아웃</label>
+                          <label className="text-xs text-[#475569] mb-1 block">체크아웃</label>
                           <input type="date" value={newCheckOut} onChange={e => setNewCheckOut(e.target.value)}
-                            className="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500" />
+                            className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500" />
                         </div>
                         <div>
-                          <label className="text-xs text-[#94A3B8] mb-1 block">인원</label>
+                          <label className="text-xs text-[#475569] mb-1 block">인원</label>
                           <select value={newGuests} onChange={e => setNewGuests(Number(e.target.value))}
-                            className="w-full bg-[#263548] border border-[#334155] rounded-xl px-3 py-2 text-sm text-[#F1F5F9] focus:outline-none focus:border-blue-500">
+                            className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500">
                             {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}명</option>)}
                           </select>
                         </div>
@@ -191,9 +191,9 @@ export default function BookingManagePage() {
                       </div>
                     ) : confirmCancel ? (
                       <div className="flex flex-col gap-3">
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-[#94A3B8]">
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-[#475569]">
                           <div className="font-semibold text-red-400 mb-1">예약을 취소하시겠어요?</div>
-                          <div className="text-xs text-[#64748B]">취소 정책: {booking.cancelPolicy}</div>
+                          <div className="text-xs text-[#94A3B8]">취소 정책: {booking.cancelPolicy}</div>
                         </div>
                         <div className="flex gap-2">
                           <Button variant="secondary" className="flex-1 text-sm" onClick={() => setConfirmCancel(false)}>돌아가기</Button>
@@ -205,7 +205,7 @@ export default function BookingManagePage() {
                       </div>
                     ) : (
                       <div className="flex flex-col gap-2">
-                        <div className="text-xs text-[#64748B] bg-[#263548] rounded-xl p-3">
+                        <div className="text-xs text-[#94A3B8] bg-[#F1F5F9] rounded-xl p-3">
                           취소 정책: {booking.cancelPolicy}
                         </div>
                         <Button className="w-full text-sm" onClick={() => openEdit(booking)}>

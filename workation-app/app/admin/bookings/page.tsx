@@ -28,11 +28,11 @@ export default function AdminBookingsPage() {
   const totalAmount = filtered.reduce((sum, b) => b.status !== 'cancelled' ? sum + b.amount : sum, 0)
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
-      <header className="sticky top-0 z-50 bg-[#0F172A]/90 backdrop-blur border-b border-[#334155] px-6 h-14 flex items-center">
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center">
         <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-[#64748B] hover:text-[#94A3B8] transition-colors">← 대시보드</Link>
-          <span className="text-[#334155]">/</span>
+          <Link href="/admin" className="text-[#94A3B8] hover:text-[#475569] transition-colors">← 대시보드</Link>
+          <span className="text-[#CBD5E1]">/</span>
           <span className="font-semibold">예약 관리</span>
         </div>
       </header>
@@ -46,8 +46,8 @@ export default function AdminBookingsPage() {
             { label: '대기중',     value: `${BOOKINGS.filter(b => b.status === 'pending').length}건`,   color: 'text-amber-400'   },
             { label: '총 매출',    value: `${(totalAmount / 10000).toLocaleString()}만원`,              color: 'text-purple-400'  },
           ].map(s => (
-            <div key={s.label} className="bg-[#1E293B] border border-[#334155] rounded-xl p-4">
-              <p className="text-xs text-[#64748B] mb-1">{s.label}</p>
+            <div key={s.label} className="bg-white border border-[#E2E8F0] rounded-xl p-4">
+              <p className="text-xs text-[#94A3B8] mb-1">{s.label}</p>
               <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
             </div>
           ))}
@@ -60,7 +60,7 @@ export default function AdminBookingsPage() {
             placeholder="기업명, 직원명, 예약번호 검색"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-[#1E293B] border border-[#334155] rounded-xl px-4 py-2.5 text-sm text-[#F1F5F9] placeholder-[#64748B] focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#0F172A] placeholder-[#64748B] focus:outline-none focus:border-blue-500"
           />
           <div className="flex gap-1.5">
             {(['all', 'confirmed', 'pending', 'cancelled'] as StatusFilter[]).map(s => (
@@ -68,7 +68,7 @@ export default function AdminBookingsPage() {
                 key={s}
                 onClick={() => setFilter(s)}
                 className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                  filter === s ? 'bg-blue-500 text-white' : 'bg-[#1E293B] border border-[#334155] text-[#94A3B8] hover:border-blue-500/50'
+                  filter === s ? 'bg-blue-500 text-white' : 'bg-white border border-[#E2E8F0] text-[#475569] hover:border-blue-500/50'
                 }`}
               >
                 {s === 'all' ? '전체' : statusLabel[s]}
@@ -78,10 +78,10 @@ export default function AdminBookingsPage() {
         </div>
 
         {/* 테이블 */}
-        <div className="bg-[#1E293B] border border-[#334155] rounded-xl overflow-hidden">
+        <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-xs text-[#64748B] border-b border-[#334155]">
+              <tr className="text-xs text-[#94A3B8] border-b border-[#E2E8F0]">
                 {['예약번호', '기업', '직원', '숙소', '체크인', '체크아웃', '인원', '금액', '상태', '액션'].map(h => (
                   <th key={h} className="text-left px-4 py-3 font-medium">{h}</th>
                 ))}
@@ -89,14 +89,14 @@ export default function AdminBookingsPage() {
             </thead>
             <tbody>
               {filtered.map((b) => (
-                <tr key={b.id} className="border-b border-[#334155]/50 hover:bg-[#263548]/50 transition-colors">
-                  <td className="px-4 py-3 text-xs text-[#64748B]">{b.id}</td>
+                <tr key={b.id} className="border-b border-[#E2E8F0]/50 hover:bg-[#F1F5F9]/50 transition-colors">
+                  <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.id}</td>
                   <td className="px-4 py-3 text-xs font-medium">{b.company}</td>
                   <td className="px-4 py-3 font-medium">{b.employee}</td>
-                  <td className="px-4 py-3 text-xs text-[#94A3B8] max-w-[140px] truncate">{b.accommodation}</td>
-                  <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.checkIn}</td>
-                  <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.checkOut}</td>
-                  <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.people}명</td>
+                  <td className="px-4 py-3 text-xs text-[#475569] max-w-[140px] truncate">{b.accommodation}</td>
+                  <td className="px-4 py-3 text-xs text-[#475569]">{b.checkIn}</td>
+                  <td className="px-4 py-3 text-xs text-[#475569]">{b.checkOut}</td>
+                  <td className="px-4 py-3 text-xs text-[#475569]">{b.people}명</td>
                   <td className="px-4 py-3 font-medium">{b.amount.toLocaleString()}원</td>
                   <td className="px-4 py-3"><Badge variant={b.status}>{statusLabel[b.status]}</Badge></td>
                   <td className="px-4 py-3">
@@ -108,7 +108,7 @@ export default function AdminBookingsPage() {
                         </>
                       )}
                       {b.status === 'confirmed' && (
-                        <button className="text-xs px-2 py-0.5 bg-[#263548] text-[#94A3B8] rounded-md hover:bg-[#334155]">상세</button>
+                        <button className="text-xs px-2 py-0.5 bg-[#F1F5F9] text-[#475569] rounded-md hover:bg-[#334155]">상세</button>
                       )}
                     </div>
                   </td>
@@ -116,7 +116,7 @@ export default function AdminBookingsPage() {
               ))}
             </tbody>
           </table>
-          <div className="px-5 py-3 border-t border-[#334155] text-xs text-[#64748B]">
+          <div className="px-5 py-3 border-t border-[#E2E8F0] text-xs text-[#94A3B8]">
             총 {filtered.length}건
           </div>
         </div>

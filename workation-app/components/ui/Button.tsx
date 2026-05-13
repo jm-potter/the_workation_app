@@ -10,8 +10,8 @@ export default function Button({ variant = 'primary', size = 'md', className = '
 
   const variants = {
     primary:   'bg-blue-500 text-white hover:bg-blue-600',
-    secondary: 'bg-[#263548] text-[#F1F5F9] hover:bg-[#2e3f56] border border-[#334155]',
-    ghost:     'bg-transparent text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#1E293B]',
+    secondary: 'bg-[#F1F5F9] text-[#0F172A] hover:bg-[#2e3f56] border border-[#E2E8F0]',
+    ghost:     'bg-transparent text-[#475569] hover:text-[#0F172A] hover:bg-white',
     danger:    'bg-red-500 text-white hover:bg-red-600',
   }
 

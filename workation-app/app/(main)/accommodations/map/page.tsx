@@ -16,7 +16,7 @@ export default function MapPage() {
   const [selected, setSelected] = useState<typeof PINS[0] | null>(null)
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
       <Header />
 
       <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 65px)' }}>
@@ -25,7 +25,7 @@ export default function MapPage() {
 
           {/* 지도 배경 (실제 카카오맵 연동 전 임시) */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center text-[#334155]">
+            <div className="text-center text-[#CBD5E1]">
               <div className="text-6xl mb-3">🗺️</div>
               <div className="text-sm">카카오맵 API 연동 예정</div>
               <div className="text-xs mt-1 text-[#475569]">핀 위치는 실제 좌표로 교체됩니다</div>
@@ -43,7 +43,7 @@ export default function MapPage() {
               <div className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-lg transition-all ${
                 selected?.id === pin.id
                   ? 'bg-blue-500 text-white scale-110'
-                  : 'bg-[#1E293B] text-[#F1F5F9] border border-[#334155] hover:border-blue-500'
+                  : 'bg-white text-[#0F172A] border border-[#E2E8F0] hover:border-blue-500'
               }`}>
                 {pin.price.toLocaleString()}원
               </div>
@@ -53,18 +53,18 @@ export default function MapPage() {
         </div>
 
         {/* 오른쪽 패널 */}
-        <div className="w-72 bg-[#1E293B] border-l border-[#334155] flex flex-col overflow-y-auto">
-          <div className="p-4 border-b border-[#334155]">
+        <div className="w-72 bg-white border-l border-[#E2E8F0] flex flex-col overflow-y-auto">
+          <div className="p-4 border-b border-[#E2E8F0]">
             <div className="text-sm font-bold mb-1">숙소 {PINS.length}개</div>
-            <div className="text-xs text-[#64748B]">핀을 클릭하면 상세 정보가 보여요</div>
+            <div className="text-xs text-[#94A3B8]">핀을 클릭하면 상세 정보가 보여요</div>
           </div>
 
           {selected ? (
             <div className="p-4">
-              <div className="h-28 bg-[#263548] rounded-xl flex items-center justify-center text-4xl mb-3">🏨</div>
+              <div className="h-28 bg-[#F1F5F9] rounded-xl flex items-center justify-center text-4xl mb-3">🏨</div>
               <div className="font-bold text-sm mb-1">{selected.name}</div>
-              <div className="text-xs text-[#64748B] mb-3">📍 {selected.location}</div>
-              <div className="text-blue-400 font-bold mb-4">{selected.price.toLocaleString()}원<span className="text-[#64748B] font-normal text-xs">/박</span></div>
+              <div className="text-xs text-[#94A3B8] mb-3">📍 {selected.location}</div>
+              <div className="text-blue-400 font-bold mb-4">{selected.price.toLocaleString()}원<span className="text-[#94A3B8] font-normal text-xs">/박</span></div>
               <Link href={`/accommodations/${selected.id}`} className="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">
                 상세 보기 →
               </Link>
@@ -73,9 +73,9 @@ export default function MapPage() {
             <div className="flex-1 flex flex-col gap-2 p-4">
               {PINS.map((pin) => (
                 <button key={pin.id} onClick={() => setSelected(pin)}
-                  className="text-left p-3 bg-[#263548] rounded-xl hover:bg-[#2e3f56] transition-colors border border-transparent hover:border-blue-500/30">
+                  className="text-left p-3 bg-[#F1F5F9] rounded-xl hover:bg-[#2e3f56] transition-colors border border-transparent hover:border-blue-500/30">
                   <div className="font-medium text-sm">{pin.name}</div>
-                  <div className="text-xs text-[#64748B] mt-0.5">{pin.price.toLocaleString()}원/박</div>
+                  <div className="text-xs text-[#94A3B8] mt-0.5">{pin.price.toLocaleString()}원/박</div>
                 </button>
               ))}
             </div>
