@@ -65,36 +65,6 @@ export default function LandingPage() {
         </Link>
       </section>
 
-      {/* 기능 3가지 */}
-      <section className="max-w-5xl mx-auto px-6 py-20">
-        <h2 className="text-2xl font-bold text-center mb-12">더워케이션의 장점</h2>
-        <div className="grid grid-cols-3 gap-6">
-          {[
-            {
-              icon: '🗺️',
-              title: '지도로 한눈에 보기',
-              desc: '전국 워케이션 숙소를 지도에서 탐색하고, 업무 환경·와이파이·가격을 한 번에 비교할 수 있어요.',
-            },
-            {
-              icon: '📊',
-              title: '예산 자동 관리',
-              desc: '직원이 예약하면 회사 예산에서 자동으로 차감돼요. 잔여 예산과 사용률을 실시간으로 확인하세요.',
-            },
-            {
-              icon: '👥',
-              title: '단체 예약 한 번에',
-              desc: '팀 전체를 한 번에 예약하세요. 직원 초대 링크를 보내면 각자 원하는 날짜에 예약할 수 있어요.',
-            },
-          ].map((f) => (
-            <div key={f.title} className="bg-white border border-[#E2E8F0] rounded-xl p-6">
-              <div className="text-3xl mb-4">{f.icon}</div>
-              <div className="font-bold text-base mb-2">{f.title}</div>
-              <div className="text-sm text-[#475569] leading-relaxed">{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="bg-white border-t border-[#E2E8F0] py-16 text-center">
         <h2 className="text-2xl font-bold mb-4">지금 바로 시작해보세요</h2>
