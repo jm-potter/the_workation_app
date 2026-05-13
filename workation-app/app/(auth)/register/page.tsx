@@ -78,7 +78,7 @@ export default function RegisterPage() {
           <Input label="비밀번호" type="password" placeholder="6자 이상" value={password} onChange={e => setPassword(e.target.value)} />
 
           {error && <p className="text-sm text-red-400 text-center">{error}</p>}
-          <Button size="lg" className="w-full mt-1" onClick={handleRegister} disabled={!role}>
+          <Button size="lg" className="w-full mt-1" onClick={handleRegister}>
             {loading ? '가입 중...' : '가입하기'}
           </Button>
         </div>
