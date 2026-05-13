@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
+import { useAuthOnly } from '@/lib/useAuthOnly'
 
 const STEPS = ['날짜·인원 선택', '지원금 확인', '최종 확인']
 
@@ -21,6 +22,7 @@ type Accommodation = {
 }
 
 function BookingContent() {
+  useAuthOnly()
   const router       = useRouter()
   const searchParams = useSearchParams()
   const accId        = searchParams.get('id')

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
+import { useAuthOnly } from '@/lib/useAuthOnly'
 
 type Accommodation = {
   id: string
@@ -21,6 +22,7 @@ type Accommodation = {
 }
 
 export default function AccommodationDetailPage() {
+  useAuthOnly()
   const { id } = useParams()
   const [acc, setAcc] = useState<Accommodation | null>(null)
   const [loading, setLoading] = useState(true)

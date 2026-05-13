@@ -1,8 +1,11 @@
+'use client'
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
+import { useAuthOnly } from '@/lib/useAuthOnly'
 
 export default function BookingConfirmPage() {
+  useAuthOnly()
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Header />
