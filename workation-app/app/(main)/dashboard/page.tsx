@@ -1,7 +1,11 @@
+'use client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Header from '@/components/ui/Header'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 const BOOKINGS = [
   { id: 'WK-0010', name: '김지수', accommodation: '강릉 씨사이드 워크스테이션', dates: '6/10 – 6/13', amount: 255000, status: 'confirmed' as const },
@@ -26,6 +30,16 @@ const PERFORMANCE = [
 const statusLabel = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
 
 export default function DashboardPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const role = data.user?.user_metadata?.role
+      if (!role) router.push('/login')
+      else if (role === 'emp') router.push('/accommodations')
+    })
+  }, [])
+
   const budgetTotal = 5000000
   const budgetUsed  = 1850000
   const budgetPct   = Math.round((budgetUsed / budgetTotal) * 100)
