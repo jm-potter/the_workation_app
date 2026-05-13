@@ -17,12 +17,15 @@ export default function LoginPage() {
   async function handleLogin() {
     setError('')
     setLoading(true)
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (authError) {
       setError('이메일 또는 비밀번호가 올바르지 않아요')
     } else {
-      router.push('/dashboard')
+      const role = data.user?.user_metadata?.role
+      if (role === 'emp') router.push('/accommodations')
+      else if (role === 'hr') router.push('/dashboard')
+      else router.push('/dashboard')
     }
   }
 

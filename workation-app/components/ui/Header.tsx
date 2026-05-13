@@ -1,7 +1,10 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Badge from './Badge'
 import type { UserRole } from '@/lib/types'
+import { supabase } from '@/lib/supabase'
 
 const roleLabel: Record<UserRole, string> = {
   hr:  '인사담당자',
@@ -16,7 +19,24 @@ interface HeaderProps {
   userName?: string
 }
 
-export default function Header({ role, userName }: HeaderProps) {
+export default function Header({ role: roleProp, userName: nameProp }: HeaderProps) {
+  const router = useRouter()
+  const [role, setRole]     = useState<UserRole | null>(roleProp ?? null)
+  const [userName, setName] = useState(nameProp ?? '')
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const meta = data.user?.user_metadata
+      if (meta?.role) setRole(meta.role as UserRole)
+      if (meta?.name) setName(meta.name)
+    })
+  }, [])
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
   return (
     <header className="bg-white border-b border-[#E2E8F0] px-6 py-4">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -27,10 +47,10 @@ export default function Header({ role, userName }: HeaderProps) {
         {role ? (
           <div className="flex items-center gap-3">
             <Badge variant={role}>{roleLabel[role]}</Badge>
-            <span className="text-sm text-[#475569]">{userName}</span>
-            <Link href="/login" className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors">
+            {userName && <span className="text-sm text-[#475569]">{userName}님</span>}
+            <button onClick={handleLogout} className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors">
               로그아웃
-            </Link>
+            </button>
           </div>
         ) : (
           <Link href="/login" className="text-sm text-[#475569] hover:text-[#0F172A] transition-colors">
