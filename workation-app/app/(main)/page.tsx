@@ -44,10 +44,9 @@ export default function LandingPage() {
       {/* 수치 — 회색 배경 */}
       <section className="bg-[#F1F5F9] py-16">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="flex items-center gap-3 justify-center mb-8">
-            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+          <div className="text-center mb-8">
             <span className="text-sm font-bold text-[#475569] uppercase tracking-widest">지금까지의 성과</span>
-            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+            <div className="w-8 h-1 bg-blue-400 rounded-full mx-auto mt-2" />
           </div>
           <div className="grid grid-cols-3 gap-8 text-center">
             {[
@@ -67,10 +66,9 @@ export default function LandingPage() {
       {/* 워케이션이란? — 흰 배경 */}
       <section className="bg-white py-16">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="flex items-center gap-3 justify-center mb-8">
-            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+          <div className="text-center mb-8">
             <span className="text-sm font-bold text-[#475569] uppercase tracking-widest">워케이션 알아보기</span>
-            <div className="w-8 h-1 bg-blue-400 rounded-full" />
+            <div className="w-8 h-1 bg-blue-400 rounded-full mx-auto mt-2" />
           </div>
           <div className="text-center">
             <p className="text-[#475569] mb-6">워케이션이 처음이신가요?</p>
@@ -84,10 +82,9 @@ export default function LandingPage() {
       {/* CTA — 파란 배경 */}
       <section className="bg-blue-500 py-20 text-center">
         <div className="max-w-2xl mx-auto px-6">
-          <div className="flex items-center gap-3 justify-center mb-6">
-            <div className="w-8 h-1 bg-white/50 rounded-full" />
+          <div className="text-center mb-6">
             <span className="text-sm font-bold text-white/80 uppercase tracking-widest">지금 시작하기</span>
-            <div className="w-8 h-1 bg-white/50 rounded-full" />
+            <div className="w-8 h-1 bg-white/50 rounded-full mx-auto mt-2" />
           </div>
           <h2 className="text-2xl font-bold text-white mb-4">지금 바로 시작해보세요</h2>
           <p className="text-white/80 mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
