@@ -23,7 +23,7 @@ export default function LandingPage() {
           기업 전용 워케이션 플랫폼
         </div>
         <h1 className="text-5xl font-black leading-tight mb-6">
-          직원 워케이션,<br />
+          워케이션,<br />
           <span className="text-blue-400">한 번에 예약하고</span><br />
           자동으로 관리하세요
         </h1>
