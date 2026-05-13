@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
@@ -20,7 +20,7 @@ type Accommodation = {
   image_url?: string
 }
 
-export default function BookingPage() {
+function BookingContent() {
   const router       = useRouter()
   const searchParams = useSearchParams()
   const accId        = searchParams.get('id')
@@ -232,5 +232,13 @@ export default function BookingPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center text-[#94A3B8]">불러오는 중...</div>}>
+      <BookingContent />
+    </Suspense>
   )
 }
