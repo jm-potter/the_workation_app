@@ -17,72 +17,105 @@ export default function WorkationInfoPage() {
       </header>
 
       <section className="max-w-5xl mx-auto px-6 py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold mb-4">워케이션이란?</h2>
-          <p className="text-[#475569] text-lg max-w-2xl mx-auto">
-            워케이션(Workation)은 <strong>일(Work) + 휴가(Vacation)</strong>의 합성어로,
-            여행지에서 업무를 이어가는 새로운 근무 방식입니다.
-          </p>
+
+        {/* 타이틀 */}
+        <div className="text-center mb-16">
+          <h1 className="text-3xl font-black mb-3">워케이션이란?</h1>
+          <p className="text-[#475569]">일과 휴가를 동시에, 새로운 근무 방식</p>
         </div>
 
-        <div className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden mb-12">
-          <div className="grid grid-cols-2 divide-x divide-[#E2E8F0]">
-            <div className="p-6 bg-[#F8FAFC]">
-              <div className="text-sm font-bold text-[#94A3B8] mb-4">기업의 고민</div>
-              <ul className="space-y-4 text-sm text-[#475569]">
-                <li>😓 반복되는 사무실 환경, 번아웃 증가</li>
-                <li>🏆 MZ세대 채용 경쟁 심화</li>
-                <li>💸 직원 복지 예산 효율화 필요</li>
-              </ul>
-            </div>
-            <div className="p-6">
-              <div className="text-sm font-bold text-blue-500 mb-4">워케이션 효과</div>
-              <ul className="space-y-4 text-sm text-[#475569]">
-                <li>✅ 환경 전환으로 집중력·창의성 회복</li>
-                <li>✅ 워케이션 복지로 입사 선호 기업 등극</li>
-                <li>✅ 여행+업무 동시에, 비용 대비 효과 최대</li>
-              </ul>
-            </div>
+        {/* Work + Vacation = Workation */}
+        <div className="flex items-center justify-center gap-4 mb-20">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl px-8 py-6 text-center w-40">
+            <div className="text-4xl mb-2">💼</div>
+            <div className="font-black text-xl text-blue-600">Work</div>
+            <div className="text-xs text-[#475569] mt-1">업무</div>
+          </div>
+          <div className="text-3xl font-black text-[#94A3B8]">+</div>
+          <div className="bg-green-50 border border-green-200 rounded-2xl px-8 py-6 text-center w-40">
+            <div className="text-4xl mb-2">🌴</div>
+            <div className="font-black text-xl text-green-600">Vacation</div>
+            <div className="text-xs text-[#475569] mt-1">휴가</div>
+          </div>
+          <div className="text-3xl font-black text-[#94A3B8]">=</div>
+          <div className="bg-gradient-to-br from-blue-500 to-green-400 rounded-2xl px-8 py-6 text-center w-40 shadow-lg">
+            <div className="text-4xl mb-2">✨</div>
+            <div className="font-black text-xl text-white">Workation</div>
+            <div className="text-xs text-white/80 mt-1">워케이션</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 text-center">
-          {[
-            { num: '23%', label: '업무 집중도 향상' },
-            { num: '40%', label: '직원 만족도 상승' },
-            { num: '15%', label: '이직률 감소' },
-          ].map((item) => (
-            <div key={item.label} className="bg-white border border-[#E2E8F0] rounded-xl p-6">
-              <div className="text-3xl font-black text-blue-400 mb-1">{item.num}</div>
-              <div className="text-sm text-[#475569]">{item.label}</div>
-            </div>
-          ))}
+        {/* 문제 → 해결 */}
+        <div className="mb-20">
+          <h2 className="text-xl font-bold text-center mb-10">왜 도입할까요?</h2>
+          <div className="space-y-4">
+            {[
+              { problem: '😓 반복되는 사무실, 번아웃 증가', solution: '환경 전환으로 집중력·창의성 회복' },
+              { problem: '🏆 MZ세대 채용 경쟁 심화', solution: '워케이션 복지로 입사 선호 기업 등극' },
+              { problem: '💸 직원 복지 예산 효율화 필요', solution: '여행+업무 동시에, 비용 대비 효과 최대' },
+            ].map((item) => (
+              <div key={item.problem} className="flex items-center gap-4">
+                <div className="flex-1 bg-white border border-[#E2E8F0] rounded-xl px-5 py-4 text-sm text-[#475569]">
+                  {item.problem}
+                </div>
+                <div className="text-2xl text-blue-400 font-black shrink-0">→</div>
+                <div className="flex-1 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 text-sm text-blue-700 font-medium">
+                  ✅ {item.solution}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <p className="text-center text-xs text-[#94A3B8] mt-4">* 국내 워케이션 도입 기업 평균</p>
+
+        {/* 수치 */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-400 rounded-2xl p-10 mb-20">
+          <h2 className="text-xl font-bold text-white text-center mb-8">이미 검증된 효과</h2>
+          <div className="grid grid-cols-3 gap-6 text-center">
+            {[
+              { num: '23%', label: '업무 집중도 향상' },
+              { num: '40%', label: '직원 만족도 상승' },
+              { num: '15%', label: '이직률 감소' },
+            ].map((item) => (
+              <div key={item.label}>
+                <div className="text-5xl font-black text-white mb-2">{item.num}</div>
+                <div className="text-sm text-white/80">{item.label}</div>
+              </div>
+            ))}
+          </div>
+          <p className="text-center text-xs text-white/60 mt-6">* 국내 워케이션 도입 기업 평균</p>
+        </div>
 
         {/* 더워케이션의 장점 */}
-        <div className="mt-20">
-          <h2 className="text-2xl font-bold text-center mb-12">더워케이션의 장점</h2>
+        <div className="mb-16">
+          <h2 className="text-xl font-bold text-center mb-10">더워케이션의 장점</h2>
           <div className="grid grid-cols-3 gap-6">
             {[
               {
                 icon: '🗺️',
+                color: 'bg-purple-50 border-purple-200',
+                iconBg: 'bg-purple-100',
                 title: '지도로 한눈에 보기',
-                desc: '전국 워케이션 숙소를 지도에서 탐색하고, 업무 환경·와이파이·가격을 한 번에 비교할 수 있어요.',
+                desc: '전국 숙소를 지도에서 탐색하고 업무 환경·와이파이·가격을 한 번에 비교',
               },
               {
                 icon: '📊',
+                color: 'bg-blue-50 border-blue-200',
+                iconBg: 'bg-blue-100',
                 title: '예산 자동 관리',
-                desc: '직원이 예약하면 회사 예산에서 자동으로 차감돼요. 잔여 예산과 사용률을 실시간으로 확인하세요.',
+                desc: '예약 즉시 회사 예산 자동 차감, 잔여 예산과 사용률 실시간 확인',
               },
               {
                 icon: '👥',
+                color: 'bg-green-50 border-green-200',
+                iconBg: 'bg-green-100',
                 title: '단체 예약 한 번에',
-                desc: '팀 전체를 한 번에 예약하세요. 직원 초대 링크를 보내면 각자 원하는 날짜에 예약할 수 있어요.',
+                desc: '팀 전체를 한 번에 예약, 초대 링크로 각자 원하는 날짜 선택',
               },
             ].map((f) => (
-              <div key={f.title} className="bg-white border border-[#E2E8F0] rounded-xl p-6">
-                <div className="text-3xl mb-4">{f.icon}</div>
+              <div key={f.title} className={`border rounded-2xl p-6 ${f.color}`}>
+                <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-4 ${f.iconBg}`}>
+                  {f.icon}
+                </div>
                 <div className="font-bold text-base mb-2">{f.title}</div>
                 <div className="text-sm text-[#475569] leading-relaxed">{f.desc}</div>
               </div>
@@ -90,7 +123,7 @@ export default function WorkationInfoPage() {
           </div>
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center">
           <Link href="/">
             <Button variant="secondary" size="lg">← 메인으로 돌아가기</Button>
           </Link>
