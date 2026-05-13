@@ -14,6 +14,7 @@ type Accommodation = {
   tags: string[]
   amenities: string[]
   description: string
+  image_url?: string
 }
 
 const LOCATIONS = ['전체', '강원도', '제주도', '전라남도', '전라북도']
@@ -164,7 +165,10 @@ export default function AccommodationsPage() {
             {filtered.map(acc => (
               <Link key={acc.id} href={`/accommodations/${acc.id}`}>
                 <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden hover:border-blue-500/50 transition-all group">
-                  <div className="h-44 bg-[#F1F5F9] flex items-center justify-center text-4xl group-hover:bg-[#2e3f56] transition-colors">🏨</div>
+                  {acc.image_url
+                    ? <img src={acc.image_url} alt={acc.name} className="h-44 w-full object-cover" />
+                    : <div className="h-44 bg-[#F1F5F9] flex items-center justify-center text-4xl">🏨</div>
+                  }
                   <div className="p-4">
                     <h3 className="font-semibold text-sm leading-snug mb-1">{acc.name}</h3>
                     <p className="text-xs text-[#94A3B8] mb-2">📍 {acc.region}</p>
