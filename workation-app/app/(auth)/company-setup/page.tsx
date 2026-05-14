@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 
@@ -19,6 +20,9 @@ export default function CompanySetupPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
+        <Link href="/register" className="flex items-center gap-1 text-sm text-[#94A3B8] hover:text-[#475569] transition-colors mb-6">
+          ← 뒤로가기
+        </Link>
         <div className="text-center mb-8">
           <div className="text-xs text-[#94A3B8] mb-2">가입 완료 · 회사 정보 등록</div>
           <h1 className="text-xl font-bold">회사 정보를 입력해주세요</h1>

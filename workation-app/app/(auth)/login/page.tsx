@@ -32,6 +32,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
+        <Link href="/" className="flex items-center gap-1 text-sm text-[#94A3B8] hover:text-[#475569] transition-colors mb-6">
+          ← 뒤로가기
+        </Link>
         <div className="text-center mb-8">
           <Link href="/" className="text-xl font-black text-[#0F172A]">더 워케이션</Link>
           <p className="text-sm text-[#475569] mt-2">계정에 로그인하세요</p>
