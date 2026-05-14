@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
-import { useAuthOnly } from '@/lib/useAuthOnly'
+import { useRouter } from 'next/navigation'
 
 type Accommodation = {
   id: string
@@ -33,11 +33,21 @@ type Subsidy = {
 }
 
 export default function AccommodationDetailPage() {
-  useAuthOnly()
+  const router = useRouter()
   const { id } = useParams()
   const [acc, setAcc]             = useState<Accommodation | null>(null)
   const [subsidies, setSubsidies] = useState<Subsidy[]>([])
   const [loading, setLoading]     = useState(true)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+
+  async function handleBooking() {
+    const { data } = await supabase.auth.getUser()
+    if (!data.user) {
+      setShowLoginModal(true)
+    } else {
+      router.push(`/booking?id=${acc?.id}`)
+    }
+  }
 
   useEffect(() => {
     async function fetch() {
@@ -160,15 +170,34 @@ export default function AccommodationDetailPage() {
                 </div>
               )}
 
-              <Link href={`/booking?id=${acc.id}`}>
-                <Button size="lg" className="w-full">예약하기</Button>
-              </Link>
+              <Button size="lg" className="w-full" onClick={handleBooking}>예약하기</Button>
 
               <p className="text-xs text-[#94A3B8] text-center mt-3">회사 예산에서 자동 차감됩니다</p>
             </div>
           </div>
         </div>
       </div>
+      {/* 로그인 유도 모달 */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-xl">
+            <div className="text-4xl mb-4">🔒</div>
+            <h2 className="text-lg font-bold mb-2">로그인이 필요해요</h2>
+            <p className="text-sm text-[#475569] mb-6">예약하려면 먼저 로그인해주세요.</p>
+            <div className="flex flex-col gap-3">
+              <Link href="/login">
+                <Button size="lg" className="w-full">로그인하기</Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="secondary" size="lg" className="w-full">회원가입</Button>
+              </Link>
+              <button onClick={() => setShowLoginModal(false)} className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
 import { supabase } from '@/lib/supabase'
-import { useAuthOnly } from '@/lib/useAuthOnly'
 
 type Accommodation = {
   id: string
@@ -26,7 +25,6 @@ type SubsidyInfo = {
 const LOCATIONS = ['전체', '강원도', '제주도', '전라남도', '전라북도']
 
 export default function AccommodationsPage() {
-  useAuthOnly()
   const [accommodations, setAccommodations] = useState<Accommodation[]>([])
   const [subsidies, setSubsidies]           = useState<SubsidyInfo[]>([])
   const [loading, setLoading]               = useState(true)
