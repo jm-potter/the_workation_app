@@ -52,8 +52,8 @@ export default function Header({ role: roleProp, userName: nameProp }: HeaderPro
         {role ? (
           <div className="flex items-center gap-3">
             {role === 'emp' && (
-              <Link href="/documents" className="text-xs text-[#475569] hover:text-blue-500 transition-colors">
-                📂 서류 제출
+              <Link href="/my" className="text-xs text-[#475569] hover:text-blue-500 transition-colors">
+                👤 마이페이지
               </Link>
             )}
             <Badge variant={role}>{roleLabel[role]}</Badge>
