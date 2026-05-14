@@ -17,7 +17,7 @@ type Booking = {
   accommodations: { name: string; region: string } | null
 }
 
-type SubsidyRow = { region: string; name: string; amount_per_person: number }
+type SubsidyRow = { region: string; name: string; amount_per_person: number; status: string }
 
 function nightsBetween(start: string, end: string) {
   return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
@@ -38,6 +38,7 @@ export default function BillingPage() {
   const [bookings, setBookings]       = useState<Booking[]>([])
   const [subsidies, setSubsidies]     = useState<SubsidyRow[]>([])
   const [loading, setLoading]         = useState(true)
+  const [applying, setApplying]       = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -49,7 +50,7 @@ export default function BillingPage() {
         .limit(20),
       supabase
         .from('subsidies')
-        .select('region, name, amount_per_person'),
+        .select('region, name, amount_per_person, status'),
     ]).then(([{ data: bData }, { data: sData }]) => {
       if (bData) setBookings(bData)
       if (sData) setSubsidies(sData)
@@ -78,9 +79,26 @@ export default function BillingPage() {
         return r !== '' && (r.includes(s.region) || s.region.includes(r.split(' ')[0]))
       })
       const totalGuests = regionBookings.reduce((sum, b) => sum + b.guests, 0)
-      return totalGuests > 0 ? { region: s.region, amount: s.amount_per_person * totalGuests, status: '신청 예정' as string } : null
+      return totalGuests > 0 ? { region: s.region, name: s.name, amount: s.amount_per_person * totalGuests, status: s.status ?? '신청 예정' } : null
     })
-    .filter((s): s is { region: string; amount: number; status: string } => s !== null)
+    .filter((s): s is { region: string; name: string; amount: number; status: string } => s !== null)
+
+  const pendingSubsidies = subsidyStatus.filter(s => s.status === '신청 예정')
+
+  async function handleBulkApply() {
+    if (pendingSubsidies.length === 0) return
+    setApplying(true)
+    const { error } = await supabase
+      .from('subsidies')
+      .update({ status: '신청 완료' })
+      .in('name', pendingSubsidies.map(s => s.name))
+    if (!error) {
+      setSubsidies(prev => prev.map(s =>
+        pendingSubsidies.some(p => p.name === s.name) ? { ...s, status: '신청 완료' } : s
+      ))
+    }
+    setApplying(false)
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -212,8 +230,11 @@ export default function BillingPage() {
               </div>
             ))}
           </div>
-          <button className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors">
-            전체 지원금 일괄 신청하기 →
+          <button
+            onClick={handleBulkApply}
+            disabled={applying || pendingSubsidies.length === 0}
+            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors">
+            {applying ? '신청 중...' : pendingSubsidies.length === 0 ? '✅ 모두 신청 완료' : `전체 지원금 일괄 신청하기 (${pendingSubsidies.length}건) →`}
           </button>
         </div>
       </div>
