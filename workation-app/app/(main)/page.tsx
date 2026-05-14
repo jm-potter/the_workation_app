@@ -87,14 +87,14 @@ export default function LandingPage() {
       </section>
 
       {/* CTA — 파란 배경 */}
-      <section className="bg-blue-300 py-20 text-center">
+      <section className="bg-blue-50 py-20 text-center">
         <div className="max-w-2xl mx-auto px-6">
           <div className="text-center mb-6">
-            <span className="text-sm font-bold text-white/80 uppercase tracking-widest">지금 시작하기</span>
-            <div className="w-8 h-1 bg-white/50 rounded-full mx-auto mt-2" />
+            <span className="text-sm font-bold text-blue-400 uppercase tracking-widest">지금 시작하기</span>
+            <div className="w-8 h-1 bg-blue-300 rounded-full mx-auto mt-2" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-4">지금 바로 시작해보세요</h2>
-          <p className="text-white/80 mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
+          <h2 className="text-2xl font-bold text-[#0F172A] mb-4">지금 바로 시작해보세요</h2>
+          <p className="text-[#475569] mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
           <Link href="/register">
             <Button size="lg">무료로 시작하기</Button>
           </Link>
