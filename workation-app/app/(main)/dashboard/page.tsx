@@ -114,7 +114,7 @@ export default function DashboardPage() {
             { label: '총 예약',     value: `${bookings.length}건`,  sub: '전체 예약 수',  color: 'text-blue-500' },
             { label: '참여 직원',   value: `${totalGuests}명`,       sub: '누적 참여',     color: 'text-emerald-500' },
             { label: '예산 사용률', value: `${budgetPct}%`,          sub: `${budgetUsed.toLocaleString()}원 사용`, color: 'text-amber-500' },
-            { label: '절감 지원금', value: `${matchedSubsidyTotal.toLocaleString()}원`, sub: '지원금 합계', color: 'text-purple-500' },
+            { label: '절감 지원금', value: `${subsidyUsage.reduce((s, u) => s + u.amount, 0).toLocaleString()}원`, sub: '지원금 합계', color: 'text-purple-500' },
           ].map((s) => (
             <div key={s.label} className="bg-white border border-[#E2E8F0] rounded-xl p-5">
               <p className="text-xs text-[#94A3B8] mb-2">{s.label}</p>
