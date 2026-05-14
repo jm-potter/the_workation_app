@@ -4,29 +4,32 @@ import Header from '@/components/ui/Header'
 import { useHrOnly } from '@/lib/useHrOnly'
 
 const ACCOMMODATIONS = [
-  { name: '강릉 씨사이드 워크스테이션', price: 85000 },
-  { name: '제주 한달살기 스튜디오',     price: 95000 },
-  { name: '양양 서퍼스 하우스',          price: 70000 },
-  { name: '여수 오션뷰 코워킹',          price: 75000 },
-  { name: '속초 설악 리트릿',            price: 65000 },
-  { name: '전주 한옥 스테이',            price: 80000 },
+  { name: '강릉 씨사이드 워크스테이션', price: 85000,  subsidy: 100000 },
+  { name: '제주 한달살기 스튜디오',     price: 95000,  subsidy: 300000 },
+  { name: '양양 서퍼스 하우스',          price: 70000,  subsidy: 100000 },
+  { name: '여수 오션뷰 코워킹',          price: 75000,  subsidy: 80000  },
+  { name: '속초 설악 리트릿',            price: 65000,  subsidy: 100000 },
+  { name: '전주 한옥 스테이',            price: 80000,  subsidy: 0      },
 ]
 
 export default function CalculatorPage() {
   useHrOnly()
-  const [nights, setNights]   = useState(3)
-  const [people, setPeople]   = useState(4)
-  const [accIdx, setAccIdx]   = useState(0)
-  const [extra, setExtra]     = useState(50000)
+  const [nights, setNights]       = useState(3)
+  const [people, setPeople]       = useState(4)
+  const [accIdx, setAccIdx]       = useState(0)
+  const [extra, setExtra]         = useState(50000)
+  const [useSubsidy, setUseSubsidy] = useState(true)
 
-  const acc         = ACCOMMODATIONS[accIdx]
-  const roomCost    = acc.price * nights
-  const totalPeople = people
-  const transport   = totalPeople * 30000
-  const meal        = totalPeople * nights * 15000
-  const extraCost   = extra
-  const total       = roomCost + transport + meal + extraCost
-  const perPerson   = Math.round(total / totalPeople)
+  const acc            = ACCOMMODATIONS[accIdx]
+  const roomCost       = acc.price * nights
+  const totalPeople    = people
+  const transport      = totalPeople * 30000
+  const meal           = totalPeople * nights * 15000
+  const extraCost      = extra
+  const subtotal       = roomCost + transport + meal + extraCost
+  const subsidyTotal   = useSubsidy && acc.subsidy > 0 ? acc.subsidy * totalPeople : 0
+  const total          = Math.max(0, subtotal - subsidyTotal)
+  const perPerson      = Math.round(total / totalPeople)
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -128,15 +131,42 @@ export default function CalculatorPage() {
                 </div>
               ))}
 
+              {acc.subsidy > 0 && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 mt-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-emerald-700">지원금 선공제 적용</span>
+                    <button onClick={() => setUseSubsidy(!useSubsidy)}
+                      className={`relative w-10 h-5 rounded-full transition-colors ${useSubsidy ? 'bg-emerald-500' : 'bg-[#E2E8F0]'}`}>
+                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${useSubsidy ? 'left-5' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-emerald-600">{acc.subsidy.toLocaleString()}원/인 × {totalPeople}명</span>
+                    <span className="font-bold text-emerald-600">- {(acc.subsidy * totalPeople).toLocaleString()}원</span>
+                  </div>
+                </div>
+              )}
+
               <div className="border-t border-[#E2E8F0] pt-4 mt-1">
+                {subsidyTotal > 0 && (
+                  <div className="flex justify-between items-center text-sm text-[#94A3B8] mb-2">
+                    <span>소계</span>
+                    <span>{subtotal.toLocaleString()}원</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center mb-2">
-                  <span className="font-bold text-base">총 예상 비용</span>
-                  <span className="font-black text-xl text-blue-400">{total.toLocaleString()}원</span>
+                  <span className="font-bold text-base">최종 예상 비용</span>
+                  <span className="font-black text-xl text-blue-500">{total.toLocaleString()}원</span>
                 </div>
                 <div className="flex justify-between items-center text-xs text-[#94A3B8]">
                   <span>1인당 비용</span>
-                  <span className="text-emerald-400 font-semibold">{perPerson.toLocaleString()}원</span>
+                  <span className="text-emerald-500 font-semibold">{perPerson.toLocaleString()}원</span>
                 </div>
+                {subsidyTotal > 0 && (
+                  <div className="text-xs text-emerald-500 text-right mt-1 font-medium">
+                    💡 지원금으로 {subsidyTotal.toLocaleString()}원 절감!
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -24,7 +24,7 @@ export default function ReportPage() {
   useHrOnly()
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <Header role="hr" userName="홍길동 팀장" />
+      <Header role="hr" />
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* 헤더 */}
@@ -154,7 +154,7 @@ export default function ReportPage() {
               { name: 'Google Workspace', icon: '📊', status: 'pending',   data: '연동 설정 필요' },
             ].map(t => (
               <div key={t.name} className={`rounded-xl p-4 border ${
-                t.status === 'connected' ? 'bg-[#F1F5F9] border-[#E2E8F0]' : 'bg-[#1a2540] border-[#E2E8F0] opacity-60'
+                t.status === 'connected' ? 'bg-[#F1F5F9] border-[#E2E8F0]' : 'bg-white border-[#E2E8F0] opacity-60'
               }`}>
                 <div className="flex items-center gap-2 mb-2">
                   <span>{t.icon}</span>
