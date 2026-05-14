@@ -37,11 +37,13 @@ export default function AccommodationsPage() {
 
   useEffect(() => {
     async function fetchAccommodations() {
-      const { data } = await supabase.from('accommodations').select('*')
+      const { data, error } = await supabase.from('accommodations').select('*')
+      if (error) console.error('[accommodations fetch error]', error)
       if (data) setAccommodations(data)
       setLoading(false)
     }
-    supabase.from('subsidies').select('region, amount_per_person').then(({ data }) => {
+    supabase.from('subsidies').select('region, amount_per_person').then(({ data, error }) => {
+      if (error) console.error('[subsidies fetch error]', error)
       if (data) setSubsidies(data)
     })
     fetchAccommodations()
@@ -211,7 +213,14 @@ export default function AccommodationsPage() {
           </div>
         )}
 
-        {!loading && filtered.length === 0 && (
+        {!loading && accommodations.length === 0 && (
+          <div className="text-center py-20">
+            <div className="text-4xl mb-4">🏨</div>
+            <p className="text-[#475569] font-medium mb-1">등록된 숙소가 없어요</p>
+            <p className="text-xs text-[#94A3B8]">Supabase accommodations 테이블을 확인해주세요</p>
+          </div>
+        )}
+        {!loading && accommodations.length > 0 && filtered.length === 0 && (
           <div className="text-center py-20 text-[#94A3B8]">조건에 맞는 숙소가 없어요</div>
         )}
       </div>
