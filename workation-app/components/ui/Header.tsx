@@ -51,6 +51,11 @@ export default function Header({ role: roleProp, userName: nameProp }: HeaderPro
 
         {role ? (
           <div className="flex items-center gap-3">
+            {role === 'emp' && (
+              <Link href="/documents" className="text-xs text-[#475569] hover:text-blue-500 transition-colors">
+                📂 서류 제출
+              </Link>
+            )}
             <Badge variant={role}>{roleLabel[role]}</Badge>
             {userName && <span className="text-sm text-[#475569]">{userName}님</span>}
             <button onClick={handleLogout} className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors">
