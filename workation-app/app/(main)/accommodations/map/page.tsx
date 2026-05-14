@@ -4,10 +4,12 @@ import Link from 'next/link'
 import Header from '@/components/ui/Header'
 
 const SUBSIDY_BY_REGION: Record<string, number> = {
-  '강원도': 100000,
-  '제주도': 300000,
-  '전라남도': 80000,
-  '부산': 500000,
+  '강원도 속초': 500000,
+  '강원도':      100000,
+  '제주도':      300000,
+  '전라남도':    300000,
+  '경상남도':     80000,
+  '부산':        500000,
 }
 
 const PINS = [

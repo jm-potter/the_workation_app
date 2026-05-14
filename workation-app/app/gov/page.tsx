@@ -20,10 +20,12 @@ const MONTHLY_TREND = [
 const maxVisitors = Math.max(...MONTHLY_TREND.map(m => m.visitors))
 
 const SUBSIDY_RATES = [
-  { region: '부산광역시',  amount: 500000, unit: '1인당', minNights: 5, deadline: '2026-12-31', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  { region: '제주도',      amount: 300000, unit: '1인당', minNights: 3, deadline: '2026-07-31', color: 'text-blue-500',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20'   },
-  { region: '강원도',      amount: 100000, unit: '1인당', minNights: 2, deadline: '2026-06-30', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  { region: '전라남도',    amount:  80000, unit: '1인당', minNights: 2, deadline: '2026-05-31', color: 'text-amber-500',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20'  },
+  { region: '부산광역시',    amount: 500000, unit: '1인당', minNights: 3, deadline: '2026-12-31', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  { region: '제주도',        amount: 300000, unit: '1인당', minNights: 3, deadline: '2026-07-31', color: 'text-blue-500',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20'   },
+  { region: '강원도 속초',   amount: 500000, unit: '1인당', minNights: 3, deadline: '2025-12-31', color: 'text-teal-500',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20'   },
+  { region: '강원도 (일반)', amount: 100000, unit: '1인당', minNights: 2, deadline: '2025-12-31', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  { region: '전라남도',      amount: 300000, unit: '1인당', minNights: 2, deadline: '2025-12-31', color: 'text-amber-500',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20'  },
+  { region: '경상남도',      amount:  80000, unit: '1인당', minNights: 2, deadline: '2025-12-31', color: 'text-rose-500',   bg: 'bg-rose-500/10',   border: 'border-rose-500/20'   },
 ]
 
 const RECENT_SUBSIDIES = [
@@ -123,7 +125,7 @@ export default function GovPage() {
             <h2 className="font-bold text-sm">지역별 워케이션 지원금 현황</h2>
             <span className="text-xs bg-emerald-500/20 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-500/30">2026년 상반기</span>
           </div>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {SUBSIDY_RATES.map(s => (
               <div key={s.region} className={`${s.bg} border ${s.border} rounded-xl p-4`}>
                 <div className={`text-xl font-black ${s.color} mb-1`}>{s.amount.toLocaleString()}원</div>

@@ -7,8 +7,8 @@ const ACCOMMODATIONS = [
   { name: '강릉 씨사이드 워크스테이션', price: 85000,  subsidy: 100000 },
   { name: '제주 한달살기 스튜디오',     price: 95000,  subsidy: 300000 },
   { name: '양양 서퍼스 하우스',          price: 70000,  subsidy: 100000 },
-  { name: '여수 오션뷰 코워킹',          price: 75000,  subsidy: 80000  },
-  { name: '속초 설악 리트릿',            price: 65000,  subsidy: 100000 },
+  { name: '여수 오션뷰 코워킹',          price: 75000,  subsidy: 300000 },
+  { name: '속초 설악 리트릿',            price: 65000,  subsidy: 500000 },
   { name: '전주 한옥 스테이',            price: 80000,  subsidy: 0      },
 ]
 
