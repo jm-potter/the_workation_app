@@ -23,12 +23,11 @@ export default function BillingPage() {
   const [month, setMonth]       = useState(MONTHS[0])
   const [downloaded, setDownloaded] = useState(false)
 
-  const items = BILLING_ITEMS.map(b => ({
-    ...b,
-    accommodationCost: b.pricePerNight * b.nights * b.guests,
-    subsidyTotal:      b.subsidyPerHead * b.guests,
-    get finalAmount()  { return this.accommodationCost - this.subsidyTotal },
-  }))
+  const items = BILLING_ITEMS.map(b => {
+    const accommodationCost = b.pricePerNight * b.nights * b.guests
+    const subsidyTotal      = b.subsidyPerHead * b.guests
+    return { ...b, accommodationCost, subsidyTotal, finalAmount: accommodationCost - subsidyTotal }
+  })
 
   const totalCost    = items.reduce((s, b) => s + b.accommodationCost, 0)
   const totalSubsidy = items.reduce((s, b) => s + b.subsidyTotal, 0)
