@@ -5,7 +5,10 @@ export default function WorkationInfoPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <header className="px-6 py-5 flex justify-between items-center max-w-6xl mx-auto">
-        <Link href="/" className="text-lg font-bold">더 워케이션</Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">← 뒤로</Link>
+          <Link href="/" className="text-lg font-bold">더 워케이션</Link>
+        </div>
         <div className="flex gap-3">
           <Link href="/login">
             <Button variant="ghost" size="sm">로그인</Button>

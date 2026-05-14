@@ -107,7 +107,10 @@ export default function SubsidyPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="text-lg font-black text-[#0F172A]">더 워케이션</Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">← 뒤로</Link>
+          <Link href="/" className="text-lg font-black text-[#0F172A]">더 워케이션</Link>
+        </div>
         <div className="flex gap-3">
           <Link href="/login">
             <Button variant="secondary" size="sm">로그인</Button>

@@ -40,9 +40,14 @@ export default function Header({ role: roleProp, userName: nameProp }: HeaderPro
   return (
     <header className="bg-white border-b border-[#E2E8F0] px-6 py-4">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold text-[#0F172A] tracking-tight">
-          더 워케이션
-        </Link>
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.back()} className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">
+            ← 뒤로
+          </button>
+          <Link href="/" className="text-lg font-bold text-[#0F172A] tracking-tight">
+            더 워케이션
+          </Link>
+        </div>
 
         {role ? (
           <div className="flex items-center gap-3">
