@@ -122,6 +122,14 @@ export default function SubsidyPage() {
         </div>
       </header>
 
+      {/* 마케팅 배너 */}
+      <div className="bg-gradient-to-r from-emerald-500 to-blue-500 py-4 text-center">
+        <p className="text-white font-bold text-base tracking-wide">
+          💸 숙박비 일부, 지원금으로 해결!
+          <span className="ml-3 text-sm font-normal text-white/80">지금 바로 신청 가능한 지자체 지원금을 확인하세요</span>
+        </p>
+      </div>
+
       <div className="max-w-5xl mx-auto px-6 py-12">
         {/* 히어로 */}
         <div className="text-center mb-14">
