@@ -127,7 +127,7 @@ export default function PartnerBookingsPage() {
                 </div>
               )}
               {selected.status === 'confirmed' && (
-                <button className="w-full py-2 bg-[#F1F5F9] hover:bg-[#2e3f56] text-[#475569] text-sm font-medium rounded-xl transition-colors">
+                <button className="w-full py-2 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#475569] text-sm font-medium rounded-xl transition-colors">
                   예약 취소
                 </button>
               )}

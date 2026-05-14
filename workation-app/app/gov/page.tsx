@@ -44,7 +44,10 @@ export default function GovPage() {
           <span className="font-black text-lg">더워케이션</span>
           <Badge variant="gov">지자체</Badge>
         </div>
-        <div className="text-sm text-[#94A3B8]">강원도청 · 관광진흥과</div>
+        <div className="flex items-center gap-3">
+          <Link href="/gov/post" className="text-sm px-3 py-1.5 bg-white border border-[#E2E8F0] hover:border-blue-500/50 text-[#475569] rounded-xl transition-colors font-medium">📢 공고 게재</Link>
+          <Link href="/gov/report" className="text-sm px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors font-medium">📊 성과 리포트</Link>
+        </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-6 py-8">

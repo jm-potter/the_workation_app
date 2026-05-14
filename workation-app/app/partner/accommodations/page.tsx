@@ -29,16 +29,21 @@ export default function PartnerAccommodationsPage() {
           <span className="text-[#CBD5E1]">/</span>
           <span className="font-semibold">내 숙소 관리</span>
         </div>
-        <button
-          onClick={() => setEditing(!editing)}
-          className={`text-sm font-semibold px-4 py-2 rounded-xl transition-colors ${
-            editing
-              ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          }`}
-        >
-          {editing ? '저장하기' : '수정하기'}
-        </button>
+        <div className="flex items-center gap-2">
+          <Link href="/partner/accommodations/new" className="text-sm font-semibold px-4 py-2 bg-white border border-[#E2E8F0] hover:border-blue-500/50 text-[#475569] rounded-xl transition-colors">
+            + 신규 등록
+          </Link>
+          <button
+            onClick={() => setEditing(!editing)}
+            className={`text-sm font-semibold px-4 py-2 rounded-xl transition-colors ${
+              editing
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                : 'bg-blue-500 hover:bg-blue-600 text-white'
+            }`}
+          >
+            {editing ? '저장하기' : '수정하기'}
+          </button>
+        </div>
       </header>
 
       <div className="max-w-3xl mx-auto px-6 py-8">

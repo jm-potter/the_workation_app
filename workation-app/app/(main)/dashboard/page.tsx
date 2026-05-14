@@ -234,10 +234,11 @@ export default function DashboardPage() {
         </div>
 
         {/* 퀵 메뉴 */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           {[
             { href: '/members',        icon: '👥', label: '임직원 초대·관리' },
             { href: '/booking/manage', icon: '📅', label: '예약 변경·취소' },
+            { href: '/dashboard/billing', icon: '🧾', label: '원빌링 정산' },
             { href: '/settings',       icon: '⚙️', label: '회사 설정' },
           ].map(q => (
             <Link key={q.href} href={q.href}
