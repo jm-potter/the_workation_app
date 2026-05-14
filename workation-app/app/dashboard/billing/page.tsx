@@ -81,11 +81,6 @@ export default function BillingPage() {
     }
   })
 
-  const nextMonthTotal = Math.round(totalFinal * 1.15)
-  const nextSubsidy    = Math.round(totalSubsidy * 1.1)
-  const budgetTotal    = 5000000
-  const budgetUsed     = totalFinal
-
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Header role="hr" />
@@ -192,56 +187,33 @@ export default function BillingPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          {/* 지원금 정산 현황 */}
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-lg">💰</span>
-              <h2 className="font-bold text-sm">지원금 신청 현황</h2>
-            </div>
-            <div className="flex flex-col gap-2 mb-4">
-              {(subsidyStatus.length > 0 ? subsidyStatus : [
-                { region: '연결된 지원금 없음', amount: 0, status: '신청 예정' }
-              ]).map(s => (
-                <div key={s.region} className="bg-white rounded-xl px-4 py-3 flex items-center justify-between">
-                  <div>
-                    <div className="font-medium text-sm">{s.region}</div>
-                    <div className="text-xs text-emerald-600 font-semibold">{s.amount.toLocaleString()}원</div>
-                  </div>
-                  <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${
-                    s.status === '승인 완료' ? 'bg-emerald-500/20 text-emerald-600' :
-                    s.status === '신청 완료' ? 'bg-emerald-500/20 text-emerald-600' :
-                    s.status === '검토중'    ? 'bg-amber-500/20 text-amber-600'    :
-                                               'bg-[#F1F5F9] text-[#94A3B8]'
-                  }`}>{s.status}</span>
+        {/* 지원금 정산 현황 */}
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">💰</span>
+            <h2 className="font-bold text-sm">지원금 신청 현황</h2>
+          </div>
+          <div className="flex flex-col gap-2 mb-4">
+            {(subsidyStatus.length > 0 ? subsidyStatus : [
+              { region: '연결된 지원금 없음', amount: 0, status: '신청 예정' }
+            ]).map(s => (
+              <div key={s.region} className="bg-white rounded-xl px-4 py-3 flex items-center justify-between">
+                <div>
+                  <div className="font-medium text-sm">{s.region}</div>
+                  <div className="text-xs text-emerald-600 font-semibold">{s.amount.toLocaleString()}원</div>
                 </div>
-              ))}
-            </div>
-            <button className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors">
-              전체 지원금 일괄 신청하기 →
-            </button>
-          </div>
-
-          {/* 다음 달 예상 + 납부 안내 */}
-          <div className="flex flex-col gap-4">
-            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 flex-1">
-              <h2 className="font-bold text-sm mb-4">다음 달 예상 청구</h2>
-              <div className="text-3xl font-black text-blue-500 mb-1">{nextMonthTotal.toLocaleString()}원</div>
-              <div className="text-xs text-emerald-500 mb-4">지원금 차감 후 (절감 예상 {nextSubsidy.toLocaleString()}원)</div>
-              <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full"
-                  style={{ width: `${Math.min(100, Math.round((budgetUsed / budgetTotal) * 100))}%` }} />
+                <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${
+                  s.status === '승인 완료' ? 'bg-emerald-500/20 text-emerald-600' :
+                  s.status === '신청 완료' ? 'bg-emerald-500/20 text-emerald-600' :
+                  s.status === '검토중'    ? 'bg-amber-500/20 text-amber-600'    :
+                                             'bg-[#F1F5F9] text-[#94A3B8]'
+                }`}>{s.status}</span>
               </div>
-              <div className="flex justify-between text-xs text-[#94A3B8] mt-1">
-                <span>예산 사용률 {Math.min(100, Math.round((budgetUsed / budgetTotal) * 100))}%</span>
-                <span>잔여 {(budgetTotal - budgetUsed).toLocaleString()}원</span>
-              </div>
-            </div>
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-5">
-              <div className="text-xs text-blue-700 font-semibold mb-1">💳 자동 납부 설정됨</div>
-              <div className="text-xs text-[#475569]">매월 말일 회사 법인카드 자동 결제됩니다. 지원금은 익월 지자체 정산 후 환급됩니다.</div>
-            </div>
+            ))}
           </div>
+          <button className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors">
+            전체 지원금 일괄 신청하기 →
+          </button>
         </div>
       </div>
     </div>
