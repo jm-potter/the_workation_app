@@ -8,12 +8,6 @@ import Link from 'next/link'
 import Footer from '@/components/ui/Footer'
 import { supabase } from '@/lib/supabase'
 
-const SUBSIDIES = [
-  { name: '강원도 워케이션 유치 지원금', region: '강원도', amount: 100000, unit: '1인당', condition: '2박 이상', matched: true,  deadline: '2026-06-30' },
-  { name: '제주 기업 유치 특별 지원',    region: '제주도', amount: 150000, unit: '1인당', condition: '3박 이상', matched: true,  deadline: '2026-07-31' },
-  { name: '전라남도 워케이션 활성화',    region: '전라남도', amount: 80000, unit: '1인당', condition: '2박 이상', matched: false, deadline: '2026-05-31' },
-]
-
 const PERFORMANCE = [
   { label: '업무 집중도',  before: 68, after: 84, unit: '%' },
   { label: '팀 결속력',   before: 72, after: 91, unit: '%' },
@@ -25,18 +19,23 @@ const statusLabel: Record<string, string> = { confirmed: '확정', pending: '대
 
 type Booking = {
   id: string
+  user_id: string
   start_date: string
   end_date: string
   guests: number
   total_price: number
   status: string
   accommodations: { name: string; region: string } | null
+  users: { name: string; email: string } | null
 }
+
+type SubsidyRow = { region: string; name: string; amount_per_person: number }
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [bookings, setBookings]   = useState<Booking[]>([])
-  const [loading, setLoading]     = useState(true)
+  const [bookings,  setBookings]  = useState<Booking[]>([])
+  const [subsidies, setSubsidies] = useState<SubsidyRow[]>([])
+  const [loading,   setLoading]   = useState(true)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -45,15 +44,20 @@ export default function DashboardPage() {
       else if (role === 'emp') router.push('/accommodations')
     })
 
-    supabase
-      .from('bookings')
-      .select('*, accommodations(name, region)')
-      .order('id', { ascending: false })
-      .limit(10)
-      .then(({ data }) => {
-        if (data) setBookings(data)
-        setLoading(false)
-      })
+    Promise.all([
+      supabase
+        .from('bookings')
+        .select('*, accommodations(name, region), users(name, email)')
+        .order('id', { ascending: false })
+        .limit(20),
+      supabase
+        .from('subsidies')
+        .select('region, name, amount_per_person'),
+    ]).then(([{ data: bData }, { data: sData }]) => {
+      if (bData) setBookings(bData as any)
+      if (sData) setSubsidies(sData)
+      setLoading(false)
+    })
   }, [])
 
   const confirmedBookings = bookings.filter(b => b.status === 'confirmed')
@@ -64,7 +68,30 @@ export default function DashboardPage() {
   const budgetUsed  = totalAmount
   const budgetPct   = Math.min(100, Math.round((budgetUsed / budgetTotal) * 100))
 
-  const matchedSubsidyTotal = SUBSIDIES.filter(s => s.matched).reduce((sum, s) => sum + s.amount * 4, 0)
+  // 지원금 수혜 현황: 확정 예약 × 매칭 지원금
+  const subsidyUsageRaw = confirmedBookings.flatMap(b => {
+    const region = b.accommodations?.region ?? ''
+    return subsidies
+      .filter(s => region.includes(s.region) || s.region.includes(region.split(' ')[0]))
+      .map(s => ({
+        userId:    b.user_id,
+        userName:  b.users?.name ?? b.users?.email ?? '알 수 없음',
+        subsidyName: s.name,
+        region:    b.accommodations?.region ?? '',
+        date:      b.start_date,
+        amount:    s.amount_per_person * b.guests,
+      }))
+  })
+  // 중복 감지: 같은 사람이 같은 지원금 2회 이상
+  const usageCount = new Map<string, number>()
+  subsidyUsageRaw.forEach(u => {
+    const key = `${u.userId}:${u.subsidyName}`
+    usageCount.set(key, (usageCount.get(key) ?? 0) + 1)
+  })
+  const subsidyUsage = subsidyUsageRaw.map(u => ({
+    ...u,
+    isDuplicate: (usageCount.get(`${u.userId}:${u.subsidyName}`) ?? 0) > 1,
+  }))
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -112,40 +139,55 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* 지원금 자동 매칭 */}
-        <div className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-xl p-5 mb-6">
-          <div className="flex items-center justify-between mb-4">
+        {/* 지원금 수혜 현황 */}
+        <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden mb-6">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0]">
             <div className="flex items-center gap-2">
               <span className="text-lg">💰</span>
-              <h2 className="font-bold text-sm">지원금 자동 매칭</h2>
+              <h2 className="font-bold text-sm">지원금 수혜 현황</h2>
+              <span className="text-xs bg-amber-500/10 text-amber-600 px-2 py-0.5 rounded-full border border-amber-500/20">1인 1회 제한</span>
             </div>
-            <div className="text-right">
-              <div className="text-xs text-[#94A3B8]">최대 수령 가능</div>
-              <div className="text-lg font-black text-emerald-500">{matchedSubsidyTotal.toLocaleString()}원</div>
+            <Link href="/dashboard/billing" className="text-xs text-blue-500 hover:text-blue-600 transition-colors">원빌링 정산 →</Link>
+          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-8 text-[#94A3B8] text-sm">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2" />불러오는 중...
             </div>
+          ) : subsidyUsage.length === 0 ? (
+            <div className="text-center py-8 text-[#94A3B8] text-sm">지원금 수혜 내역이 없어요</div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs text-[#94A3B8] border-b border-[#E2E8F0]">
+                  {['직원', '지원금', '지역', '수혜일', '금액', '상태'].map(h => (
+                    <th key={h} className="text-left px-5 py-3 font-medium">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {subsidyUsage.map((u, i) => (
+                  <tr key={i} className={`border-b border-[#E2E8F0]/50 transition-colors ${u.isDuplicate ? 'bg-amber-500/5' : 'hover:bg-[#F1F5F9]/50'}`}>
+                    <td className="px-5 py-3 font-medium">{u.userName}</td>
+                    <td className="px-5 py-3 text-xs text-[#475569]">{u.subsidyName}</td>
+                    <td className="px-5 py-3 text-xs text-[#94A3B8]">📍 {u.region}</td>
+                    <td className="px-5 py-3 text-xs text-[#475569]">{u.date}</td>
+                    <td className="px-5 py-3 text-emerald-500 font-medium">{u.amount.toLocaleString()}원</td>
+                    <td className="px-5 py-3">
+                      {u.isDuplicate
+                        ? <span className="text-xs bg-amber-500/20 text-amber-600 px-2 py-1 rounded-lg font-medium">⚠️ 중복 수혜</span>
+                        : <span className="text-xs bg-emerald-500/20 text-emerald-600 px-2 py-1 rounded-lg font-medium">✅ 정상</span>
+                      }
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          <div className="px-5 py-3 border-t border-[#E2E8F0]">
+            <Link href="/dashboard/billing" className="block w-full text-center py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors">
+              지원금 일괄 신청하기 →
+            </Link>
           </div>
-          <div className="flex flex-col gap-3">
-            {SUBSIDIES.map((s) => (
-              <div key={s.name} className={`flex items-center justify-between p-3 rounded-xl border ${
-                s.matched ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white border-[#E2E8F0] opacity-50'
-              }`}>
-                <div className="flex items-center gap-3">
-                  <span>{s.matched ? '✅' : '❌'}</span>
-                  <div>
-                    <div className="font-medium text-sm">{s.name}</div>
-                    <div className="text-xs text-[#94A3B8]">{s.condition} · 마감 {s.deadline}</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-sm text-emerald-500">{s.amount.toLocaleString()}원</div>
-                  <div className="text-xs text-[#94A3B8]">{s.unit}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <button className="mt-4 w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors">
-            매칭된 지원금 신청하기 →
-          </button>
         </div>
 
         {/* 성과 예측 */}
