@@ -87,7 +87,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA — 파란 배경 */}
-      <section className="bg-blue-500 py-20 text-center">
+      <section className="bg-blue-300 py-20 text-center">
         <div className="max-w-2xl mx-auto px-6">
           <div className="text-center mb-6">
             <span className="text-sm font-bold text-white/80 uppercase tracking-widest">지금 시작하기</span>
