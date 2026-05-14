@@ -96,7 +96,7 @@ export default function LandingPage() {
           <h2 className="text-2xl font-bold text-[#0F172A] mb-4">지금 바로 시작해보세요</h2>
           <p className="text-[#475569] mb-8">가입 후 5분 안에 첫 워케이션 예약까지 완료할 수 있습니다</p>
           <Link href="/register">
-            <Button size="lg" className="bg-white text-blue-500 hover:bg-blue-50 border border-blue-200">무료로 시작하기</Button>
+            <Button size="lg" className="!bg-white !text-blue-500 hover:!bg-blue-50 border border-blue-200">무료로 시작하기</Button>
           </Link>
         </div>
       </section>
