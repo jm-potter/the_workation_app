@@ -41,7 +41,7 @@ export default function GovReportPage() {
         .from('subsidies')
         .select('region, amount_per_person'),
     ]).then(([{ data: bData }, { data: sData }]) => {
-      if (bData) setBookings(bData)
+      if (bData) setBookings(bData as any)
       if (sData) setSubsidies(sData)
       setLoading(false)
     })
