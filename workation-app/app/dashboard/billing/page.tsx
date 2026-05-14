@@ -25,11 +25,11 @@ function nightsBetween(start: string, end: string) {
 
 function matchSubsidy(region: string, subsidies: SubsidyRow[]) {
   const r = region ?? ''
+  if (!r) return 0
   return subsidies.find(s => r.includes(s.region) || s.region.includes(r.split(' ')[0]))
     ?.amount_per_person ?? 0
 }
 
-const STATUS_CYCLE = ['신청 예정', '신청 완료', '검토중', '승인 완료']
 
 export default function BillingPage() {
   useHrOnly()
@@ -70,16 +70,17 @@ export default function BillingPage() {
   const totalSubsidy = items.reduce((s, b) => s + b.subsidyTotal, 0)
   const totalFinal   = items.reduce((s, b) => s + b.finalAmount, 0)
 
-  // 지역별 지원금 신청 현황 (실제 subsidies 테이블에서)
-  const subsidyStatus = subsidies.slice(0, 3).map((s, i) => {
-    const regionBookings = items.filter(b => (b.accommodations?.region ?? '').includes(s.region))
-    const totalGuests    = regionBookings.reduce((sum, b) => sum + b.guests, 0)
-    return {
-      region: s.region,
-      amount: s.amount_per_person * Math.max(totalGuests, 1),
-      status: STATUS_CYCLE[i % STATUS_CYCLE.length],
-    }
-  })
+  // 실제 예약이 있는 지역의 지원금만 표시
+  const subsidyStatus = subsidies
+    .map(s => {
+      const regionBookings = items.filter(b => {
+        const r = b.accommodations?.region ?? ''
+        return r !== '' && (r.includes(s.region) || s.region.includes(r.split(' ')[0]))
+      })
+      const totalGuests = regionBookings.reduce((sum, b) => sum + b.guests, 0)
+      return totalGuests > 0 ? { region: s.region, amount: s.amount_per_person * totalGuests, status: '신청 예정' as string } : null
+    })
+    .filter((s): s is { region: string; amount: number; status: string } => s !== null)
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">

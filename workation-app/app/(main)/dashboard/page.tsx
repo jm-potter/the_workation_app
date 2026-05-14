@@ -71,6 +71,7 @@ export default function DashboardPage() {
   // 지원금 수혜 현황: 확정 예약 × 매칭 지원금
   const subsidyUsageRaw = confirmedBookings.flatMap(b => {
     const region = b.accommodations?.region ?? ''
+    if (!region) return []
     return subsidies
       .filter(s => region.includes(s.region) || s.region.includes(region.split(' ')[0]))
       .map(s => ({
