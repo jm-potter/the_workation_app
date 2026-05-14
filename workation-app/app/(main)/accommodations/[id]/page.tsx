@@ -21,16 +21,36 @@ type Accommodation = {
   image_url?: string
 }
 
+type Subsidy = {
+  id: string
+  name: string
+  region: string
+  amount_per_person: number
+  min_nights: number
+  unit: string
+  conditions: string
+  provider: string
+}
+
 export default function AccommodationDetailPage() {
   useAuthOnly()
   const { id } = useParams()
-  const [acc, setAcc] = useState<Accommodation | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [acc, setAcc]             = useState<Accommodation | null>(null)
+  const [subsidies, setSubsidies] = useState<Subsidy[]>([])
+  const [loading, setLoading]     = useState(true)
 
   useEffect(() => {
     async function fetch() {
       const { data } = await supabase.from('accommodations').select('*').eq('id', id).single()
-      if (data) setAcc(data)
+      if (data) {
+        setAcc(data)
+        const { data: subs } = await supabase.from('subsidies').select('*')
+        if (subs) {
+          setSubsidies(subs.filter((s: Subsidy) =>
+            data.region.includes(s.region) || s.region.includes(data.region.split(' ')[0])
+          ))
+        }
+      }
       setLoading(false)
     }
     fetch()
@@ -124,6 +144,21 @@ export default function AccommodationDetailPage() {
                   </select>
                 </div>
               </div>
+
+              {subsidies.length > 0 && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 mb-4">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="text-sm">💰</span>
+                    <span className="text-xs font-semibold text-emerald-700">지원금 자동 매칭</span>
+                  </div>
+                  {subsidies.map(s => (
+                    <div key={s.id} className="flex justify-between items-center text-xs mb-1">
+                      <span className="text-emerald-700 truncate pr-2">{s.name}</span>
+                      <span className="font-bold text-emerald-600 shrink-0">{s.amount_per_person.toLocaleString()}원/인</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <Link href={`/booking?id=${acc.id}`}>
                 <Button size="lg" className="w-full">예약하기</Button>

@@ -18,11 +18,17 @@ type Accommodation = {
   image_url?: string
 }
 
+type SubsidyInfo = {
+  region: string
+  amount_per_person: number
+}
+
 const LOCATIONS = ['전체', '강원도', '제주도', '전라남도', '전라북도']
 
 export default function AccommodationsPage() {
   useAuthOnly()
   const [accommodations, setAccommodations] = useState<Accommodation[]>([])
+  const [subsidies, setSubsidies]           = useState<SubsidyInfo[]>([])
   const [loading, setLoading]               = useState(true)
   const [location, setLocation]             = useState('전체')
   const [aiPeople, setAiPeople]             = useState(4)
@@ -36,8 +42,17 @@ export default function AccommodationsPage() {
       if (data) setAccommodations(data)
       setLoading(false)
     }
+    supabase.from('subsidies').select('region, amount_per_person').then(({ data }) => {
+      if (data) setSubsidies(data)
+    })
     fetchAccommodations()
   }, [])
+
+  function getSubsidyTotal(region: string) {
+    return subsidies
+      .filter(s => region.includes(s.region) || s.region.includes(region.split(' ')[0]))
+      .reduce((sum, s) => sum + s.amount_per_person, 0)
+  }
 
   const filtered = accommodations.filter(a =>
     location === '전체' || a.region.includes(location)
@@ -178,6 +193,11 @@ export default function AccommodationsPage() {
                       {acc.amenities?.slice(0, 2).map(a => (
                         <span key={a} className="text-xs bg-[#F1F5F9] text-[#475569] px-2 py-0.5 rounded">{a}</span>
                       ))}
+                      {getSubsidyTotal(acc.region) > 0 && (
+                        <span className="text-xs bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded border border-emerald-500/20">
+                          💰 {getSubsidyTotal(acc.region).toLocaleString()}원/인 지원
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-blue-400 font-bold text-sm">

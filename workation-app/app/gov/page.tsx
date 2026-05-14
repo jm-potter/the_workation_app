@@ -19,11 +19,19 @@ const MONTHLY_TREND = [
 
 const maxVisitors = Math.max(...MONTHLY_TREND.map(m => m.visitors))
 
+const SUBSIDY_RATES = [
+  { region: '부산광역시',  amount: 500000, unit: '1인당', minNights: 5, deadline: '2026-12-31', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  { region: '제주도',      amount: 300000, unit: '1인당', minNights: 3, deadline: '2026-07-31', color: 'text-blue-500',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20'   },
+  { region: '강원도',      amount: 100000, unit: '1인당', minNights: 2, deadline: '2026-06-30', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  { region: '전라남도',    amount:  80000, unit: '1인당', minNights: 2, deadline: '2026-05-31', color: 'text-amber-500',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20'  },
+]
+
 const RECENT_SUBSIDIES = [
-  { company: '삼성전자',  region: '강원도 강릉',  employees: 4, amount: 400000, status: 'approved' },
-  { company: 'LG전자',   region: '제주도 서귀포', employees: 3, amount: 300000, status: 'approved' },
-  { company: '카카오',   region: '강원도 양양',  employees: 2, amount: 200000, status: 'pending'  },
-  { company: '네이버',   region: '전라남도 여수', employees: 3, amount: 300000, status: 'pending'  },
+  { company: '삼성전자',  region: '강원도 강릉',  employees: 4, amount:  400000, status: 'approved' },
+  { company: 'LG전자',   region: '제주도 서귀포', employees: 3, amount:  900000, status: 'approved' },
+  { company: '카카오',   region: '강원도 양양',  employees: 2, amount:  200000, status: 'pending'  },
+  { company: '네이버',   region: '전라남도 여수', employees: 5, amount:  400000, status: 'pending'  },
+  { company: '쿠팡',     region: '부산광역시',   employees: 6, amount: 3000000, status: 'pending'  },
 ]
 
 export default function GovPage() {
@@ -108,12 +116,31 @@ export default function GovPage() {
           </div>
         </div>
 
+        {/* 지역별 지원금 현황 */}
+        <div className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-xl p-5 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">💰</span>
+            <h2 className="font-bold text-sm">지역별 워케이션 지원금 현황</h2>
+            <span className="text-xs bg-emerald-500/20 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-500/30">2026년 상반기</span>
+          </div>
+          <div className="grid grid-cols-4 gap-3">
+            {SUBSIDY_RATES.map(s => (
+              <div key={s.region} className={`${s.bg} border ${s.border} rounded-xl p-4`}>
+                <div className={`text-xl font-black ${s.color} mb-1`}>{s.amount.toLocaleString()}원</div>
+                <div className="text-xs font-semibold text-[#0F172A] mb-0.5">{s.region}</div>
+                <div className="text-xs text-[#94A3B8]">{s.unit} · {s.minNights}박 이상</div>
+                <div className="text-xs text-[#94A3B8] mt-1">~{s.deadline}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* 지원금 신청 현황 */}
         <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0]">
             <div>
               <span className="font-semibold text-sm">워케이션 지원금 신청 현황</span>
-              <span className="text-xs text-[#94A3B8] ml-2">1인당 10만원 지원</span>
+              <span className="text-xs text-[#94A3B8] ml-2">지역별 차등 지원</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg">
