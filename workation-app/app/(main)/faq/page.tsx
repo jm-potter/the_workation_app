@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
 
 export default function FaqPage() {
@@ -29,6 +30,7 @@ export default function FaqPage() {
           </Link>
         </div>
       </section>
+      <Footer />
     </div>
   )
 }

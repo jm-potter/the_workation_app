@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { useAuthOnly } from '@/lib/useAuthOnly'
@@ -95,6 +96,7 @@ export default function BookingConfirmPage() {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

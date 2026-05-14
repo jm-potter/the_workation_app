@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
 
 export default function WorkationInfoPage() {
@@ -132,6 +133,7 @@ export default function WorkationInfoPage() {
           </Link>
         </div>
       </section>
+      <Footer />
     </div>
   )
 }

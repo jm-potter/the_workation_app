@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 
 const SUBSIDY_BY_REGION: Record<string, number> = {
@@ -132,6 +133,7 @@ export default function MapPage() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

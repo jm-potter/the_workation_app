@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
 
 const SUBSIDIES = [
@@ -203,6 +204,7 @@ export default function SubsidyPage() {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

@@ -1,4 +1,5 @@
 'use client'
+import Footer from '@/components/ui/Footer'
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/components/ui/Header'
@@ -262,6 +263,7 @@ function BookingContent() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

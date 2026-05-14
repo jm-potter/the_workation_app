@@ -1,4 +1,5 @@
 'use client'
+import Footer from '@/components/ui/Footer'
 import { useState } from 'react'
 import Header from '@/components/ui/Header'
 import { useHrOnly } from '@/lib/useHrOnly'
@@ -200,6 +201,7 @@ export default function CalculatorPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

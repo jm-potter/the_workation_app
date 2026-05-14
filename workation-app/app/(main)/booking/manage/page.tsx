@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { useHrOnly } from '@/lib/useHrOnly'
@@ -269,6 +270,7 @@ export default function BookingManagePage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

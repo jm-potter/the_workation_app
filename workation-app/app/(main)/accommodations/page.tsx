@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 import { supabase } from '@/lib/supabase'
 
@@ -214,6 +215,7 @@ export default function AccommodationsPage() {
           <div className="text-center py-20 text-[#94A3B8]">조건에 맞는 숙소가 없어요</div>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

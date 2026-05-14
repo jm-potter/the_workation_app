@@ -5,6 +5,7 @@ import Header from '@/components/ui/Header'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import { supabase } from '@/lib/supabase'
 
 const SUBSIDIES = [
@@ -249,6 +250,7 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

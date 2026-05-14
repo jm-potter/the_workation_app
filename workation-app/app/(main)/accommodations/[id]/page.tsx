@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
@@ -198,6 +199,7 @@ export default function AccommodationDetailPage() {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   )
 }

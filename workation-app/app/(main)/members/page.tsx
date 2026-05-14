@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import { useHrOnly } from '@/lib/useHrOnly'
@@ -183,6 +184,7 @@ export default function MembersPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
