@@ -61,7 +61,7 @@ export default function DashboardPage() {
   const totalGuests       = confirmedBookings.reduce((s, b) => s + (b.guests ?? 0), 0)
 
   const budgetTotal = 5000000
-  const budgetUsed  = totalAmount || 1850000
+  const budgetUsed  = totalAmount
   const budgetPct   = Math.min(100, Math.round((budgetUsed / budgetTotal) * 100))
 
   const matchedSubsidyTotal = SUBSIDIES.filter(s => s.matched).reduce((sum, s) => sum + s.amount * 4, 0)
