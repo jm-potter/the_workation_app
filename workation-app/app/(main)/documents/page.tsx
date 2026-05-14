@@ -22,7 +22,6 @@ type Doc = {
 }
 
 const TYPE_LABELS: Record<string, { label: string; desc: string }> = {
-  receipt:    { label: '영수증',    desc: '식비·교통비 등 지출 영수증' },
   work_proof: { label: '직무 증빙', desc: '업무 보고서, 회의록, 결과물 등' },
 }
 
