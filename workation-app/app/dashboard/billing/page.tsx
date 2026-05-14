@@ -38,7 +38,6 @@ export default function BillingPage() {
   const [bookings, setBookings]       = useState<Booking[]>([])
   const [subsidies, setSubsidies]     = useState<SubsidyRow[]>([])
   const [loading, setLoading]         = useState(true)
-  const [applying, setApplying]       = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -82,23 +81,6 @@ export default function BillingPage() {
       return totalGuests > 0 ? { region: s.region, name: s.name, amount: s.amount_per_person * totalGuests, status: s.status ?? '신청 예정' } : null
     })
     .filter((s): s is { region: string; name: string; amount: number; status: string } => s !== null)
-
-  const pendingSubsidies = subsidyStatus.filter(s => s.status === '신청 예정')
-
-  async function handleBulkApply() {
-    if (pendingSubsidies.length === 0) return
-    setApplying(true)
-    const { error } = await supabase
-      .from('subsidies')
-      .update({ status: '신청 완료' })
-      .in('name', pendingSubsidies.map(s => s.name))
-    if (!error) {
-      setSubsidies(prev => prev.map(s =>
-        pendingSubsidies.some(p => p.name === s.name) ? { ...s, status: '신청 완료' } : s
-      ))
-    }
-    setApplying(false)
-  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -206,36 +188,31 @@ export default function BillingPage() {
           )}
         </div>
 
-        {/* 지원금 정산 현황 */}
+        {/* 지원금 신청 현황 */}
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">💰</span>
             <h2 className="font-bold text-sm">지원금 신청 현황</h2>
           </div>
-          <div className="flex flex-col gap-2 mb-4">
+          <p className="text-xs text-[#475569] mb-4 ml-7">더 워케이션이 자동으로 신청 · 관리해드립니다</p>
+          <div className="flex flex-col gap-2">
             {(subsidyStatus.length > 0 ? subsidyStatus : [
-              { region: '연결된 지원금 없음', amount: 0, status: '신청 예정' }
+              { region: '연결된 지원금 없음', name: '', amount: 0, status: '신청 예정' }
             ]).map(s => (
               <div key={s.region} className="bg-white rounded-xl px-4 py-3 flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">{s.region}</div>
-                  <div className="text-xs text-emerald-600 font-semibold">{s.amount.toLocaleString()}원</div>
+                  <div className="text-xs text-emerald-600 font-semibold">{s.amount > 0 ? `${s.amount.toLocaleString()}원` : '-'}</div>
                 </div>
                 <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${
                   s.status === '승인 완료' ? 'bg-emerald-500/20 text-emerald-600' :
-                  s.status === '신청 완료' ? 'bg-emerald-500/20 text-emerald-600' :
-                  s.status === '검토중'    ? 'bg-amber-500/20 text-amber-600'    :
+                  s.status === '신청 완료' ? 'bg-blue-500/10 text-blue-600'       :
+                  s.status === '검토중'    ? 'bg-amber-500/20 text-amber-600'     :
                                              'bg-[#F1F5F9] text-[#94A3B8]'
                 }`}>{s.status}</span>
               </div>
             ))}
           </div>
-          <button
-            onClick={handleBulkApply}
-            disabled={applying || pendingSubsidies.length === 0}
-            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors">
-            {applying ? '신청 중...' : pendingSubsidies.length === 0 ? '✅ 모두 신청 완료' : `전체 지원금 일괄 신청하기 (${pendingSubsidies.length}건) →`}
-          </button>
         </div>
       </div>
     </div>

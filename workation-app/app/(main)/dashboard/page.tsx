@@ -185,8 +185,8 @@ export default function DashboardPage() {
             </table>
           )}
           <div className="px-5 py-3 border-t border-[#E2E8F0]">
-            <Link href="/dashboard/billing" className="block w-full text-center py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors">
-              지원금 일괄 신청하기 →
+            <Link href="/dashboard/billing" className="block w-full text-center py-2.5 bg-white border border-emerald-500/30 hover:border-emerald-500 text-emerald-600 text-sm font-semibold rounded-xl transition-colors">
+              원빌링 정산에서 상세 현황 보기 →
             </Link>
           </div>
         </div>
