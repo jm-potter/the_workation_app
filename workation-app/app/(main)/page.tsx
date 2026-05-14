@@ -12,6 +12,7 @@ export default function LandingPage() {
           <Link href="/accommodations" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">숙소 찾기</Link>
           <Link href="/subsidy" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">지원금 안내</Link>
           <Link href="/partner" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">파트너 등록</Link>
+          <Link href="/faq" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">자주 묻는 질문</Link>
         </nav>
         <div className="flex gap-3">
           <Link href="/login">
