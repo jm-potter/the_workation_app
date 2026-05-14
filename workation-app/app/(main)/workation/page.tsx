@@ -22,71 +22,134 @@ export default function WorkationInfoPage() {
 
       <section className="max-w-5xl mx-auto px-6 py-20">
 
-        {/* 타이틀 */}
-        <div className="text-center mb-16">
-          <h1 className="text-3xl font-black mb-3">워케이션이란?</h1>
-          <p className="text-[#475569]">일과 휴가를 동시에, 새로운 근무 방식</p>
+        {/* 핵심 문구 */}
+        <div className="text-center mb-20">
+          <div className="inline-block bg-blue-50 border border-blue-200 text-blue-600 text-xs font-bold px-3 py-1 rounded-full mb-6">
+            워케이션이란?
+          </div>
+          <h1 className="text-3xl font-black leading-snug text-[#0F172A] mb-6">
+            Work + Vacation
+          </h1>
+          <p className="text-xl text-[#475569] max-w-2xl mx-auto leading-relaxed">
+            일하며 쉬는 것이 아니라,<br />
+            <span className="text-blue-500 font-bold">잘 쉬기에 더 잘 일하는 것입니다.</span>
+          </p>
         </div>
 
-        {/* Work + Vacation = Workation */}
-        <div className="flex items-center justify-center gap-4 mb-20">
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl px-8 py-6 text-center w-40">
-            <div className="text-4xl mb-2">💼</div>
-            <div className="font-black text-xl text-blue-600">Work</div>
-            <div className="text-xs text-[#475569] mt-1">업무</div>
-          </div>
-          <div className="text-3xl font-black text-[#94A3B8]">+</div>
-          <div className="bg-green-50 border border-green-200 rounded-2xl px-8 py-6 text-center w-40">
-            <div className="text-4xl mb-2">🌴</div>
-            <div className="font-black text-xl text-green-600">Vacation</div>
-            <div className="text-xs text-[#475569] mt-1">휴가</div>
-          </div>
-          <div className="text-3xl font-black text-[#94A3B8]">=</div>
-          <div className="bg-gradient-to-br from-blue-500 to-green-400 rounded-2xl px-8 py-6 text-center w-40 shadow-lg">
-            <div className="text-4xl mb-2">✨</div>
-            <div className="font-black text-xl text-white">Workation</div>
-            <div className="text-xs text-white/80 mt-1">워케이션</div>
-          </div>
+        {/* Work / Stay / Play */}
+        <div className="grid grid-cols-3 gap-6 mb-20">
+          {[
+            {
+              label: 'Work',
+              emoji: '💻',
+              color: 'bg-blue-50 border-blue-200',
+              labelColor: 'text-blue-600',
+              iconBg: 'bg-blue-100',
+              items: [
+                '5G 초고속 와이파이',
+                '허리 편한 의자',
+                '넉넉한 콘센트',
+                '공용 라운지',
+              ],
+            },
+            {
+              label: 'Stay',
+              emoji: '🛏️',
+              color: 'bg-purple-50 border-purple-200',
+              labelColor: 'text-purple-600',
+              iconBg: 'bg-purple-100',
+              items: [
+                '호텔급 침구류',
+                '채광 좋은 객실',
+                '독립된 프라이빗 공간',
+              ],
+            },
+            {
+              label: 'Play',
+              emoji: '🌊',
+              color: 'bg-green-50 border-green-200',
+              labelColor: 'text-green-600',
+              iconBg: 'bg-green-100',
+              items: [
+                '도보 5분 거리의 명소',
+                '전용 액티비티 할인권',
+              ],
+            },
+          ].map((card) => (
+            <div key={card.label} className={`border rounded-2xl p-6 ${card.color}`}>
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-4 ${card.iconBg}`}>
+                {card.emoji}
+              </div>
+              <div className={`text-xl font-black mb-4 ${card.labelColor}`}>{card.label}</div>
+              <ul className="space-y-2">
+                {card.items.map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm text-[#475569]">
+                    <span className="text-[#94A3B8]">·</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        {/* 문제 → 해결 */}
-        <div className="mb-20">
-          <h2 className="text-xl font-bold text-center mb-10">왜 도입할까요?</h2>
-          <div className="space-y-4">
+        {/* 하루 루틴 타임라인 */}
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-10 mb-16">
+          <h2 className="text-xl font-black text-center mb-10">하루 루틴 시나리오</h2>
+          <div className="space-y-0">
             {[
-              { problem: '😓 반복되는 사무실, 번아웃 증가', solution: '환경 전환으로 집중력·창의성 회복' },
-              { problem: '🏆 MZ세대 채용 경쟁 심화', solution: '워케이션 복지로 입사 선호 기업 등극' },
-              { problem: '💸 직원 복지 예산 효율화 필요', solution: '여행+업무 동시에, 비용 대비 효과 최대' },
-            ].map((item) => (
-              <div key={item.problem} className="flex items-center gap-4">
-                <div className="flex-1 bg-white border border-[#E2E8F0] rounded-xl px-5 py-4 text-sm text-[#475569]">
-                  {item.problem}
+              {
+                time: '09:00 – 12:00',
+                emoji: '🌊',
+                title: '오전 딥워크',
+                desc: '파도 소리 ASMR과 함께 집중 업무',
+                color: 'border-blue-300 bg-blue-50',
+                dot: 'bg-blue-400',
+              },
+              {
+                time: '12:00 – 14:00',
+                emoji: '🍜',
+                title: '여유로운 점심',
+                desc: '줄 서서 먹는 로컬 맛집에서 느긋한 식사',
+                color: 'border-orange-300 bg-orange-50',
+                dot: 'bg-orange-400',
+              },
+              {
+                time: '14:00 – 17:00',
+                emoji: '☕',
+                title: '테라스 오피스',
+                desc: '팀 화상 회의 및 업무 마무리',
+                color: 'border-purple-300 bg-purple-50',
+                dot: 'bg-purple-400',
+              },
+              {
+                time: '17:00 ~',
+                emoji: '🏄',
+                title: '일몰 액티비티',
+                desc: '일몰을 보며 즐기는 요가 또는 서핑',
+                color: 'border-green-300 bg-green-50',
+                dot: 'bg-green-400',
+              },
+            ].map((item, i, arr) => (
+              <div key={item.time} className="flex gap-5">
+                {/* 타임라인 선 */}
+                <div className="flex flex-col items-center">
+                  <div className={`w-4 h-4 rounded-full shrink-0 mt-5 ${item.dot}`} />
+                  {i < arr.length - 1 && <div className="w-px flex-1 bg-[#E2E8F0] my-1" />}
                 </div>
-                <div className="text-2xl text-blue-400 font-black shrink-0">→</div>
-                <div className="flex-1 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 text-sm text-blue-700 font-medium">
-                  ✅ {item.solution}
+                {/* 카드 */}
+                <div className={`flex-1 border rounded-xl p-4 mb-3 ${item.color}`}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{item.emoji}</span>
+                    <div>
+                      <div className="text-xs text-[#94A3B8] font-medium">{item.time}</div>
+                      <div className="font-bold text-sm text-[#0F172A]">{item.title}</div>
+                      <div className="text-xs text-[#475569] mt-0.5">{item.desc}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* 수치 */}
-        <div className="bg-gradient-to-r from-blue-500 to-blue-400 rounded-2xl p-10 mb-20">
-          <h2 className="text-xl font-bold text-white text-center mb-8">이미 검증된 효과</h2>
-          <div className="grid grid-cols-3 gap-6 text-center">
-            {[
-              { num: '23%', label: '업무 집중도 향상' },
-              { num: '40%', label: '직원 만족도 상승' },
-              { num: '15%', label: '이직률 감소' },
-            ].map((item) => (
-              <div key={item.label}>
-                <div className="text-5xl font-black text-white mb-2">{item.num}</div>
-                <div className="text-sm text-white/80">{item.label}</div>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-xs text-white/60 mt-6">* 국내 워케이션 도입 기업 평균</p>
         </div>
 
         {/* 더워케이션의 장점 */}
