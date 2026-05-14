@@ -1,6 +1,14 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+
+const AMENITY_LABELS: Record<string, string> = {
+  wifi: '고속 Wi-Fi', monitor: '모니터', whiteboard: '화이트보드',
+  parking: '주차장', breakfast: '조식 제공', printer: '프린터',
+  meeting: '회의실', laundry: '세탁기', ac: '에어컨',
+  lounge: '휴게공간', kitchen: '공용 주방', gym: '피트니스',
+}
 
 const AMENITY_OPTIONS = [
   { id: 'wifi',       label: '고속 Wi-Fi',   icon: '📶' },
@@ -33,12 +41,34 @@ export default function NewAccommodationPage() {
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl]   = useState('')
   const [done, setDone]           = useState(false)
+  const [saving, setSaving]       = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   function toggleAmenity(id: string) {
     setAmenities(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])
   }
   function toggleTag(t: string) {
     setTags(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])
+  }
+
+  async function handleRegister() {
+    setSaving(true)
+    setSaveError('')
+    const { error } = await supabase.from('accommodations').insert({
+      name,
+      region,
+      address:         address      || null,
+      price_per_night: Number(price),
+      capacity:        Number(capacity),
+      amenities:       amenities.map(id => AMENITY_LABELS[id] ?? id),
+      tags,
+      description:     description  || null,
+      image_url:       imageUrl      || null,
+      rating:          0,
+    })
+    setSaving(false)
+    if (error) { setSaveError(error.message); return }
+    setDone(true)
   }
 
   if (done) return (
@@ -250,8 +280,9 @@ export default function NewAccommodationPage() {
               <button onClick={() => setStep(1)} className="flex-1 py-3 bg-white border border-[#E2E8F0] hover:border-[#94A3B8] text-[#475569] font-semibold rounded-xl transition-colors">
                 ← 이전
               </button>
-              <button onClick={() => setDone(true)} className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors">
-                ✅ 등록 신청
+              {saveError && <p className="text-xs text-red-500 text-center">{saveError}</p>}
+              <button onClick={handleRegister} disabled={saving} className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-40 text-white font-semibold rounded-xl transition-colors">
+                {saving ? '등록 중...' : '✅ 등록 신청'}
               </button>
             </div>
           </div>

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
+import { supabase } from '@/lib/supabase'
 
 const REGIONS = ['강원도', '제주도', '전라남도', '전라북도', '경상남도', '경상북도', '충청남도', '충청북도', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '울산광역시', '세종특별자치시']
 
@@ -19,6 +20,27 @@ export default function GovPostPage() {
   const [contact, setContact]       = useState('')
   const [apiUrl, setApiUrl]         = useState('')
   const [submitted, setSubmitted]   = useState(false)
+  const [saving, setSaving]         = useState(false)
+  const [error, setError]           = useState('')
+
+  async function handleSubmit() {
+    if (!name || !selectedRegion || !amount) return
+    setSaving(true)
+    setError('')
+    const { error: err } = await supabase.from('subsidies').insert({
+      name,
+      region: selectedRegion,
+      amount_per_person: Number(amount),
+      unit,
+      min_nights: Number(minNights),
+      conditions: conditions || null,
+      deadline:   endDate   || null,
+      provider:   provider  ? `${provider}${contact ? ' · ' + contact : ''}` : (contact || null),
+    })
+    setSaving(false)
+    if (err) { setError(err.message); return }
+    setSubmitted(true)
+  }
 
   if (submitted) return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -192,9 +214,10 @@ export default function GovPostPage() {
               💡 <strong className="text-blue-600">자동 반영 안내:</strong> 공고 등록 즉시 해당 지역 숙소 예약 시 지원금이 자동으로 표시되고 선공제 계산에 반영됩니다.
             </div>
 
-            <button onClick={() => setSubmitted(true)}
-              className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors">
-              공고 등록하기 →
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <button onClick={handleSubmit} disabled={saving || !name || !selectedRegion || !amount}
+              className="w-full py-3 bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white font-semibold rounded-xl transition-colors">
+              {saving ? '등록 중...' : '공고 등록하기 →'}
             </button>
           </div>
         )}
@@ -246,9 +269,9 @@ export default function GovPostPage() {
               </div>
             </div>
 
-            <button onClick={() => setSubmitted(true)}
-              className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors">
-              API 연동 신청하기 →
+            <button onClick={handleSubmit} disabled={saving}
+              className="w-full py-3 bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white font-semibold rounded-xl transition-colors">
+              {saving ? '신청 중...' : 'API 연동 신청하기 →'}
             </button>
           </div>
         )}
