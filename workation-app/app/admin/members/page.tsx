@@ -102,7 +102,7 @@ export default function AdminMembersPage() {
                     <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${
                       m.status === 'active'
                         ? 'bg-emerald-500/20 text-emerald-400'
-                        : 'bg-[#334155] text-[#94A3B8]'
+                        : 'bg-[#F1F5F9] text-[#94A3B8]'
                     }`}>
                       {m.status === 'active' ? '활성' : '비활성'}
                     </span>

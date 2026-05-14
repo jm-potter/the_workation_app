@@ -94,7 +94,7 @@ export default function ReportPage() {
                     <div className="flex-1 text-center">
                       <div className="text-xs text-[#94A3B8] mb-1">이전</div>
                       <div className="h-20 bg-white rounded-lg flex items-end overflow-hidden">
-                        <div className="w-full bg-[#334155] rounded-lg" style={{ height: `${p.before}%` }} />
+                        <div className="w-full bg-[#CBD5E1] rounded-lg" style={{ height: `${p.before}%` }} />
                       </div>
                       <div className="text-sm font-bold mt-1 text-[#475569]">{p.before}{p.unit}</div>
                     </div>

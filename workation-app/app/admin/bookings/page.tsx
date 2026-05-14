@@ -108,7 +108,7 @@ export default function AdminBookingsPage() {
                         </>
                       )}
                       {b.status === 'confirmed' && (
-                        <button className="text-xs px-2 py-0.5 bg-[#F1F5F9] text-[#475569] rounded-md hover:bg-[#334155]">상세</button>
+                        <button className="text-xs px-2 py-0.5 bg-[#F1F5F9] text-[#475569] rounded-md hover:bg-[#E2E8F0]">상세</button>
                       )}
                     </div>
                   </td>

@@ -21,7 +21,7 @@ const statusLabel: Record<string, string> = { active: '운영중', pending: '검
 const statusColor: Record<string, string> = {
   active:   'bg-emerald-500/20 text-emerald-400',
   pending:  'bg-amber-500/20 text-amber-400',
-  inactive: 'bg-[#334155] text-[#94A3B8]',
+  inactive: 'bg-[#F1F5F9] text-[#94A3B8]',
 }
 
 export default function AdminAccommodationsPage() {
