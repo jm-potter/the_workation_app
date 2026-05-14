@@ -54,6 +54,7 @@ export default function LoginPage() {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           />
           {error && <p className="text-sm text-red-400 text-center">{error}</p>}
           <Button size="lg" className="w-full mt-2" onClick={handleLogin}>
