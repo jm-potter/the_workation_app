@@ -84,7 +84,7 @@ export default function BillingPage() {
   const nextMonthTotal = Math.round(totalFinal * 1.15)
   const nextSubsidy    = Math.round(totalSubsidy * 1.1)
   const budgetTotal    = 5000000
-  const budgetUsed     = totalFinal || 1850000
+  const budgetUsed     = totalFinal
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
