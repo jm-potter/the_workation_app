@@ -89,7 +89,7 @@ export default function AdminPage() {
               <span className="font-semibold text-sm">검토 대기 숙소</span>
               <Link href="/admin/accommodations" className="text-xs text-blue-400 hover:text-blue-600">전체 →</Link>
             </div>
-            <div className="flex flex-col divide-y divide-[#334155]">
+            <div className="flex flex-col divide-y divide-[#E2E8F0]">
               {PENDING_ACCOMMODATIONS.map((a) => (
                 <div key={a.name} className="px-5 py-4 hover:bg-[#F1F5F9]/50 transition-colors cursor-pointer">
                   <div className="font-medium text-sm mb-1">{a.name}</div>

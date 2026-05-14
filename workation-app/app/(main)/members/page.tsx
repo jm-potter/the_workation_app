@@ -54,7 +54,7 @@ export default function MembersPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <Header role="hr" userName="홍길동 팀장" />
+      <Header role="hr" />
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
@@ -147,7 +147,7 @@ export default function MembersPage() {
                     <th className="py-2 font-medium" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1E293B]">
+                <tbody className="divide-y divide-[#E2E8F0]">
                   {filtered.map(m => (
                     <tr key={m.id} className="hover:bg-[#F1F5F9]/50 transition-colors">
                       <td className="py-3 pr-4 font-medium">{m.name}</td>

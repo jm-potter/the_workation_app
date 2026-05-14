@@ -26,7 +26,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <Header role="hr" userName="홍길동 팀장" />
+      <Header role="hr" />
 
       <div className="max-w-2xl mx-auto px-6 py-8">
         <div className="mb-8">
