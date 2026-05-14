@@ -25,6 +25,13 @@ type SubsidyInfo = {
 
 const LOCATIONS = ['전체', '강원도', '제주도', '전라남도', '전라북도']
 
+const LOCATION_ALIASES: Record<string, string[]> = {
+  '강원도': ['강원도', '강원특별자치도'],
+  '제주도': ['제주도', '제주특별자치도'],
+  '전라남도': ['전라남도'],
+  '전라북도': ['전라북도', '전북특별자치도'],
+}
+
 export default function AccommodationsPage() {
   const [accommodations, setAccommodations] = useState<Accommodation[]>([])
   const [subsidies, setSubsidies]           = useState<SubsidyInfo[]>([])
@@ -55,9 +62,11 @@ export default function AccommodationsPage() {
       .reduce((sum, s) => sum + s.amount_per_person, 0)
   }
 
-  const filtered = accommodations.filter(a =>
-    location === '전체' || a.region.includes(location)
-  )
+  const filtered = accommodations.filter(a => {
+    if (location === '전체') return true
+    const aliases = LOCATION_ALIASES[location] ?? [location]
+    return aliases.some(alias => a.region.includes(alias))
+  })
 
   const aiRecommended = accommodations
     .filter(a => a.tags?.includes(aiStyle))
