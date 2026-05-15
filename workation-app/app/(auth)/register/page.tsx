@@ -38,7 +38,8 @@ export default function RegisterPage() {
       if (authError) {
         setError(authError.message)
       } else if (data.user) {
-        router.push('/dashboard')
+        if (role === 'emp') router.push('/accommodations')
+        else router.push('/dashboard')
       } else {
         setError('가입 처리 중 오류가 발생했어요. 다시 시도해주세요.')
       }
