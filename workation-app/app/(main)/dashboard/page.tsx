@@ -17,6 +17,16 @@ const PERFORMANCE = [
 
 const statusLabel: Record<string, string> = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
 
+function normalizeRegion(r: string) {
+  return r.replace('특별자치도', '도').replace('특별자치시', '시').replace('특별시', '시').replace('광역시', '시').split(' ')[0]
+}
+function regionMatch(accommodationRegion: string, subsidyRegion: string) {
+  if (!accommodationRegion || !subsidyRegion) return false
+  const a = normalizeRegion(accommodationRegion)
+  const s = normalizeRegion(subsidyRegion)
+  return a.includes(s) || s.includes(a)
+}
+
 type Booking = {
   id: string
   user_id: string
@@ -73,7 +83,7 @@ export default function DashboardPage() {
     const region = b.accommodations?.region ?? ''
     if (!region) return []
     return subsidies
-      .filter(s => region.includes(s.region) || s.region.includes(region.split(' ')[0]))
+      .filter(s => regionMatch(region, s.region))
       .map(s => ({
         userId:    b.user_id,
         userName:  b.users?.name ?? b.users?.email ?? '알 수 없음',

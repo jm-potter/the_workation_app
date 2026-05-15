@@ -23,11 +23,17 @@ function nightsBetween(start: string, end: string) {
   return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
 }
 
+function normalizeRegion(r: string) {
+  return r.replace('특별자치도', '도').replace('특별자치시', '시').replace('특별시', '시').replace('광역시', '시').split(' ')[0]
+}
+
 function matchSubsidy(region: string, subsidies: SubsidyRow[]) {
-  const r = region ?? ''
-  if (!r) return 0
-  return subsidies.find(s => r.includes(s.region) || s.region.includes(r.split(' ')[0]))
-    ?.amount_per_person ?? 0
+  if (!region) return 0
+  const a = normalizeRegion(region)
+  return subsidies.find(s => {
+    const b = normalizeRegion(s.region)
+    return a.includes(b) || b.includes(a)
+  })?.amount_per_person ?? 0
 }
 
 
@@ -75,7 +81,7 @@ export default function BillingPage() {
     .map(s => {
       const regionBookings = items.filter(b => {
         const r = b.accommodations?.region ?? ''
-        return r !== '' && (r.includes(s.region) || s.region.includes(r.split(' ')[0]))
+        return r !== '' && (normalizeRegion(r).includes(normalizeRegion(s.region)) || normalizeRegion(s.region).includes(normalizeRegion(r)))
       })
       const totalGuests = regionBookings.reduce((sum, b) => sum + b.guests, 0)
       return totalGuests > 0 ? { region: s.region, name: s.name, amount: s.amount_per_person * totalGuests, status: s.status ?? '신청 예정' } : null
