@@ -40,8 +40,8 @@ export default function DocumentsAdminPage() {
 
       if (!docsData || docsData.length === 0) { setLoading(false); return }
 
-      const bookingIds = [...new Set(docsData.map(d => d.booking_id).filter(Boolean))]
-      const userIds    = [...new Set(docsData.map(d => d.user_id).filter(Boolean))]
+      const bookingIds = Array.from(new Set(docsData.map(d => d.booking_id).filter(Boolean)))
+      const userIds    = Array.from(new Set(docsData.map(d => d.user_id).filter(Boolean)))
 
       const [{ data: bookingsData }, { data: usersData }] = await Promise.all([
         supabase
