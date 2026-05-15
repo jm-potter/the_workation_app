@@ -36,8 +36,9 @@ type Booking = {
   total_price: number
   status: string
   accommodations: { name: string; region: string } | null
-  users: { name: string; email: string } | null
 }
+
+type UserRow = { id: string; name: string; email: string }
 
 type SubsidyRow = { region: string; name: string; amount_per_person: number }
 
@@ -45,6 +46,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const [bookings,  setBookings]  = useState<Booking[]>([])
   const [subsidies, setSubsidies] = useState<SubsidyRow[]>([])
+  const [userMap,   setUserMap]   = useState<Record<string, string>>({})
   const [loading,   setLoading]   = useState(true)
 
   useEffect(() => {
@@ -57,15 +59,23 @@ export default function DashboardPage() {
     Promise.all([
       supabase
         .from('bookings')
-        .select('*, accommodations(name, region), users(name, email)')
+        .select('*, accommodations(name, region)')
         .order('id', { ascending: false })
         .limit(20),
       supabase
         .from('subsidies')
         .select('region, name, amount_per_person'),
-    ]).then(([{ data: bData }, { data: sData }]) => {
+      supabase
+        .from('users')
+        .select('id, name, email'),
+    ]).then(([{ data: bData }, { data: sData }, { data: uData }]) => {
       if (bData) setBookings(bData as any)
       if (sData) setSubsidies(sData)
+      if (uData) {
+        const map: Record<string, string> = {}
+        uData.forEach((u: UserRow) => { map[u.id] = u.name ?? u.email ?? '알 수 없음' })
+        setUserMap(map)
+      }
       setLoading(false)
     })
   }, [])
@@ -86,7 +96,7 @@ export default function DashboardPage() {
       .filter(s => regionMatch(region, s.region))
       .map(s => ({
         userId:    b.user_id,
-        userName:  b.users?.name ?? b.users?.email ?? '알 수 없음',
+        userName:  userMap[b.user_id] ?? '알 수 없음',
         subsidyName: s.name,
         region:    b.accommodations?.region ?? '',
         date:      b.start_date,
