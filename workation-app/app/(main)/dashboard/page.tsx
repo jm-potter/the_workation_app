@@ -300,10 +300,10 @@ export default function DashboardPage() {
         {/* 퀵 메뉴 */}
         <div className="grid grid-cols-4 gap-4">
           {[
-            { href: '/members',             icon: '👥', label: '임직원 초대·관리' },
-            { href: '/booking/manage',      icon: '📅', label: '예약 변경·취소' },
-            { href: '/dashboard/billing',   icon: '🧾', label: '원빌링 정산' },
-            { href: '/dashboard/documents', icon: '📂', label: '제출 서류 관리' },
+            { href: '/members',           icon: '👥', label: '임직원 초대·관리' },
+            { href: '/booking/manage',    icon: '📅', label: '예약 변경·취소' },
+            { href: '/dashboard/billing', icon: '🧾', label: '원빌링 정산' },
+            { href: '/settings',          icon: '⚙️', label: '회사 설정' },
           ].map(q => (
             <Link key={q.href} href={q.href}
               className="flex items-center gap-3 bg-white border border-[#E2E8F0] rounded-xl p-4 hover:border-blue-500/50 transition-colors">

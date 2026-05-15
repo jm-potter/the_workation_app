@@ -88,8 +88,8 @@ export default function BookingConfirmPage() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <Link href="/dashboard">
-            <Button size="lg" className="w-full">예약 현황 확인하기</Button>
+          <Link href="/my">
+            <Button size="lg" className="w-full">마이페이지에서 확인하기</Button>
           </Link>
           <Link href="/accommodations">
             <Button variant="secondary" size="lg" className="w-full">숙소 더 둘러보기</Button>
