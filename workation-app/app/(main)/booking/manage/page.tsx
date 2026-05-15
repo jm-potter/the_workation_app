@@ -43,6 +43,7 @@ export default function BookingManagePage() {
   const [newGuests,   setNewGuests]   = useState(1)
   const [done, setDone]               = useState<'changed' | 'cancelled' | null>(null)
   const [saving, setSaving]           = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   useEffect(() => {
     supabase
@@ -97,6 +98,17 @@ export default function BookingManagePage() {
     setEditMode(false)
   }
 
+  async function deleteBooking() {
+    if (!selected) return
+    setSaving(true)
+    const { error } = await supabase.from('bookings').delete().eq('id', selected)
+    setSaving(false)
+    if (error) { alert('삭제 실패: ' + error.message); return }
+    setBookings(prev => prev.filter(b => b.id !== selected))
+    setSelected(null)
+    setConfirmDelete(false)
+  }
+
   async function applyCancel() {
     if (!selected) return
     setSaving(true)
@@ -142,7 +154,7 @@ export default function BookingManagePage() {
               ) : bookings.map(b => (
                 <button
                   key={b.id}
-                  onClick={() => { setSelected(b.id); setEditMode(false); setConfirmCancel(false); setDone(null) }}
+                  onClick={() => { setSelected(b.id); setEditMode(false); setConfirmCancel(false); setConfirmDelete(false); setDone(null) }}
                   className={`w-full text-left bg-white border rounded-2xl p-5 transition-all ${
                     selected === b.id ? 'border-blue-500/60' : 'border-[#E2E8F0] hover:border-[#94A3B8]'
                   } ${b.status === 'cancelled' ? 'opacity-50' : ''}`}
@@ -188,6 +200,34 @@ export default function BookingManagePage() {
                   {done === 'cancelled' && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-sm text-red-500">
                       🚫 예약이 취소됐어요
+                    </div>
+                  )}
+
+                  {booking.status === 'cancelled' && (
+                    <div className="flex flex-col gap-3">
+                      <div className="bg-[#F1F5F9] rounded-xl p-3 text-xs text-[#94A3B8] text-center">
+                        취소된 예약입니다
+                      </div>
+                      {confirmDelete ? (
+                        <>
+                          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-xs text-[#475569]">
+                            <div className="font-semibold text-red-500 mb-1">예약 내역을 삭제하시겠어요?</div>
+                            <div className="text-[#94A3B8]">삭제하면 복구할 수 없습니다</div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="secondary" className="flex-1 text-sm" onClick={() => setConfirmDelete(false)}>돌아가기</Button>
+                            <button onClick={deleteBooking} disabled={saving}
+                              className="flex-1 text-sm py-2.5 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white font-semibold transition-colors">
+                              {saving ? '삭제 중...' : '삭제 확정'}
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <button onClick={() => setConfirmDelete(true)}
+                          className="w-full text-sm py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors font-medium">
+                          🗑️ 예약 내역 삭제
+                        </button>
+                      )}
                     </div>
                   )}
 
