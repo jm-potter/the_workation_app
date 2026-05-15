@@ -23,10 +23,32 @@ type Doc = {
   status: string
 }
 
-const BOOKING_STATUS: Record<string, { label: string; color: string }> = {
-  confirmed: { label: '예약 확정', color: 'bg-emerald-500/10 text-emerald-600' },
-  pending:   { label: '대기중',   color: 'bg-amber-500/10 text-amber-600'   },
-  cancelled: { label: '취소됨',   color: 'bg-[#F1F5F9] text-[#94A3B8]'     },
+const STATUS_STYLE: Record<string, { label: string; bg: string; text: string }> = {
+  confirmed: { label: '예약 확정', bg: 'bg-emerald-500',    text: 'text-white' },
+  pending:   { label: '대기중',   bg: 'bg-amber-400',      text: 'text-white' },
+  cancelled: { label: '취소됨',   bg: 'bg-[#CBD5E1]',      text: 'text-white' },
+}
+
+const REGION_COLORS: Record<string, string> = {
+  '강원': 'from-blue-400 to-cyan-400',
+  '제주': 'from-emerald-400 to-teal-400',
+  '전라': 'from-amber-400 to-orange-400',
+  '경상': 'from-purple-400 to-violet-400',
+  '충청': 'from-pink-400 to-rose-400',
+}
+
+function getRegionColor(region: string) {
+  const match = Object.keys(REGION_COLORS).find(k => region?.includes(k))
+  return match ? REGION_COLORS[match] : 'from-blue-400 to-indigo-400'
+}
+
+function formatDate(d: string) {
+  const date = new Date(d)
+  return `${date.getMonth() + 1}월 ${date.getDate()}일`
+}
+
+function nights(start: string, end: string) {
+  return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
 }
 
 export default function MyPage() {
@@ -69,69 +91,73 @@ export default function MyPage() {
   async function handleUpload(bookingId: string, file: File) {
     if (!userId) return
     setUploading(bookingId)
-
     const path = `${userId}/${bookingId}/work_proof_${Date.now()}_${file.name}`
-    const { error: uploadError } = await supabase.storage
-      .from('documents')
-      .upload(path, file, { upsert: true })
-
-    if (uploadError) {
-      alert('업로드 실패: ' + uploadError.message)
-      setUploading(null)
-      return
-    }
-
+    const { error: uploadError } = await supabase.storage.from('documents').upload(path, file, { upsert: true })
+    if (uploadError) { alert('업로드 실패: ' + uploadError.message); setUploading(null); return }
     const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(path)
-
     const { data: inserted } = await supabase
       .from('documents')
       .insert({ booking_id: bookingId, user_id: userId, type: 'work_proof', file_url: publicUrl, file_name: file.name })
-      .select()
-      .single()
-
+      .select().single()
     if (inserted) setDocs(prev => [...prev, inserted])
     setUploading(null)
   }
 
-  const confirmedCount  = bookings.filter(b => b.status === 'confirmed').length
-  const docSubmitted    = bookings.filter(b =>
-    b.status === 'confirmed' && docs.some(d => d.booking_id === String(b.id))
-  ).length
+  const confirmedCount = bookings.filter(b => b.status === 'confirmed').length
+  const totalNights    = bookings.filter(b => b.status === 'confirmed').reduce((s, b) => s + nights(b.start_date, b.end_date), 0)
+  const docCount       = docs.length
+  const regions        = [...new Set(bookings.filter(b => b.status === 'confirmed').map(b => b.accommodations?.region?.split(' ')[0]).filter(Boolean))]
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Header />
-      <div className="max-w-3xl mx-auto px-6 py-8">
 
-        {/* 프로필 카드 */}
-        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 mb-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-xl font-bold text-blue-500">
-            {userName ? userName[0] : '?'}
+      {/* 히어로 */}
+      <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          <div className="flex items-center gap-5 mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-black">
+              {userName ? userName[0] : '?'}
+            </div>
+            <div>
+              <div className="text-xl font-black">{userName || '이름 없음'}</div>
+              <div className="text-blue-200 text-sm mt-0.5">{email}</div>
+            </div>
           </div>
-          <div>
-            <div className="font-bold text-lg">{userName || '이름 없음'}</div>
-            <div className="text-xs text-[#94A3B8]">{email}</div>
-          </div>
-          <div className="ml-auto flex gap-3 text-center">
-            <div>
-              <div className="text-xl font-black text-blue-500">{bookings.length}</div>
-              <div className="text-xs text-[#94A3B8]">전체 예약</div>
-            </div>
-            <div className="w-px bg-[#E2E8F0]" />
-            <div>
-              <div className="text-xl font-black text-emerald-500">{confirmedCount}</div>
-              <div className="text-xs text-[#94A3B8]">확정</div>
-            </div>
-            <div className="w-px bg-[#E2E8F0]" />
-            <div>
-              <div className="text-xl font-black text-purple-500">{docSubmitted}/{confirmedCount}</div>
-              <div className="text-xs text-[#94A3B8]">서류 제출</div>
-            </div>
+
+          {/* 스탯 */}
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { icon: '🏨', value: confirmedCount,      label: '완료한 워케이션' },
+              { icon: '🌙', value: totalNights,         label: '총 워케이션 박수' },
+              { icon: '📍', value: regions.length,      label: '방문한 지역 수'   },
+              { icon: '📄', value: docCount,            label: '제출한 서류'      },
+            ].map(s => (
+              <div key={s.label} className="bg-white/10 backdrop-blur rounded-2xl p-4 text-center">
+                <div className="text-2xl mb-1">{s.icon}</div>
+                <div className="text-2xl font-black">{s.value}</div>
+                <div className="text-xs text-blue-200 mt-0.5">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* 예약 + 서류 목록 */}
-        <h2 className="font-bold text-sm text-[#0F172A] mb-3">내 예약</h2>
+      <div className="max-w-3xl mx-auto px-6 py-8">
+
+        {/* 방문 지역 태그 */}
+        {regions.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-8">
+            {regions.map(r => (
+              <span key={r} className="text-xs font-medium bg-white border border-[#E2E8F0] text-[#475569] px-3 py-1.5 rounded-full shadow-sm">
+                📍 {r}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* 예약 목록 */}
+        <h2 className="font-black text-lg mb-4">내 워케이션 기록</h2>
 
         {loading ? (
           <div className="flex items-center justify-center py-20 text-[#94A3B8] text-sm">
@@ -139,55 +165,83 @@ export default function MyPage() {
             불러오는 중...
           </div>
         ) : bookings.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-4xl mb-3">🏨</div>
-            <p className="text-[#475569] font-medium mb-1">예약 내역이 없어요</p>
-            <Link href="/accommodations" className="text-xs text-blue-500 hover:underline">숙소 예약하러 가기 →</Link>
+          <div className="text-center py-20 bg-white rounded-2xl border border-[#E2E8F0]">
+            <div className="text-5xl mb-4">✈️</div>
+            <p className="font-bold text-[#0F172A] mb-1">첫 워케이션을 떠나볼까요?</p>
+            <p className="text-sm text-[#94A3B8] mb-5">전국 제휴 숙소에서 일과 휴식을 동시에</p>
+            <Link href="/accommodations"
+              className="inline-block bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
+              숙소 둘러보기 →
+            </Link>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {bookings.map(b => {
-              const sid     = String(b.id)
-              const bStatus = BOOKING_STATUS[b.status] ?? { label: b.status, color: 'bg-[#F1F5F9] text-[#94A3B8]' }
-              const myDocs  = docs.filter(d => d.booking_id === sid)
-              const isOpen  = openId === sid
+              const sid        = String(b.id)
+              const st         = STATUS_STYLE[b.status] ?? STATUS_STYLE.cancelled
+              const region     = b.accommodations?.region ?? ''
+              const gradColor  = getRegionColor(region)
+              const myDocs     = docs.filter(d => d.booking_id === sid)
+              const isOpen     = openId === sid
               const isUploading = uploading === sid
+              const n          = nights(b.start_date, b.end_date)
+              const docConfirmed = myDocs.some(d => d.status === '확인 완료')
 
               return (
-                <div key={b.id} className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden">
-                  {/* 예약 요약 행 */}
-                  <div className="flex items-center gap-4 px-5 py-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">{b.accommodations?.name ?? '-'}</div>
-                      <div className="text-xs text-[#94A3B8] mt-0.5">
-                        📍 {b.accommodations?.region} · {b.start_date} ~ {b.end_date} · {b.guests}명
-                      </div>
+                <div key={b.id} className="bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm hover:shadow-md transition-shadow">
+                  {/* 컬러 배너 */}
+                  <div className={`bg-gradient-to-r ${gradColor} px-5 py-4 flex items-center justify-between`}>
+                    <div>
+                      <div className="text-white font-black text-lg leading-tight">{b.accommodations?.name ?? '-'}</div>
+                      <div className="text-white/80 text-xs mt-0.5">📍 {region || '-'}</div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="text-sm font-bold text-blue-500">{b.total_price?.toLocaleString()}원</div>
-                      <span className={`text-xs px-2 py-1 rounded-lg font-medium ${bStatus.color}`}>{bStatus.label}</span>
-                      {b.status === 'confirmed' && (
-                        <button
-                          onClick={() => setOpenId(isOpen ? null : sid)}
-                          className="text-xs text-[#94A3B8] hover:text-blue-500 transition-colors">
-                          {isOpen ? '닫기 ▲' : '서류 ▼'}
-                        </button>
-                      )}
-                    </div>
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${st.bg} ${st.text} bg-white/20`}>
+                      {st.label}
+                    </span>
                   </div>
 
-                  {/* 서류 제출 영역 (확정 예약만, 열렸을 때만) */}
+                  {/* 상세 정보 */}
+                  <div className="px-5 py-4 flex items-center justify-between">
+                    <div className="flex gap-5">
+                      <div>
+                        <div className="text-xs text-[#94A3B8] mb-0.5">일정</div>
+                        <div className="text-sm font-semibold">{formatDate(b.start_date)} – {formatDate(b.end_date)}</div>
+                        <div className="text-xs text-[#94A3B8] mt-0.5">{n}박 · {b.guests}명</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#94A3B8] mb-0.5">결제 금액</div>
+                        <div className="text-sm font-semibold text-blue-500">{b.total_price?.toLocaleString()}원</div>
+                        <div className="text-xs text-[#94A3B8] mt-0.5">회사 예산 차감</div>
+                      </div>
+                    </div>
+
+                    {b.status === 'confirmed' && (
+                      <button onClick={() => setOpenId(isOpen ? null : sid)}
+                        className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-colors ${
+                          myDocs.length > 0
+                            ? 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20'
+                            : 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20'
+                        }`}>
+                        {myDocs.length > 0 ? (docConfirmed ? '✅ 확인 완료' : `📄 ${myDocs.length}건 제출됨`) : '📎 서류 제출'}
+                        <span>{isOpen ? '▲' : '▼'}</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* 서류 제출 패널 */}
                   {b.status === 'confirmed' && isOpen && (
-                    <div className="border-t border-[#F1F5F9] px-5 py-4 bg-[#F8FAFC]">
-                      <div className="text-xs font-semibold text-[#475569] mb-3">직무 증빙 자료</div>
+                    <div className="border-t border-[#F1F5F9] bg-[#F8FAFC] px-5 py-4">
+                      <div className="text-xs font-bold text-[#475569] mb-3">직무 증빙 자료</div>
 
                       {myDocs.length > 0 && (
-                        <div className="flex flex-col gap-1.5 mb-3">
+                        <div className="flex flex-col gap-2 mb-3">
                           {myDocs.map(doc => (
                             <a key={doc.id} href={doc.file_url} target="_blank" rel="noreferrer"
-                              className="flex items-center justify-between bg-white border border-[#E2E8F0] rounded-lg px-3 py-2 hover:border-blue-500/50 transition-colors">
-                              <span className="text-xs text-[#475569] truncate max-w-[220px]">📄 {doc.file_name}</span>
-                              <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                              className="flex items-center justify-between bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 hover:border-blue-400 transition-colors group">
+                              <span className="text-xs text-[#475569] group-hover:text-blue-500 truncate max-w-[240px]">
+                                📄 {doc.file_name}
+                              </span>
+                              <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-full font-bold ${
                                 doc.status === '확인 완료'
                                   ? 'bg-emerald-500/10 text-emerald-600'
                                   : 'bg-amber-500/10 text-amber-600'
@@ -197,14 +251,14 @@ export default function MyPage() {
                         </div>
                       )}
 
-                      <label className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors ${
+                      <label className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl text-xs font-semibold border-2 border-dashed cursor-pointer transition-colors ${
                         isUploading
-                          ? 'bg-[#F1F5F9] text-[#94A3B8] cursor-not-allowed'
-                          : 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20'
+                          ? 'border-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
+                          : 'border-blue-300 text-blue-500 hover:bg-blue-500/5 hover:border-blue-400'
                       }`}>
                         {isUploading
                           ? <><div className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />업로드 중...</>
-                          : `+ 파일 추가${myDocs.length > 0 ? ' (추가 첨부)' : ''}`}
+                          : <>+ 파일 첨부 {myDocs.length > 0 ? '(추가)' : ''}</>}
                         <input type="file" className="hidden" disabled={!!uploading}
                           onChange={e => {
                             const file = e.target.files?.[0]
