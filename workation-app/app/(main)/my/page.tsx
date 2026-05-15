@@ -106,7 +106,7 @@ export default function MyPage() {
   const confirmedCount = bookings.filter(b => b.status === 'confirmed').length
   const totalNights    = bookings.filter(b => b.status === 'confirmed').reduce((s, b) => s + nights(b.start_date, b.end_date), 0)
   const docCount       = docs.length
-  const regions        = [...new Set(bookings.filter(b => b.status === 'confirmed').map(b => b.accommodations?.region?.split(' ')[0]).filter(Boolean))]
+  const regions        = Array.from(new Set(bookings.filter(b => b.status === 'confirmed').map(b => b.accommodations?.region?.split(' ')[0]).filter(Boolean))) as string[]
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
