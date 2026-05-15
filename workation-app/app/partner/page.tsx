@@ -1,19 +1,56 @@
+'use client'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
+import { supabase } from '@/lib/supabase'
 
-const RECENT_BOOKINGS = [
-  { id: 'WK-0010', guest: '삼성전자 · 김지수',  checkIn: '6/10', checkOut: '6/13', people: 4, amount: 1020000, status: 'confirmed' as const },
-  { id: 'WK-0009', guest: 'LG전자 · 박민준',   checkIn: '6/05', checkOut: '6/08', people: 3, amount: 855000,  status: 'confirmed' as const },
-  { id: 'WK-0008', guest: '카카오 · 이서연',   checkIn: '5/28', checkOut: '5/30', people: 2, amount: 280000,  status: 'pending'   as const },
-  { id: 'WK-0007', guest: '네이버 · 최준혁',   checkIn: '5/20', checkOut: '5/23', people: 3, amount: 675000,  status: 'cancelled' as const },
-]
+type Booking = {
+  id: string
+  user_id: string
+  start_date: string
+  end_date: string
+  guests: number
+  total_price: number
+  status: string
+  accommodations: { name: string; region: string } | null
+}
 
-const statusLabel = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
+type UserRow = { id: string; name: string; email: string }
+
+const statusLabel: Record<string, string> = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
+
+function nights(start: string, end: string) {
+  return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
+}
 
 export default function PartnerPage() {
-  const monthRevenue = 2830000
-  const totalBookings = 24
-  const avgRating = 4.8
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [userMap,  setUserMap]  = useState<Record<string, string>>({})
+  const [loading,  setLoading]  = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      supabase
+        .from('bookings')
+        .select('*, accommodations(name, region)')
+        .order('id', { ascending: false })
+        .limit(50),
+      supabase.from('users').select('id, name, email'),
+    ]).then(([{ data: bData }, { data: uData }]) => {
+      if (bData) setBookings(bData as any)
+      if (uData) {
+        const map: Record<string, string> = {}
+        ;(uData as UserRow[]).forEach(u => { map[u.id] = u.name ?? u.email ?? '-' })
+        setUserMap(map)
+      }
+      setLoading(false)
+    })
+  }, [])
+
+  const confirmed     = bookings.filter(b => b.status === 'confirmed')
+  const pending       = bookings.filter(b => b.status === 'pending')
+  const monthRevenue  = confirmed.reduce((s, b) => s + (b.total_price ?? 0), 0)
+  const recent        = bookings.slice(0, 5)
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -22,22 +59,26 @@ export default function PartnerPage() {
           <span className="font-black text-lg">더워케이션</span>
           <Badge variant="prt">파트너</Badge>
         </div>
-        <div className="text-sm text-[#94A3B8]">강릉 씨사이드 워크스테이션</div>
+        {pending.length > 0 && (
+          <span className="text-xs bg-amber-500 text-white font-bold px-2.5 py-1 rounded-full">
+            대기중 {pending.length}건
+          </span>
+        )}
       </header>
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-black mb-1">파트너 대시보드</h1>
-          <p className="text-sm text-[#475569]">2026년 5월 기준</p>
+          <p className="text-sm text-[#475569]">실시간 예약 현황</p>
         </div>
 
         {/* 요약 카드 */}
         <div className="grid grid-cols-4 gap-4 mb-8">
           {[
-            { label: '이번 달 매출',  value: `${(monthRevenue / 10000).toLocaleString()}만원`, sub: '전월 대비 +18%',   color: 'text-blue-400'    },
-            { label: '이번 달 예약',  value: `${totalBookings}건`,                              sub: '확정 20건',         color: 'text-emerald-400' },
-            { label: '평균 평점',     value: `⭐ ${avgRating}`,                                 sub: '리뷰 38개',         color: 'text-amber-400'   },
-            { label: '객실 점유율',   value: '73%',                                             sub: '이번 달 기준',      color: 'text-purple-400'  },
+            { label: '누적 매출',    value: loading ? '-' : `${(monthRevenue / 10000).toFixed(0)}만원`, sub: '확정 예약 기준',   color: 'text-blue-400'    },
+            { label: '전체 예약',    value: loading ? '-' : `${bookings.length}건`,                      sub: `확정 ${confirmed.length}건`, color: 'text-emerald-400' },
+            { label: '대기중 예약',  value: loading ? '-' : `${pending.length}건`,                       sub: '확인 필요',        color: 'text-amber-400'   },
+            { label: '취소율',       value: loading ? '-' : bookings.length > 0 ? `${Math.round((bookings.filter(b => b.status === 'cancelled').length / bookings.length) * 100)}%` : '0%', sub: '전체 대비', color: 'text-purple-400' },
           ].map((s) => (
             <div key={s.label} className="bg-white border border-[#E2E8F0] rounded-xl p-5">
               <p className="text-xs text-[#94A3B8] mb-2">{s.label}</p>
@@ -47,73 +88,50 @@ export default function PartnerPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          {/* 예약 현황 */}
-          <div className="col-span-2 bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0]">
-              <span className="font-semibold text-sm">최근 예약</span>
-              <Link href="/partner/bookings" className="text-xs text-blue-400 hover:text-blue-600">전체 보기 →</Link>
+        {/* 최근 예약 */}
+        <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden mb-6">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0]">
+            <span className="font-semibold text-sm">최근 예약</span>
+            <Link href="/partner/bookings" className="text-xs text-blue-400 hover:text-blue-600">전체 보기 →</Link>
+          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-10 text-[#94A3B8] text-sm">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2" />불러오는 중...
             </div>
+          ) : recent.length === 0 ? (
+            <div className="text-center py-10 text-[#94A3B8] text-sm">예약 내역이 없어요</div>
+          ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-xs text-[#94A3B8] border-b border-[#E2E8F0]">
-                  {['예약번호', '예약자', '체크인', '체크아웃', '인원', '금액', '상태'].map(h => (
+                  {['예약번호', '숙소', '예약자', '기간', '인원', '금액', '상태'].map(h => (
                     <th key={h} className="text-left px-4 py-3 font-medium">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {RECENT_BOOKINGS.map((b) => (
+                {recent.map((b) => (
                   <tr key={b.id} className="border-b border-[#E2E8F0]/50 hover:bg-[#F1F5F9]/50 transition-colors">
-                    <td className="px-4 py-3 text-xs text-[#94A3B8]">{b.id}</td>
-                    <td className="px-4 py-3 text-sm font-medium">{b.guest}</td>
-                    <td className="px-4 py-3 text-xs text-[#475569]">{b.checkIn}</td>
-                    <td className="px-4 py-3 text-xs text-[#475569]">{b.checkOut}</td>
-                    <td className="px-4 py-3 text-xs text-[#475569]">{b.people}명</td>
-                    <td className="px-4 py-3 text-sm">{b.amount.toLocaleString()}원</td>
-                    <td className="px-4 py-3"><Badge variant={b.status}>{statusLabel[b.status]}</Badge></td>
+                    <td className="px-4 py-3 text-xs text-[#94A3B8]">WK-{String(b.id).padStart(4, '0')}</td>
+                    <td className="px-4 py-3 text-xs font-medium">{b.accommodations?.name ?? '-'}</td>
+                    <td className="px-4 py-3 text-xs">{userMap[b.user_id] ?? '-'}</td>
+                    <td className="px-4 py-3 text-xs text-[#475569]">{b.start_date} ~ {b.end_date}</td>
+                    <td className="px-4 py-3 text-xs text-[#475569]">{b.guests}명</td>
+                    <td className="px-4 py-3 text-sm">{b.total_price?.toLocaleString()}원</td>
+                    <td className="px-4 py-3"><Badge variant={b.status as any}>{statusLabel[b.status] ?? b.status}</Badge></td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-
-          {/* 이번 달 달력 점유율 */}
-          <div className="bg-white border border-[#E2E8F0] rounded-xl p-5">
-            <div className="font-semibold text-sm mb-4">6월 예약 현황</div>
-            <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2">
-              {['일','월','화','수','목','금','토'].map(d => (
-                <div key={d} className="text-[#94A3B8] py-1">{d}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-xs">
-              {/* 6월 1일이 월요일 */}
-              <div />
-              {Array.from({ length: 30 }, (_, i) => i + 1).map(d => {
-                const booked = [10,11,12,13,5,6,7,8].includes(d)
-                const today  = d === 11
-                return (
-                  <div key={d} className={`py-1.5 rounded-md font-medium transition-colors ${
-                    today  ? 'bg-blue-500 text-white' :
-                    booked ? 'bg-blue-500/30 text-blue-600' :
-                    'text-[#475569] hover:bg-[#F1F5F9]'
-                  }`}>{d}</div>
-                )
-              })}
-            </div>
-            <div className="flex gap-3 mt-4 text-xs">
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-blue-500/30 rounded inline-block" />예약됨</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-blue-500 rounded inline-block" />오늘</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* 빠른 메뉴 */}
-        <div className="grid grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-3 gap-4">
           {[
-            { label: '내 숙소 관리',  icon: '🏨', href: '/partner/accommodations', desc: '숙소 정보·사진 수정' },
+            { label: '내 숙소 관리',   icon: '🏨', href: '/partner/accommodations', desc: '숙소 정보·사진 수정' },
             { label: '예약 전체 보기', icon: '📅', href: '/partner/bookings',       desc: '예약 확인 및 관리' },
-            { label: '정산 내역',     icon: '💰', href: '#',                        desc: '월별 정산 확인' },
+            { label: '숙소 등록',      icon: '➕', href: '/partner/accommodations/new', desc: '새 숙소 등록하기' },
           ].map((m) => (
             <Link key={m.label} href={m.href}
               className="bg-white border border-[#E2E8F0] rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-colors">
