@@ -18,6 +18,7 @@ type Booking = {
 type UserRow = { id: string; name: string; email: string }
 
 const statusLabel: Record<string, string> = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
+const PARTNER_NAME = '다자요 고산도들집'
 type StatusFilter = 'all' | 'confirmed' | 'pending' | 'cancelled'
 
 function nights(start: string, end: string) {
@@ -60,8 +61,9 @@ export default function PartnerBookingsPage() {
     setUpdating(false)
   }
 
-  const filtered     = bookings.filter(b => filter === 'all' || b.status === filter)
-  const pendingCount = bookings.filter(b => b.status === 'pending').length
+  const myBookings   = bookings.filter(b => b.accommodations?.name === PARTNER_NAME)
+  const filtered     = myBookings.filter(b => filter === 'all' || b.status === filter)
+  const pendingCount = myBookings.filter(b => b.status === 'pending').length
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">

@@ -18,6 +18,7 @@ type Booking = {
 type UserRow = { id: string; name: string; email: string }
 
 const statusLabel: Record<string, string> = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
+const PARTNER_NAME = '다자요 고산도들집'
 
 function nights(start: string, end: string) {
   return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
@@ -47,10 +48,11 @@ export default function PartnerPage() {
     })
   }, [])
 
-  const confirmed     = bookings.filter(b => b.status === 'confirmed')
-  const pending       = bookings.filter(b => b.status === 'pending')
+  const myBookings    = bookings.filter(b => b.accommodations?.name === PARTNER_NAME)
+  const confirmed     = myBookings.filter(b => b.status === 'confirmed')
+  const pending       = myBookings.filter(b => b.status === 'pending')
   const monthRevenue  = confirmed.reduce((s, b) => s + (b.total_price ?? 0), 0)
-  const recent        = bookings.slice(0, 5)
+  const recent        = myBookings.slice(0, 5)
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -59,6 +61,7 @@ export default function PartnerPage() {
           <span className="font-black text-lg">더워케이션</span>
           <Badge variant="prt">파트너</Badge>
         </div>
+        <span className="text-sm text-[#94A3B8]">{PARTNER_NAME}</span>
         {pending.length > 0 && (
           <span className="text-xs bg-amber-500 text-white font-bold px-2.5 py-1 rounded-full">
             대기중 {pending.length}건
@@ -76,9 +79,9 @@ export default function PartnerPage() {
         <div className="grid grid-cols-4 gap-4 mb-8">
           {[
             { label: '누적 매출',    value: loading ? '-' : `${(monthRevenue / 10000).toFixed(0)}만원`, sub: '확정 예약 기준',   color: 'text-blue-400'    },
-            { label: '전체 예약',    value: loading ? '-' : `${bookings.length}건`,                      sub: `확정 ${confirmed.length}건`, color: 'text-emerald-400' },
+            { label: '전체 예약',    value: loading ? '-' : `${myBookings.length}건`,                    sub: `확정 ${confirmed.length}건`, color: 'text-emerald-400' },
             { label: '대기중 예약',  value: loading ? '-' : `${pending.length}건`,                       sub: '확인 필요',        color: 'text-amber-400'   },
-            { label: '취소율',       value: loading ? '-' : bookings.length > 0 ? `${Math.round((bookings.filter(b => b.status === 'cancelled').length / bookings.length) * 100)}%` : '0%', sub: '전체 대비', color: 'text-purple-400' },
+            { label: '취소율',       value: loading ? '-' : myBookings.length > 0 ? `${Math.round((myBookings.filter(b => b.status === 'cancelled').length / myBookings.length) * 100)}%` : '0%', sub: '전체 대비', color: 'text-purple-400' },
           ].map((s) => (
             <div key={s.label} className="bg-white border border-[#E2E8F0] rounded-xl p-5">
               <p className="text-xs text-[#94A3B8] mb-2">{s.label}</p>
