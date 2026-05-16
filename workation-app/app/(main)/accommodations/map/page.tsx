@@ -23,6 +23,7 @@ type SubsidyInfo = {
 }
 
 const REGION_COORDS: { keyword: string; lat: number; lng: number }[] = [
+  { keyword: '삼척', lat: 37.4496, lng: 129.1659 },
   { keyword: '속초', lat: 38.2070, lng: 128.5918 },
   { keyword: '양양', lat: 38.0752, lng: 128.6186 },
   { keyword: '강릉', lat: 37.7519, lng: 128.8760 },
