@@ -26,7 +26,7 @@ const REGION_COORDS: { keyword: string; lat: number; lng: number }[] = [
   { keyword: '속초', lat: 38.2070, lng: 128.5918 },
   { keyword: '양양', lat: 38.0752, lng: 128.6186 },
   { keyword: '강릉', lat: 37.7519, lng: 128.8760 },
-  { keyword: '춘천', lat: 37.8747, lng: 127.7342 },
+  { keyword: '춘천', lat: 37.8813, lng: 127.7298 },
   { keyword: '원주', lat: 37.3422, lng: 127.9202 },
   { keyword: '평창', lat: 37.3705, lng: 128.3906 },
   { keyword: '홍천', lat: 37.6969, lng: 127.8886 },
@@ -85,7 +85,7 @@ export default function MapPage() {
     if (!mapLoaded || !mapRef.current || accommodations.length === 0) return
 
     const { kakao } = window
-    const center = new kakao.maps.LatLng(37.8747, 127.7342)
+    const center = new kakao.maps.LatLng(37.8813, 127.7298)
     const map = new kakao.maps.Map(mapRef.current, { center, level: 10 })
     mapInstanceRef.current = map
 
