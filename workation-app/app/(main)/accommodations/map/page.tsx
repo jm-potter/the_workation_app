@@ -87,8 +87,23 @@ export default function MapPage() {
 
     const { kakao } = window
     const center = new kakao.maps.LatLng(36.2, 127.8)
-    const map = new kakao.maps.Map(mapRef.current, { center, level: 13 })
+    const map = new kakao.maps.Map(mapRef.current, { center, level: 12, maxLevel: 12 })
     mapInstanceRef.current = map
+
+    // 남한 영역 벗어나면 되돌아오기
+    const SW = new kakao.maps.LatLng(33.0, 124.6)
+    const NE = new kakao.maps.LatLng(38.6, 131.9)
+    kakao.maps.event.addListener(map, 'center_changed', () => {
+      const c = map.getCenter()
+      const lat = c.getLat()
+      const lng = c.getLng()
+      if (lat < 33.0 || lat > 38.6 || lng < 124.6 || lng > 131.9) {
+        map.setCenter(new kakao.maps.LatLng(
+          Math.max(33.0, Math.min(38.6, lat)),
+          Math.max(124.6, Math.min(131.9, lng))
+        ))
+      }
+    })
 
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
