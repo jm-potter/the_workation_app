@@ -88,14 +88,9 @@ export default function MapPage() {
       })
       return
     }
-    const key = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY
-    if (!key) {
-      console.error('[KakaoMap] NEXT_PUBLIC_KAKAO_MAP_KEY is not set')
-      return
-    }
     const script = document.createElement('script')
     script.id = 'kakao-maps-sdk'
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&autoload=false`
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=7bc287dcd5f0f88909d9ba455ede678d&autoload=false`
     script.async = true
     script.onload = () => {
       window.kakao.maps.load(() => setMapLoaded(true))
