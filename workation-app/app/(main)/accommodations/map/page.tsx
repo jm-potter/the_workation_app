@@ -85,7 +85,7 @@ export default function MapPage() {
     if (!mapLoaded || !mapRef.current || accommodations.length === 0) return
 
     const { kakao } = window
-    const center = new kakao.maps.LatLng(37.9, 128.3)
+    const center = new kakao.maps.LatLng(37.8747, 127.7342)
     const map = new kakao.maps.Map(mapRef.current, { center, level: 10 })
     mapInstanceRef.current = map
 
@@ -98,24 +98,25 @@ export default function MapPage() {
 
       const subsidy = getSubsidyTotal(acc.region, subsidies)
       const subsidyHtml = subsidy > 0
-        ? `<div style="margin-top:2px;background:#10b981;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;">-${subsidy.toLocaleString()}</div>`
+        ? `<div style="background:#10b981;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px;">💰 ${subsidy.toLocaleString()}원/인</div>`
         : ''
+      const imgHtml = acc.image_url
+        ? `<img src="${acc.image_url}" style="width:130px;height:80px;object-fit:cover;display:block;" />`
+        : `<div style="width:130px;height:80px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:24px;">🏨</div>`
 
       const content = `
-        <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,0.12);cursor:pointer;text-align:center;">
-          ${acc.price_per_night.toLocaleString()}원
-          ${subsidyHtml}
+        <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;width:130px;box-shadow:0 4px 12px rgba(0,0,0,0.15);cursor:pointer;">
+          ${imgHtml}
+          <div style="padding:6px 8px;">
+            <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.name}</div>
+            <div style="font-size:11px;color:#3b82f6;font-weight:700;">${acc.price_per_night.toLocaleString()}원/박</div>
+            ${subsidyHtml}
+          </div>
         </div>
       `
 
-      const overlay = new kakao.maps.CustomOverlay({ position, content, yAnchor: 1.1 })
+      const overlay = new kakao.maps.CustomOverlay({ position, content, yAnchor: 1.05 })
       overlay.setMap(map)
-
-      const clickDiv = document.createElement('div')
-      clickDiv.innerHTML = content
-      clickDiv.style.cursor = 'pointer'
-
-      kakao.maps.event.addListener(overlay, 'click', () => setSelected(acc))
 
       const overlayEl = overlay.getContent() as HTMLElement
       if (overlayEl && overlayEl.addEventListener) {
