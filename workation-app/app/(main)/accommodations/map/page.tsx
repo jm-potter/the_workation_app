@@ -77,16 +77,31 @@ export default function MapPage() {
   }, [])
 
   useEffect(() => {
-    if (document.getElementById('kakao-maps-sdk')) {
+    if (window.kakao?.maps) {
       setMapLoaded(true)
+      return
+    }
+    const existing = document.getElementById('kakao-maps-sdk')
+    if (existing) {
+      existing.addEventListener('load', () => {
+        window.kakao.maps.load(() => setMapLoaded(true))
+      })
+      return
+    }
+    const key = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY
+    if (!key) {
+      console.error('[KakaoMap] NEXT_PUBLIC_KAKAO_MAP_KEY is not set')
       return
     }
     const script = document.createElement('script')
     script.id = 'kakao-maps-sdk'
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&autoload=false`
     script.async = true
     script.onload = () => {
       window.kakao.maps.load(() => setMapLoaded(true))
+    }
+    script.onerror = () => {
+      console.error('[KakaoMap] SDK load failed — check API key and domain registration')
     }
     document.head.appendChild(script)
   }, [])
