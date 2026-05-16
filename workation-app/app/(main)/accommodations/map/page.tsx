@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import Script from 'next/script'
 import Link from 'next/link'
 import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
@@ -76,30 +77,9 @@ export default function MapPage() {
     })
   }, [])
 
-  useEffect(() => {
-    if (window.kakao?.maps) {
-      setMapLoaded(true)
-      return
-    }
-    const existing = document.getElementById('kakao-maps-sdk')
-    if (existing) {
-      existing.addEventListener('load', () => {
-        window.kakao.maps.load(() => setMapLoaded(true))
-      })
-      return
-    }
-    const script = document.createElement('script')
-    script.id = 'kakao-maps-sdk'
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=7bc287dcd5f0f88909d9ba455ede678d&autoload=false`
-    script.async = true
-    script.onload = () => {
-      window.kakao.maps.load(() => setMapLoaded(true))
-    }
-    script.onerror = () => {
-      console.error('[KakaoMap] SDK load failed — check API key and domain registration')
-    }
-    document.head.appendChild(script)
-  }, [])
+  function onKakaoLoad() {
+    window.kakao.maps.load(() => setMapLoaded(true))
+  }
 
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || accommodations.length === 0) return
@@ -156,6 +136,11 @@ export default function MapPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+      <Script
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7bc287dcd5f0f88909d9ba455ede678d&autoload=false"
+        strategy="afterInteractive"
+        onLoad={onKakaoLoad}
+      />
       <Header />
 
       <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 65px)' }}>
