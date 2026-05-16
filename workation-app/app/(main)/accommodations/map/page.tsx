@@ -86,9 +86,14 @@ export default function MapPage() {
     if (!mapLoaded || !mapRef.current || accommodations.length === 0) return
 
     const { kakao } = window
-    const center = new kakao.maps.LatLng(34.8, 127.7)
-    const map = new kakao.maps.Map(mapRef.current, { center, level: 13, maxLevel: 13 })
+    const center = new kakao.maps.LatLng(36.5, 127.8)
+    const map = new kakao.maps.Map(mapRef.current, { center, level: 13 })
     mapInstanceRef.current = map
+
+    // 남한 전체가 딱 맞게 보이도록 bounds 설정
+    const sw = new kakao.maps.LatLng(33.0, 124.6)
+    const ne = new kakao.maps.LatLng(38.6, 131.9)
+    map.setBounds(new kakao.maps.LatLngBounds(sw, ne))
 
     // 남한 영역 벗어나면 되돌아오기
     const SW = new kakao.maps.LatLng(33.0, 124.6)
