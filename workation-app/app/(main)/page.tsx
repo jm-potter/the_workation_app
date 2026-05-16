@@ -15,11 +15,11 @@ export default function LandingPage() {
           <Link href="/faq" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">자주 묻는 질문</Link>
         </nav>
         <div className="flex gap-3">
-          <Link href="/dashboard" className="text-sm text-[#475569] hover:text-blue-500 transition-colors px-3 py-2">
-            HR 대시보드
-          </Link>
           <Link href="/gov" className="text-sm text-[#475569] hover:text-blue-500 transition-colors px-3 py-2">
             지자체
+          </Link>
+          <Link href="/dashboard" className="text-sm text-[#475569] hover:text-blue-500 transition-colors px-3 py-2">
+            HR 대시보드
           </Link>
           <Link href="/login">
             <Button variant="ghost" size="sm">로그인</Button>
