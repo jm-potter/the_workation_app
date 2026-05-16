@@ -85,70 +85,78 @@ export default function AccommodationsPage() {
       <div className="max-w-6xl mx-auto px-6 py-8">
 
         {/* AI 숙소 매칭 */}
-        <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6 mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl">✨</span>
-            <h2 className="font-bold text-base">AI 숙소 매칭</h2>
-            <span className="text-xs bg-blue-500/20 text-blue-600 px-2 py-0.5 rounded-full border border-blue-500/30">Beta</span>
-          </div>
-          <p className="text-sm text-[#475569] mb-5">팀 정보를 입력하면 AI가 최적의 숙소를 추천해드려요</p>
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#1e3a8a] via-[#1d4ed8] to-[#7c3aed] rounded-2xl p-7 mb-8 shadow-lg">
+          {/* 배경 장식 */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 w-40 h-40 bg-purple-400/10 rounded-full translate-y-1/2 pointer-events-none" />
 
-          <div className="flex flex-wrap items-end gap-4 mb-5">
-            <div>
-              <label className="text-xs text-[#475569] mb-1.5 block">팀 인원</label>
-              <div className="flex items-center gap-2">
-                <button onClick={() => setAiPeople(Math.max(1, aiPeople - 1))}
-                  className="w-8 h-8 rounded-lg bg-white border border-[#E2E8F0] text-[#475569] hover:border-blue-500 transition-colors">-</button>
-                <span className="font-bold w-6 text-center">{aiPeople}</span>
-                <button onClick={() => setAiPeople(Math.min(50, aiPeople + 1))}
-                  className="w-8 h-8 rounded-lg bg-white border border-[#E2E8F0] text-[#475569] hover:border-blue-500 transition-colors">+</button>
-                <span className="text-xs text-[#94A3B8]">명</span>
-              </div>
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-2xl">✨</span>
+              <h2 className="font-black text-xl text-white tracking-tight">AI 숙소 매칭</h2>
+              <span className="text-xs bg-white/20 text-white px-2.5 py-0.5 rounded-full border border-white/30 font-semibold">Beta</span>
             </div>
+            <p className="text-blue-100 text-sm mb-6">팀 정보를 입력하면 AI가 최적의 숙소를 3초 안에 추천해드려요</p>
 
-            <div>
-              <label className="text-xs text-[#475569] mb-1.5 block">워케이션 스타일</label>
-              <div className="flex gap-2">
-                {['집중', '힐링', '팀빌딩', '액티비티'].map(s => (
-                  <button key={s} onClick={() => setAiStyle(s)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      aiStyle === s ? 'bg-blue-500 text-white' : 'bg-white border border-[#E2E8F0] text-[#475569] hover:border-blue-500/50'
-                    }`}>
-                    {s}
-                  </button>
-                ))}
+            <div className="flex flex-wrap items-end gap-4 mb-2">
+              <div>
+                <label className="text-xs text-blue-200 mb-1.5 block font-medium">팀 인원</label>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setAiPeople(Math.max(1, aiPeople - 1))}
+                    className="w-8 h-8 rounded-lg bg-white/15 border border-white/20 text-white hover:bg-white/25 transition-colors font-bold">-</button>
+                  <span className="font-black text-white w-7 text-center text-lg">{aiPeople}</span>
+                  <button onClick={() => setAiPeople(Math.min(50, aiPeople + 1))}
+                    className="w-8 h-8 rounded-lg bg-white/15 border border-white/20 text-white hover:bg-white/25 transition-colors font-bold">+</button>
+                  <span className="text-sm text-blue-200">명</span>
+                </div>
               </div>
-            </div>
 
-            <button onClick={handleAiMatch} disabled={aiLoading}
-              className="px-5 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-60 text-white text-sm font-semibold rounded-xl transition-colors">
-              {aiLoading ? '분석 중...' : '✨ AI 추천 받기'}
-            </button>
+              <div>
+                <label className="text-xs text-blue-200 mb-1.5 block font-medium">워케이션 스타일</label>
+                <div className="flex gap-2">
+                  {['집중', '힐링', '팀빌딩', '액티비티'].map(s => (
+                    <button key={s} onClick={() => setAiStyle(s)}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        aiStyle === s
+                          ? 'bg-white text-blue-700 shadow-md'
+                          : 'bg-white/15 border border-white/20 text-white hover:bg-white/25'
+                      }`}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button onClick={handleAiMatch} disabled={aiLoading}
+                className="px-6 py-2.5 bg-white hover:bg-blue-50 disabled:opacity-60 text-blue-700 text-sm font-black rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95">
+                {aiLoading ? '분석 중...' : '✨ AI 추천 받기'}
+              </button>
+            </div>
           </div>
 
           {aiLoading && (
-            <div className="flex items-center gap-3 py-4 text-sm text-[#475569]">
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="relative flex items-center gap-3 pt-5 text-sm text-blue-100">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               AI가 {aiPeople}명 팀에 최적화된 숙소를 분석하고 있어요...
             </div>
           )}
 
           {aiDone && !aiLoading && (
-            <div>
-              <p className="text-xs text-[#94A3B8] mb-3">✅ {aiPeople}명 · {aiStyle} 스타일 기준 추천 결과</p>
+            <div className="relative mt-5">
+              <p className="text-xs text-blue-200 mb-3">✅ {aiPeople}명 · {aiStyle} 스타일 기준 추천 결과</p>
               <div className="grid grid-cols-3 gap-3">
                 {(aiRecommended.length > 0 ? aiRecommended : accommodations.slice(0, 3)).map((acc, i) => (
                   <Link key={acc.id} href={`/accommodations/${acc.id}`}>
-                    <div className="bg-white border border-blue-500/30 rounded-xl p-4 hover:border-blue-500 transition-colors">
+                    <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs bg-blue-500/20 text-blue-600 px-2 py-0.5 rounded-full">
+                        <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">
                           {i === 0 ? '🥇 1순위' : i === 1 ? '🥈 2순위' : '🥉 3순위'}
                         </span>
-                        <span className="text-xs font-bold text-blue-400">{acc.price_per_night.toLocaleString()}원/박</span>
+                        <span className="text-xs font-bold text-blue-200">{acc.price_per_night.toLocaleString()}원/박</span>
                       </div>
-                      <div className="font-medium text-sm mb-1">{acc.name}</div>
-                      <div className="text-xs text-[#94A3B8] mb-2">📍 {acc.region}</div>
-                      <p className="text-xs text-[#475569] leading-relaxed">{acc.description}</p>
+                      <div className="font-semibold text-sm text-white mb-1">{acc.name}</div>
+                      <div className="text-xs text-blue-200 mb-2">📍 {acc.region}</div>
+                      <p className="text-xs text-blue-100 leading-relaxed line-clamp-2">{acc.description}</p>
                     </div>
                   </Link>
                 ))}
