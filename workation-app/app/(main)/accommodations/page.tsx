@@ -156,6 +156,18 @@ export default function AccommodationsPage() {
                       </div>
                       <div className="font-semibold text-sm text-white mb-1">{acc.name}</div>
                       <div className="text-xs text-blue-200 mb-2">📍 {acc.region}</div>
+                      {getSubsidyTotal(acc.region) > 0 && (
+                        <div className="flex items-center gap-1 mb-2">
+                          <span className="text-xs bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 rounded-full font-semibold">
+                            💰 1인당 {getSubsidyTotal(acc.region).toLocaleString()}원 할인
+                          </span>
+                        </div>
+                      )}
+                      {getSubsidyTotal(acc.region) > 0 && (
+                        <div className="text-xs text-blue-200 mb-2">
+                          {aiPeople}명 기준 <span className="text-emerald-300 font-bold">{(getSubsidyTotal(acc.region) * aiPeople).toLocaleString()}원</span> 절감
+                        </div>
+                      )}
                       <p className="text-xs text-blue-100 leading-relaxed line-clamp-2">{acc.description}</p>
                     </div>
                   </Link>
