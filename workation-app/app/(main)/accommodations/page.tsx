@@ -77,6 +77,11 @@ export default function AccommodationsPage() {
 
   const aiRecommended = accommodations
     .filter(a => a.tags?.includes(aiStyle))
+    .sort((a, b) => {
+      if (a.name.includes('비안단테')) return -1
+      if (b.name.includes('비안단테')) return 1
+      return 0
+    })
     .slice(0, 3)
 
   function handleAiMatch() {
@@ -152,7 +157,7 @@ export default function AccommodationsPage() {
             <div className="relative mt-5">
               <p className="text-xs text-blue-200 mb-3">✅ {aiPeople}명 · {aiStyle} 스타일 기준 추천 결과</p>
               <div className="grid grid-cols-3 gap-3">
-                {(aiRecommended.length > 0 ? aiRecommended : accommodations.slice(0, 3)).map((acc, i) => (
+                {(aiRecommended.length > 0 ? aiRecommended : [...accommodations].sort((a, b) => a.name.includes('비안단테') ? -1 : b.name.includes('비안단테') ? 1 : 0).slice(0, 3)).map((acc, i) => (
                   <Link key={acc.id} href={`/accommodations/${acc.id}`}>
                     <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all">
                       <div className="flex items-center justify-between mb-2">
