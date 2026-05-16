@@ -160,8 +160,8 @@ export default function MapPage() {
 
       <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 65px)' }}>
         {/* 카카오 지도 */}
-        <div className="flex-1 relative">
-          <div ref={mapRef} className="w-full h-full" />
+        <div className="flex-1 relative" style={{ minHeight: 0 }}>
+          <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
           {!mapLoaded && (
             <div className="absolute inset-0 flex items-center justify-center bg-[#EEF2FF]">
               <div className="text-center text-[#94A3B8]">
