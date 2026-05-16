@@ -85,8 +85,8 @@ export default function MapPage() {
     if (!mapLoaded || !mapRef.current || accommodations.length === 0) return
 
     const { kakao } = window
-    const center = new kakao.maps.LatLng(37.8813, 127.7298)
-    const map = new kakao.maps.Map(mapRef.current, { center, level: 8 })
+    const center = new kakao.maps.LatLng(37.8400, 127.7302)
+    const map = new kakao.maps.Map(mapRef.current, { center, level: 7 })
     mapInstanceRef.current = map
 
     markersRef.current.forEach(m => m.setMap(null))
