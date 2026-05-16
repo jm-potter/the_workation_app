@@ -96,7 +96,7 @@ const SUBSIDIES = [
 ]
 
 const HOW_TO = [
-  { step: '01', title: '숙소 예약', desc: '더 워케이션에서 원하는 지역 숙소를 선택하세요. 지원금이 자동으로 표시됩니다.', icon: '🏨' },
+  { step: '01', title: '숙소 예약', desc: 'The Workation에서 원하는 지역 숙소를 선택하세요. 지원금이 자동으로 표시됩니다.', icon: '🏨' },
   { step: '02', title: '자동 매칭', desc: '숙소 지역과 조건을 분석해 받을 수 있는 지원금을 자동으로 계산해드립니다.', icon: '🤖' },
   { step: '03', title: '선공제 적용', desc: '예약 시 지원금을 미리 차감해서 실제 결제 금액을 낮춰드립니다.', icon: '💳' },
   { step: '04', title: '정산 완료', desc: '워케이션 종료 후 지자체에 자동 신청 및 정산을 대행합니다.', icon: '✅' },
@@ -110,7 +110,7 @@ export default function SubsidyPage() {
       <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">← 뒤로</Link>
-          <Link href="/" className="text-lg font-black text-[#0F172A]">더 워케이션</Link>
+          <Link href="/" className="text-lg font-black text-[#0F172A]">The Workation</Link>
         </div>
         <div className="flex gap-3">
           <Link href="/login">

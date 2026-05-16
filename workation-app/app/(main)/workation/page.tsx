@@ -8,7 +8,7 @@ export default function WorkationInfoPage() {
       <header className="px-6 py-5 flex justify-between items-center max-w-6xl mx-auto">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">← 뒤로</Link>
-          <Link href="/" className="text-lg font-bold">더 워케이션</Link>
+          <Link href="/" className="text-lg font-bold">The Workation</Link>
         </div>
         <div className="flex gap-3">
           <Link href="/login">
@@ -152,9 +152,9 @@ export default function WorkationInfoPage() {
           </div>
         </div>
 
-        {/* 더워케이션의 장점 */}
+        {/* The Workation의 장점 */}
         <div className="mb-16">
-          <h2 className="text-xl font-bold text-center mb-10">더워케이션의 장점</h2>
+          <h2 className="text-xl font-bold text-center mb-10">The Workation의 장점</h2>
           <div className="grid grid-cols-3 gap-6">
             {[
               {

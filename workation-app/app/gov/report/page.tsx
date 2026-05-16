@@ -111,7 +111,7 @@ export default function GovReportPage() {
     <div className="min-h-screen bg-[#F8FAFC]">
       <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/" className="font-black text-lg hover:text-blue-500 transition-colors">더워케이션</Link>
+          <Link href="/" className="font-black text-lg hover:text-blue-500 transition-colors">The Workation</Link>
           <span className="text-[#CBD5E1]">/</span>
           <Link href="/gov" className="text-[#94A3B8] hover:text-[#475569] transition-colors text-sm">지자체 대시보드</Link>
           <span className="text-[#CBD5E1]">/</span>

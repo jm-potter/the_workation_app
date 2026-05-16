@@ -30,7 +30,7 @@ export default function CompanySetupPage() {
         </div>
 
         <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 flex flex-col gap-4">
-          <Input label="회사명" placeholder="(주)더워케이션" />
+          <Input label="회사명" placeholder="(주)The Workation" />
           <Input label="담당자 이름" placeholder="홍길동" />
           <Input label="직원 수" type="number" placeholder="50" />
 

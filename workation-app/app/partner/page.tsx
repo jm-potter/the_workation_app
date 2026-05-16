@@ -58,7 +58,7 @@ export default function PartnerPage() {
     <div className="min-h-screen bg-[#F8FAFC]">
       <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-black text-lg">더워케이션</span>
+          <span className="font-black text-lg">The Workation</span>
           <Badge variant="prt">파트너</Badge>
         </div>
         <span className="text-sm text-[#94A3B8]">{PARTNER_NAME}</span>
