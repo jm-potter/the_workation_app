@@ -16,9 +16,9 @@ type Booking = {
 
 type UserRow = { id: string; name: string; email: string }
 
-const JEJU_SUBSIDY_AMOUNT = 300_000
-const JEJU_BUDGET         = 150_000_000
-const MONTH_LABELS        = ['1월', '2월', '3월', '4월', '5월']
+const GANGWON_SUBSIDY_AMOUNT = 100_000
+const GANGWON_BUDGET         = 300_000_000
+const MONTH_LABELS           = ['1월', '2월', '3월', '4월', '5월']
 
 function nightsCount(start: string, end: string) {
   return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
@@ -26,8 +26,12 @@ function nightsCount(start: string, end: string) {
 
 function cityOf(region: string | undefined) {
   if (!region) return '기타'
-  if (region.includes('서귀포')) return '서귀포시'
-  if (region.includes('제주')) return '제주시'
+  if (region.includes('강릉')) return '강릉시'
+  if (region.includes('속초')) return '속초시'
+  if (region.includes('양양')) return '양양군'
+  if (region.includes('평창')) return '평창군'
+  if (region.includes('춘천')) return '춘천시'
+  if (region.includes('원주')) return '원주시'
   return region.split(' ').slice(1).join(' ') || '기타'
 }
 
@@ -45,7 +49,7 @@ export default function GovReportPage() {
       supabase.from('users').select('id, name, email'),
     ]).then(([{ data: bData }, { data: uData }]) => {
       if (bData) {
-        setBookings((bData as unknown as Booking[]).filter(b => b.accommodations?.region?.includes('제주')))
+        setBookings((bData as unknown as Booking[]).filter(b => b.accommodations?.region?.includes('강원')))
       }
       if (uData) {
         const map: Record<string, string> = {}
@@ -60,8 +64,8 @@ export default function GovReportPage() {
   const totalVisitors  = bookings.reduce((s, b) => s + (b.guests || 0), 0)
   const totalCompanies = new Set(bookings.map(b => b.user_id)).size
   const totalSpend     = bookings.reduce((s, b) => s + (b.total_price || 0), 0)
-  const totalSubsidy   = bookings.reduce((s, b) => s + (b.guests || 0) * JEJU_SUBSIDY_AMOUNT, 0)
-  const budgetPct      = Math.min(100, Math.round((totalSubsidy / JEJU_BUDGET) * 100))
+  const totalSubsidy   = bookings.reduce((s, b) => s + (b.guests || 0) * GANGWON_SUBSIDY_AMOUNT, 0)
+  const budgetPct      = Math.min(100, Math.round((totalSubsidy / GANGWON_BUDGET) * 100))
   const carbonSaved    = Math.round(28.5 * 2 * 3 * totalVisitors * 0.21)
 
   // 월별
@@ -101,7 +105,7 @@ export default function GovReportPage() {
     guests:  b.guests,
     nights:  nightsCount(b.start_date, b.end_date),
     spend:   b.total_price,
-    subsidy: (b.guests || 0) * JEJU_SUBSIDY_AMOUNT,
+    subsidy: (b.guests || 0) * GANGWON_SUBSIDY_AMOUNT,
   }))
 
   const spendFmt = (n: number) =>
@@ -131,7 +135,7 @@ export default function GovReportPage() {
             <span className="text-xl">🍊</span>
             <h1 className="text-2xl font-black">지역 활성화 성과 리포트</h1>
           </div>
-          <p className="text-sm text-[#475569]">제주특별자치도 · 확정 예약 기준 실시간 집계</p>
+          <p className="text-sm text-[#475569]">강원특별자치도 · 확정 예약 기준 실시간 집계</p>
         </div>
 
         {loading ? (
@@ -145,7 +149,7 @@ export default function GovReportPage() {
             <div className="grid grid-cols-4 gap-4 mb-8">
               {[
                 { label: '총 방문 인원',  value: `${totalVisitors.toLocaleString()}명`,  sub: `${bookings.length}건 확정 예약`,    color: 'text-blue-500'    },
-                { label: '참여 기업·개인', value: `${totalCompanies}개사`,               sub: '제주 워케이션 이용',                 color: 'text-purple-500'  },
+                { label: '참여 기업·개인', value: `${totalCompanies}개사`,               sub: '강원 워케이션 이용',                 color: 'text-purple-500'  },
                 { label: '지역 소비액',   value: spendFmt(totalSpend),                   sub: '숙박비 합산 (확정)',                 color: 'text-amber-500'   },
                 { label: '지원금 집행액', value: spendFmt(totalSubsidy),                 sub: `예산 ${budgetPct}% 집행`,           color: 'text-emerald-500' },
               ].map(s => (
@@ -193,7 +197,7 @@ export default function GovReportPage() {
                     {CITY_DIST.map(r => (
                       <div key={r.city}>
                         <div className="flex justify-between text-xs mb-1">
-                          <span className="text-[#475569] font-medium">제주 {r.city}</span>
+                          <span className="text-[#475569] font-medium">강원 {r.city}</span>
                           <span className="text-[#94A3B8]">{r.count}명 ({r.pct}%)</span>
                         </div>
                         <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
@@ -214,7 +218,7 @@ export default function GovReportPage() {
               </div>
               {rows.length === 0 ? (
                 <div className="py-14 text-center text-sm text-[#94A3B8]">
-                  확정된 제주 워케이션 예약이 없어요
+                  확정된 강원 워케이션 예약이 없어요
                 </div>
               ) : (
                 <table className="w-full text-sm">
@@ -230,7 +234,7 @@ export default function GovReportPage() {
                       <tr key={r.id} className="border-b border-[#E2E8F0]/50 hover:bg-[#F1F5F9]/50 transition-colors">
                         <td className="px-5 py-3 font-medium">{r.name}</td>
                         <td className="px-5 py-3 text-xs text-[#475569]">{r.acc}</td>
-                        <td className="px-5 py-3 text-xs text-[#94A3B8]">📍 제주 {r.city}</td>
+                        <td className="px-5 py-3 text-xs text-[#94A3B8]">📍 강원 {r.city}</td>
                         <td className="px-5 py-3 text-[#475569]">{r.guests}명</td>
                         <td className="px-5 py-3 text-[#475569]">{r.nights}박</td>
                         <td className="px-5 py-3 text-blue-500 font-medium">{r.spend.toLocaleString()}원</td>
@@ -251,7 +255,7 @@ export default function GovReportPage() {
                 </div>
                 <div className="flex flex-col gap-3">
                   {[
-                    { label: '생활인구 유입',  value: `${totalVisitors.toLocaleString()}명`,  sub: '제주도 체류 인구 증가',  color: 'text-blue-500'    },
+                    { label: '생활인구 유입',  value: `${totalVisitors.toLocaleString()}명`,  sub: '강원도 체류 인구 증가',  color: 'text-blue-500'    },
                     { label: '탄소 저감',       value: `${carbonSaved.toLocaleString()}kg CO₂`, sub: '통근 대체 효과',        color: 'text-emerald-500' },
                     { label: '지역 소비 기여',  value: spendFmt(totalSpend),                    sub: '숙박·식음료·체험',      color: 'text-amber-500'   },
                   ].map(s => (
@@ -274,7 +278,7 @@ export default function GovReportPage() {
                 <div className="flex flex-col gap-3 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#475569]">총 배정 예산</span>
-                    <span className="font-bold">{spendFmt(JEJU_BUDGET)}</span>
+                    <span className="font-bold">{spendFmt(GANGWON_BUDGET)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#475569]">집행 완료</span>
@@ -286,7 +290,7 @@ export default function GovReportPage() {
                   </div>
                   <div className="flex justify-between text-xs text-[#94A3B8]">
                     <span>집행률 {budgetPct}%</span>
-                    <span>잔여 {spendFmt(Math.max(0, JEJU_BUDGET - totalSubsidy))}</span>
+                    <span>잔여 {spendFmt(Math.max(0, GANGWON_BUDGET - totalSubsidy))}</span>
                   </div>
                 </div>
                 <div className="bg-white rounded-xl p-3 text-xs text-[#475569] leading-relaxed">

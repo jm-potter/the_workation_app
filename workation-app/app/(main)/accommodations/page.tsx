@@ -63,11 +63,17 @@ export default function AccommodationsPage() {
       .reduce((sum, s) => sum + s.amount_per_person, 0)
   }
 
-  const filtered = accommodations.filter(a => {
-    if (location === '전체') return true
-    const aliases = LOCATION_ALIASES[location] ?? [location]
-    return aliases.some(alias => a.region.includes(alias))
-  })
+  const filtered = accommodations
+    .filter(a => {
+      if (location === '전체') return true
+      const aliases = LOCATION_ALIASES[location] ?? [location]
+      return aliases.some(alias => a.region.includes(alias))
+    })
+    .sort((a, b) => {
+      const aGangwon = a.region.includes('강원') ? 0 : 1
+      const bGangwon = b.region.includes('강원') ? 0 : 1
+      return aGangwon - bGangwon
+    })
 
   const aiRecommended = accommodations
     .filter(a => a.tags?.includes(aiStyle))
