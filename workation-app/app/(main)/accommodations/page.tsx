@@ -23,9 +23,10 @@ type SubsidyInfo = {
   amount_per_person: number
 }
 
-const LOCATIONS = ['전체', '강원도', '제주도', '전라남도', '전라북도']
+const LOCATIONS = ['전체', '경기/인천', '강원도', '제주도', '전라남도', '전라북도']
 
 const LOCATION_ALIASES: Record<string, string[]> = {
+  '경기/인천': ['경기도', '경기', '인천광역시', '인천'],
   '강원도': ['강원도', '강원특별자치도'],
   '제주도': ['제주도', '제주특별자치도'],
   '전라남도': ['전라남도'],
