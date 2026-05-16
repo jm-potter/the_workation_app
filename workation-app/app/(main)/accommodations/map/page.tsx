@@ -86,8 +86,8 @@ export default function MapPage() {
     if (!mapLoaded || !mapRef.current || accommodations.length === 0) return
 
     const { kakao } = window
-    const center = new kakao.maps.LatLng(36.2, 127.8)
-    const map = new kakao.maps.Map(mapRef.current, { center, level: 12, maxLevel: 12 })
+    const center = new kakao.maps.LatLng(35.9, 127.7)
+    const map = new kakao.maps.Map(mapRef.current, { center, level: 11, maxLevel: 11 })
     mapInstanceRef.current = map
 
     // 남한 영역 벗어나면 되돌아오기
