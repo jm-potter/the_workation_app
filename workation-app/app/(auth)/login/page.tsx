@@ -36,7 +36,7 @@ export default function LoginPage() {
           ← 뒤로가기
         </Link>
         <div className="text-center mb-8">
-          <Link href="/" className="text-xl font-black text-[#0F172A]">The Workation</Link>
+          <Link href="/" className="text-xl font-black text-[#0F172A]">더 워케이션</Link>
           <p className="text-sm text-[#475569] mt-2">계정에 로그인하세요</p>
         </div>
 

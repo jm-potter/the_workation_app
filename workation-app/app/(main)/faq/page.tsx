@@ -9,8 +9,8 @@ const FAQ_DATA = [
     category: '💼 서비스 이용',
     items: [
       {
-        q: 'The Workation은 어떤 서비스인가요?',
-        a: 'The Workation은 기업 인사담당자와 직원들을 위한 B2B 워케이션 플랫폼입니다. 숙소 검색부터 단체 예약, 예산 관리, 지원금 신청까지 워케이션에 필요한 모든 과정을 한 곳에서 처리할 수 있습니다.',
+        q: '더 워케이션은 어떤 서비스인가요?',
+        a: '더 워케이션은 기업 인사담당자와 직원들을 위한 B2B 워케이션 플랫폼입니다. 숙소 검색부터 단체 예약, 예산 관리, 지원금 신청까지 워케이션에 필요한 모든 과정을 한 곳에서 처리할 수 있습니다.',
       },
       {
         q: '회원가입은 어떻게 하나요?',
@@ -48,11 +48,11 @@ const FAQ_DATA = [
       },
       {
         q: '지원금은 언제, 어떻게 지급되나요?',
-        a: 'The Workation이 예약 시 지원금을 선공제하여 실제 결제 금액을 낮춰드립니다. 워케이션 종료 후 지자체 정산은 저희가 대행하므로 별도 절차 없이 편리하게 이용 가능합니다.',
+        a: '더 워케이션이 예약 시 지원금을 선공제하여 실제 결제 금액을 낮춰드립니다. 워케이션 종료 후 지자체 정산은 저희가 대행하므로 별도 절차 없이 편리하게 이용 가능합니다.',
       },
       {
         q: '지원금 신청에 필요한 서류가 있나요?',
-        a: '재직증명서 또는 사업자등록증이 필요할 수 있습니다. The Workation에서 필요 서류를 안내해 드리며, 대부분의 경우 플랫폼 내에서 간편하게 제출할 수 있습니다.',
+        a: '재직증명서 또는 사업자등록증이 필요할 수 있습니다. 더 워케이션에서 필요 서류를 안내해 드리며, 대부분의 경우 플랫폼 내에서 간편하게 제출할 수 있습니다.',
       },
     ],
   },
@@ -116,7 +116,7 @@ export default function FaqPage() {
       <header className="px-6 py-5 flex justify-between items-center max-w-6xl mx-auto">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">← 뒤로</Link>
-          <Link href="/" className="text-lg font-bold">The Workation</Link>
+          <Link href="/" className="text-lg font-bold">더 워케이션</Link>
         </div>
         <div className="flex gap-3">
           <Link href="/login">

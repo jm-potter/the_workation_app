@@ -46,14 +46,14 @@ export default function GovPostPage() {
     <div className="min-h-screen bg-[#F8FAFC]">
       <header className="sticky top-0 z-50 bg-[#F8FAFC]/90 backdrop-blur border-b border-[#E2E8F0] px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-black text-lg">The Workation</span>
+          <span className="font-black text-lg">더 워케이션</span>
           <Badge variant="gov">지자체</Badge>
         </div>
       </header>
       <div className="max-w-md mx-auto px-6 py-20 text-center">
         <div className="w-20 h-20 bg-emerald-500/10 border-2 border-emerald-500/30 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">✅</div>
         <h1 className="text-2xl font-black mb-2">공고 등록 완료!</h1>
-        <p className="text-[#475569] mb-2">지원금 공고가 The Workation에 등록됐습니다.</p>
+        <p className="text-[#475569] mb-2">지원금 공고가 더 워케이션에 등록됐습니다.</p>
         <p className="text-sm text-[#94A3B8] mb-8">기업 담당자가 숙소 예약 시 자동으로 매칭되어 표시됩니다.</p>
         <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 text-left mb-8 text-sm flex flex-col gap-3">
           <div className="font-bold">{name || '강원도 워케이션 지원사업'}</div>

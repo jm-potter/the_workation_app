@@ -45,7 +45,7 @@ export default function Header({ role: roleProp, userName: nameProp }: HeaderPro
             ← 뒤로
           </button>
           <Link href="/" className="text-lg font-bold text-[#0F172A] tracking-tight">
-            The Workation
+            더 워케이션
           </Link>
         </div>
 

@@ -200,7 +200,7 @@ export default function BillingPage() {
             <span className="text-lg">💰</span>
             <h2 className="font-bold text-sm">지원금 신청 현황</h2>
           </div>
-          <p className="text-xs text-[#475569] mb-4 ml-7">The Workation이 자동으로 신청 · 관리해드립니다</p>
+          <p className="text-xs text-[#475569] mb-4 ml-7">더 워케이션이 자동으로 신청 · 관리해드립니다</p>
           <div className="flex flex-col gap-2">
             {(subsidyStatus.length > 0 ? subsidyStatus : [
               { region: '연결된 지원금 없음', name: '', amount: 0, status: '신청 예정' }

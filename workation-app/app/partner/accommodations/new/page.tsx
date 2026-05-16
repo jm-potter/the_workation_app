@@ -78,7 +78,7 @@ export default function NewAccommodationPage() {
           ✅
         </div>
         <h1 className="text-2xl font-black mb-2">숙소 등록 완료!</h1>
-        <p className="text-[#475569] mb-2">The Workation 운영팀이 검토 후 24시간 내 승인 처리됩니다.</p>
+        <p className="text-[#475569] mb-2">더 워케이션 운영팀이 검토 후 24시간 내 승인 처리됩니다.</p>
         <p className="text-sm text-[#94A3B8] mb-8">승인 완료 시 이메일로 안내드립니다.</p>
         <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 text-left mb-8">
           <div className="font-bold text-base mb-3">{name}</div>

@@ -41,7 +41,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-[#334155] pt-6 text-xs text-[#475569] text-center">
-          © 2026 The Workation. All rights reserved.
+          © 2026 더 워케이션. All rights reserved.
         </div>
       </div>
     </footer>
