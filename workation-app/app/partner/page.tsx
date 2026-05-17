@@ -18,7 +18,8 @@ type Booking = {
 type UserRow = { id: string; name: string; email: string }
 
 const statusLabel: Record<string, string> = { confirmed: '확정', pending: '대기중', cancelled: '취소' }
-const PARTNER_NAME = '다자요 고산도들집'
+const PARTNER_REGION = '춘천'
+const PARTNER_DISPLAY = '강원도 춘천 워케이션 파트너'
 
 function nights(start: string, end: string) {
   return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
@@ -48,7 +49,7 @@ export default function PartnerPage() {
     })
   }, [])
 
-  const myBookings    = bookings.filter(b => b.accommodations?.name === PARTNER_NAME)
+  const myBookings    = bookings.filter(b => b.accommodations?.region?.includes(PARTNER_REGION))
   const confirmed     = myBookings.filter(b => b.status === 'confirmed')
   const pending       = myBookings.filter(b => b.status === 'pending')
   const monthRevenue  = confirmed.reduce((s, b) => s + (b.total_price ?? 0), 0)
@@ -61,7 +62,7 @@ export default function PartnerPage() {
           <span className="font-black text-lg">더 워케이션</span>
           <Badge variant="prt">파트너</Badge>
         </div>
-        <span className="text-sm text-[#94A3B8]">{PARTNER_NAME}</span>
+        <span className="text-sm text-[#94A3B8]">{PARTNER_DISPLAY}</span>
         {pending.length > 0 && (
           <span className="text-xs bg-amber-500 text-white font-bold px-2.5 py-1 rounded-full">
             대기중 {pending.length}건
