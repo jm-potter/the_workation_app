@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Badge from './Badge'
 import type { UserRole } from '@/lib/types'
@@ -44,8 +45,15 @@ export default function Header({ role: roleProp, userName: nameProp }: HeaderPro
           <button onClick={() => router.back()} className="text-sm text-[#94A3B8] hover:text-[#475569] transition-colors">
             ← 뒤로
           </button>
-          <Link href="/" className="text-lg font-bold text-[#0F172A] tracking-tight">
-            더 워케이션
+          <Link href="/">
+            <Image
+              src="/logo.jpg"
+              alt="더 워케이션"
+              width={120}
+              height={107}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
         </div>
 
