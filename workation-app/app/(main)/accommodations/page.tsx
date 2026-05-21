@@ -39,9 +39,15 @@ export default function AccommodationsPage() {
   const [loading, setLoading]               = useState(true)
   const [location, setLocation]             = useState('전체')
   const [aiPeople, setAiPeople]             = useState(4)
+  const [aiDays, setAiDays]                 = useState(2)
   const [aiStyle, setAiStyle]               = useState('집중')
   const [aiLoading, setAiLoading]           = useState(false)
   const [aiDone, setAiDone]                 = useState(false)
+  const [aiError, setAiError]               = useState('')
+  const [aiResult, setAiResult]             = useState<{
+    recommendations: { id: string; rank: number; reason: string }[]
+    summary: string
+  } | null>(null)
 
   useEffect(() => {
     async function fetchAccommodations() {
@@ -75,19 +81,46 @@ export default function AccommodationsPage() {
       return aGangwon - bGangwon
     })
 
-  const aiRecommended = accommodations
-    .filter(a => a.tags?.includes(aiStyle))
-    .sort((a, b) => {
-      if (a.name.includes('비안단테')) return -1
-      if (b.name.includes('비안단테')) return 1
-      return 0
-    })
-    .slice(0, 3)
+  const aiRecommended = aiResult
+    ? aiResult.recommendations
+        .sort((a, b) => a.rank - b.rank)
+        .map(r => ({
+          acc: accommodations.find(a => a.id === r.id),
+          reason: r.reason,
+          rank: r.rank,
+        }))
+        .filter(r => r.acc != null) as { acc: Accommodation; reason: string; rank: number }[]
+    : []
 
-  function handleAiMatch() {
+  async function handleAiMatch() {
     setAiLoading(true)
     setAiDone(false)
-    setTimeout(() => { setAiLoading(false); setAiDone(true) }, 1800)
+    setAiError('')
+    setAiResult(null)
+    try {
+      const res = await fetch('/api/accommodations/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          people: aiPeople,
+          style: aiStyle,
+          days: aiDays,
+          accommodations,
+          subsidies,
+        }),
+      })
+      const data = await res.json()
+      if (data.recommendations) {
+        setAiResult(data)
+        setAiDone(true)
+      } else {
+        setAiError(data.error ?? 'AI 추천에 실패했습니다.')
+      }
+    } catch {
+      setAiError('서버 오류가 발생했습니다.')
+    } finally {
+      setAiLoading(false)
+    }
   }
 
   return (
@@ -124,6 +157,18 @@ export default function AccommodationsPage() {
               </div>
 
               <div>
+                <label className="text-xs text-blue-200 mb-1.5 block font-medium">기간</label>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setAiDays(Math.max(1, aiDays - 1))}
+                    className="w-8 h-8 rounded-lg bg-white/15 border border-white/20 text-white hover:bg-white/25 transition-colors font-bold">-</button>
+                  <span className="font-black text-white w-7 text-center text-lg">{aiDays}</span>
+                  <button onClick={() => setAiDays(Math.min(14, aiDays + 1))}
+                    className="w-8 h-8 rounded-lg bg-white/15 border border-white/20 text-white hover:bg-white/25 transition-colors font-bold">+</button>
+                  <span className="text-sm text-blue-200">박</span>
+                </div>
+              </div>
+
+              <div>
                 <label className="text-xs text-blue-200 mb-1.5 block font-medium">워케이션 스타일</label>
                 <div className="flex gap-2">
                   {['집중', '힐링', '팀빌딩', '액티비티'].map(s => (
@@ -139,9 +184,11 @@ export default function AccommodationsPage() {
                 </div>
               </div>
 
-              <button onClick={handleAiMatch} disabled={aiLoading}
+              <button onClick={handleAiMatch} disabled={aiLoading || accommodations.length === 0}
                 className="px-6 py-2.5 bg-white hover:bg-blue-50 disabled:opacity-60 text-blue-700 text-sm font-black rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95">
-                {aiLoading ? '분석 중...' : '✨ AI 추천 받기'}
+                {aiLoading
+                  ? <span className="flex items-center gap-2"><span className="w-4 h-4 border-2 border-blue-700 border-t-transparent rounded-full animate-spin" />분석 중...</span>
+                  : '✨ AI 추천 받기'}
               </button>
             </div>
           </div>
@@ -149,38 +196,48 @@ export default function AccommodationsPage() {
           {aiLoading && (
             <div className="relative flex items-center gap-3 pt-5 text-sm text-blue-100">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              AI가 {aiPeople}명 팀에 최적화된 숙소를 분석하고 있어요...
+              Claude AI가 {aiPeople}명 팀에 맞는 {aiStyle} 스타일 숙소를 분석하고 있어요...
             </div>
           )}
 
-          {aiDone && !aiLoading && (
+          {aiError && !aiLoading && (
+            <div className="relative mt-4 text-sm text-red-300 bg-red-500/10 border border-red-400/20 rounded-xl px-4 py-3">
+              {aiError}
+            </div>
+          )}
+
+          {aiDone && !aiLoading && aiResult && (
             <div className="relative mt-5">
-              <p className="text-xs text-blue-200 mb-3">✅ {aiPeople}명 · {aiStyle} 스타일 기준 추천 결과</p>
+              <div className="flex items-center gap-2 mb-3">
+                <p className="text-xs text-blue-200">✅ {aiPeople}명 · {aiDays}박 · {aiStyle} 스타일 AI 분석 완료</p>
+              </div>
+              {aiResult.summary && (
+                <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 mb-3 text-xs text-blue-100">
+                  💬 {aiResult.summary}
+                </div>
+              )}
               <div className="grid grid-cols-3 gap-3">
-                {(aiRecommended.length > 0 ? aiRecommended : [...accommodations].sort((a, b) => a.name.includes('비안단테') ? -1 : b.name.includes('비안단테') ? 1 : 0).slice(0, 3)).map((acc, i) => (
+                {aiRecommended.map(({ acc, reason, rank }) => (
                   <Link key={acc.id} href={`/accommodations/${acc.id}`}>
                     <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">
-                          {i === 0 ? '🥇 1순위' : i === 1 ? '🥈 2순위' : '🥉 3순위'}
+                          {rank === 1 ? '🥇 1순위' : rank === 2 ? '🥈 2순위' : '🥉 3순위'}
                         </span>
                         <span className="text-xs font-bold text-blue-200">{acc.price_per_night.toLocaleString()}원/박</span>
                       </div>
-                      <div className="font-semibold text-sm text-white mb-1">{acc.name}</div>
+                      <div className="font-semibold text-sm text-white mb-0.5">{acc.name}</div>
                       <div className="text-xs text-blue-200 mb-2">📍 {acc.region}</div>
+                      <div className="text-xs text-yellow-200 mb-2 bg-white/10 rounded-lg px-2 py-1">
+                        ✨ {reason}
+                      </div>
                       {getSubsidyTotal(acc.region) > 0 && (
-                        <div className="flex items-center gap-1 mb-2">
+                        <div className="flex items-center gap-1 mb-1">
                           <span className="text-xs bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 rounded-full font-semibold">
-                            💰 1인당 {getSubsidyTotal(acc.region).toLocaleString()}원 할인
+                            💰 {aiPeople}명 기준 {(getSubsidyTotal(acc.region) * aiPeople).toLocaleString()}원 절감
                           </span>
                         </div>
                       )}
-                      {getSubsidyTotal(acc.region) > 0 && (
-                        <div className="text-xs text-blue-200 mb-2">
-                          {aiPeople}명 기준 <span className="text-emerald-300 font-bold">{(getSubsidyTotal(acc.region) * aiPeople).toLocaleString()}원</span> 절감
-                        </div>
-                      )}
-                      <p className="text-xs text-blue-100 leading-relaxed line-clamp-2">{acc.description}</p>
                     </div>
                   </Link>
                 ))}

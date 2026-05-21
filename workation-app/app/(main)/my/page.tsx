@@ -156,6 +156,29 @@ export default function MyPage() {
           </div>
         )}
 
+        {/* 퀵 액션 버튼 2개 */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <Link href="/focus"
+            className="flex items-center gap-3 bg-gradient-to-r from-[#1e3a8a] to-[#7c3aed] rounded-2xl p-5 hover:opacity-90 transition-opacity group">
+            <span className="text-2xl">🍅</span>
+            <div className="flex-1">
+              <div className="text-white font-black text-sm">집중 모드</div>
+              <div className="text-blue-200 text-xs mt-0.5">뽀모도로 · 알리바이 획득</div>
+            </div>
+            <span className="text-white/60 group-hover:text-white transition-colors">→</span>
+          </Link>
+
+          <Link href="/documents"
+            className="flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-5 hover:opacity-90 transition-opacity group">
+            <span className="text-2xl">📄</span>
+            <div className="flex-1">
+              <div className="text-white font-black text-sm">업무 인증</div>
+              <div className="text-emerald-100 text-xs mt-0.5">증빙 서류 업로드</div>
+            </div>
+            <span className="text-white/60 group-hover:text-white transition-colors">→</span>
+          </Link>
+        </div>
+
         {/* 예약 목록 */}
         <h2 className="font-black text-lg mb-4">내 워케이션 기록</h2>
 

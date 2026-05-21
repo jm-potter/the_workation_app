@@ -1,28 +1,142 @@
 'use client'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 import { useHrOnly } from '@/lib/useHrOnly'
+import { supabase } from '@/lib/supabase'
 
-const BEFORE_AFTER = [
-  { label: '업무 집중도',   before: 68, after: 84, unit: '%',  icon: '🎯' },
-  { label: '팀 결속력',    before: 72, after: 91, unit: '%',  icon: '🤝' },
-  { label: '직원 만족도',  before: 74, after: 92, unit: '%',  icon: '😊' },
-  { label: '이직 의향',    before: 38, after: 19, unit: '%',  icon: '🚪', reverse: true },
-  { label: '번아웃 지수',  before: 52, after: 31, unit: '%',  icon: '🔥', reverse: true },
-  { label: '협업 활동',    before: 64, after: 88, unit: '%',  icon: '💬' },
+const PERF_BENCHMARKS = [
+  { label: '업무 집중도',  before: 68, after: 84, unit: '%', icon: '🎯' },
+  { label: '팀 결속력',   before: 72, after: 91, unit: '%', icon: '🤝' },
+  { label: '직원 만족도', before: 74, after: 92, unit: '%', icon: '😊' },
+  { label: '이직 의향',   before: 38, after: 19, unit: '%', icon: '🚪', reverse: true },
+  { label: '번아웃 지수', before: 52, after: 31, unit: '%', icon: '🔥', reverse: true },
+  { label: '협업 활동',   before: 64, after: 88, unit: '%', icon: '💬' },
 ]
 
-const CARBON = {
-  avgCommute:   28.5,
-  days:         3,
-  people:       28,
-  coefficient:  0.21,
+type BookingRow = {
+  id: string
+  start_date: string
+  end_date: string
+  guests: number
+  total_price: number
+  status: string
+  accommodations: { name: string; region: string; location: string } | null
 }
-const carbonSaved = Math.round(CARBON.avgCommute * 2 * CARBON.days * CARBON.people * CARBON.coefficient)
+
+type SubsidyRow = { region: string; name: string; amount_per_person: number }
+
+function normalizeRegion(r: string) {
+  return r.replace('특별자치도', '도').replace('특별자치시', '시').replace('특별시', '시').replace('광역시', '시').split(' ')[0]
+}
+function regionMatch(a: string, b: string) {
+  if (!a || !b) return false
+  const na = normalizeRegion(a), nb = normalizeRegion(b)
+  return na.includes(nb) || nb.includes(na)
+}
+function daysBetween(start: string, end: string) {
+  return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000))
+}
 
 export default function ReportPage() {
   useHrOnly()
+
+  const [bookings,   setBookings]   = useState<BookingRow[]>([])
+  const [subsidies,  setSubsidies]  = useState<SubsidyRow[]>([])
+  const [companyName, setCompany]   = useState('우리 회사')
+  const [loading,    setLoading]    = useState(true)
+  const [aiSummary,  setAiSummary]  = useState('')
+  const [aiLoading,  setAiLoading]  = useState(false)
+  const [aiError,    setAiError]    = useState('')
+
+  useEffect(() => {
+    Promise.all([
+      supabase
+        .from('bookings')
+        .select('*, accommodations(name, region, location)')
+        .eq('status', 'confirmed')
+        .order('start_date', { ascending: false }),
+      supabase.from('subsidies').select('region, name, amount_per_person'),
+      supabase.auth.getUser(),
+    ]).then(async ([{ data: bData }, { data: sData }, { data: uData }]) => {
+      if (bData) setBookings(bData as any)
+      if (sData) setSubsidies(sData)
+
+      const companyId = uData.user?.user_metadata?.company_id
+      if (companyId) {
+        const { data: co } = await supabase
+          .from('companies')
+          .select('name')
+          .eq('id', companyId)
+          .single()
+        if (co?.name) setCompany(co.name)
+      }
+      setLoading(false)
+    })
+  }, [])
+
+  const confirmed = bookings
+  const participants = confirmed.reduce((s, b) => s + (b.guests ?? 0), 0)
+  const totalBudget  = confirmed.reduce((s, b) => s + (b.total_price ?? 0), 0)
+
+  const subsidySaved = confirmed.reduce((s, b) => {
+    const region = b.accommodations?.region ?? ''
+    if (!region) return s
+    return s + subsidies
+      .filter(sub => regionMatch(region, sub.region))
+      .reduce((a, sub) => a + sub.amount_per_person * (b.guests ?? 0), 0)
+  }, 0)
+
+  const latest       = confirmed[0]
+  const accomName    = latest?.accommodations?.name ?? '워케이션 숙소'
+  const region       = latest?.accommodations?.region ?? ''
+  const startDate    = latest?.start_date ?? ''
+  const endDate      = latest?.end_date ?? ''
+  const days         = startDate && endDate ? daysBetween(startDate, endDate) : 3
+
+  const carbonSaved  = Math.round(28.5 * 2 * days * (participants || 28) * 0.21)
+  const localSpend   = (participants || 28) * days * 100000
+  const roi          = totalBudget > 0
+    ? (((participants * 84 * 50000) - totalBudget) / totalBudget + 1).toFixed(1)
+    : '3.2'
+
+  const generateAI = useCallback(async () => {
+    setAiLoading(true)
+    setAiError('')
+    try {
+      const res = await fetch('/api/report/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyName,
+          accommodationName: accomName,
+          region,
+          startDate,
+          endDate,
+          participants: participants || 28,
+          totalBudget,
+          subsidySaved,
+          days,
+        }),
+      })
+      const data = await res.json()
+      if (data.summary) setAiSummary(data.summary)
+      else setAiError(data.error ?? 'AI 생성에 실패했습니다.')
+    } catch {
+      setAiError('서버 오류가 발생했습니다.')
+    } finally {
+      setAiLoading(false)
+    }
+  }, [companyName, accomName, region, startDate, endDate, participants, totalBudget, subsidySaved, days])
+
+  const summaryText = aiSummary || (
+    `이번 워케이션(${participants || 28}명)은 직원 만족도 +18%p, 팀 결속력 +19%p 향상을 이끌어냈습니다. ` +
+    `지원금 ${subsidySaved.toLocaleString()}원 절감으로 실질 비용 부담이 줄었으며, ` +
+    `투자 대비 생산성·리텐션 효과를 종합한 ROI는 ${roi}배로 측정됩니다. ` +
+    `통근 거리 감소로 인한 탄소 ${carbonSaved}kg 저감은 ESG 경영 지표에 반영 가능합니다.`
+  )
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Header role="hr" />
@@ -33,7 +147,17 @@ export default function ReportPage() {
           <div>
             <Link href="/dashboard" className="text-xs text-[#94A3B8] hover:text-[#475569] mb-2 block">← 대시보드</Link>
             <h1 className="text-2xl font-black mb-1">워케이션 성과 리포트</h1>
-            <p className="text-sm text-[#475569]">삼성전자 · 강릉 씨사이드 · 2026년 6월 10~13일 · 28명 참여</p>
+            {loading ? (
+              <p className="text-sm text-[#94A3B8]">데이터 불러오는 중...</p>
+            ) : (
+              <p className="text-sm text-[#475569]">
+                {companyName}
+                {accomName !== '워케이션 숙소' && ` · ${accomName}`}
+                {region && ` (${region})`}
+                {startDate && ` · ${startDate}${endDate ? ` ~ ${endDate}` : ''}`}
+                {participants > 0 && ` · ${participants}명 참여`}
+              </p>
+            )}
           </div>
           <div className="flex gap-2">
             <button className="text-sm px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl hover:border-blue-500/50 transition-colors">
@@ -51,14 +175,25 @@ export default function ReportPage() {
             <span className="text-lg">📋</span>
             <h2 className="font-bold">경영진 요약 (Executive Summary)</h2>
             <span className="text-xs bg-blue-500/20 text-blue-600 px-2 py-0.5 rounded-full border border-blue-500/30">AI 생성</span>
+            <button
+              onClick={generateAI}
+              disabled={aiLoading}
+              className="ml-auto text-xs px-3 py-1 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-1"
+            >
+              {aiLoading ? (
+                <><span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" /> 생성 중...</>
+              ) : (
+                '✨ AI 재생성'
+              )}
+            </button>
           </div>
 
           <div className="grid grid-cols-4 gap-4 mb-5">
             {[
-              { label: 'ROI',        value: '3.2배',   sub: '투자 대비 효과',   color: 'text-blue-400' },
-              { label: '만족도 향상', value: '+18%p',  sub: '직원 설문 기준',   color: 'text-emerald-400' },
-              { label: '이직 의향',   value: '-19%p',  sub: '리텐션 효과',     color: 'text-purple-400' },
-              { label: '탄소 저감',   value: `${carbonSaved}kg`, sub: 'CO₂ 절감', color: 'text-amber-400' },
+              { label: 'ROI',        value: `${roi}배`,                       sub: '투자 대비 효과',   color: 'text-blue-400' },
+              { label: '만족도 향상', value: '+18%p',                          sub: '직원 설문 기준',   color: 'text-emerald-400' },
+              { label: '지원금 절감', value: `${(subsidySaved/10000).toFixed(0)}만원`, sub: '지자체 지원금', color: 'text-purple-400' },
+              { label: '탄소 저감',   value: `${carbonSaved}kg`,               sub: 'CO₂ 절감',       color: 'text-amber-400' },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-xl p-4 text-center">
                 <div className={`text-2xl font-black ${s.color} mb-1`}>{s.value}</div>
@@ -68,23 +203,30 @@ export default function ReportPage() {
             ))}
           </div>
 
-          <div className="bg-white rounded-xl p-4 text-sm leading-relaxed text-[#475569]">
-            <p>
-              이번 강릉 워케이션(6/10~13, 28명)은 <strong className="text-blue-600">직원 만족도 +18%p, 팀 결속력 +19%p</strong> 향상을 이끌어냈습니다.
-              특히 이직 의향이 <strong className="text-emerald-400">38% → 19%로 절반 수준으로 감소</strong>하여 인재 유지 비용 절감 효과가 두드러집니다.
-              투자 비용 대비 생산성·리텐션 효과를 종합한 <strong className="text-blue-600">ROI는 3.2배</strong>로 측정됐으며,
-              통근 거리 감소로 인한 <strong className="text-amber-400">탄소 {carbonSaved}kg 저감</strong>은 ESG 경영 지표에 반영 가능합니다.
-            </p>
+          <div className="bg-white rounded-xl p-4 text-sm leading-relaxed text-[#475569] min-h-[80px]">
+            {aiLoading ? (
+              <div className="flex items-center gap-2 text-[#94A3B8]">
+                <span className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                Claude AI가 리포트를 작성하고 있습니다...
+              </div>
+            ) : aiError ? (
+              <p className="text-red-400 text-xs">{aiError}</p>
+            ) : (
+              <p>{summaryText}</p>
+            )}
           </div>
         </div>
 
         {/* 성과 상세 — 전후 비교 */}
         <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 mb-6">
-          <h2 className="font-bold mb-5">📊 지표별 상세 비교 (워케이션 전 → 후)</h2>
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="font-bold">📊 지표별 상세 비교 (워케이션 전 → 후)</h2>
+          </div>
+          <p className="text-xs text-[#94A3B8] mb-5">업계 평균 기반 예측값 · 실제 설문 연동 시 자동 업데이트</p>
           <div className="grid grid-cols-3 gap-4">
-            {BEFORE_AFTER.map(p => {
-              const diff    = p.reverse ? p.before - p.after : p.after - p.before
-              const isGood  = p.reverse ? p.after < p.before : p.after > p.before
+            {PERF_BENCHMARKS.map(p => {
+              const diff   = p.reverse ? p.before - p.after : p.after - p.before
+              const isGood = p.reverse ? p.after < p.before : p.after > p.before
               return (
                 <div key={p.label} className="bg-[#F1F5F9] rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
@@ -127,9 +269,9 @@ export default function ReportPage() {
 
           <div className="grid grid-cols-3 gap-4 mb-4">
             {[
-              { label: '탄소 저감량',      value: `${carbonSaved}kg CO₂`,   sub: '통근 대체 효과',       color: 'text-emerald-400' },
-              { label: '지역 소비 기여',   value: '약 840만원',               sub: `${CARBON.people}명 × 3일 × 10만원`, color: 'text-blue-400' },
-              { label: '지방소멸 기여',    value: '생활인구 28명',             sub: '강릉시 유입',         color: 'text-amber-400' },
+              { label: '탄소 저감량',     value: `${carbonSaved}kg CO₂`,                        sub: '통근 대체 효과',              color: 'text-emerald-400' },
+              { label: '지역 소비 기여',  value: `약 ${(localSpend/10000).toLocaleString()}만원`, sub: `${participants||28}명 × ${days}일 × 10만원`, color: 'text-blue-400' },
+              { label: '지방소멸 기여',   value: `생활인구 ${participants||28}명`,                sub: `${region||'워케이션 지역'} 유입`,              color: 'text-amber-400' },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-xl p-4">
                 <div className={`text-xl font-black ${s.color} mb-1`}>{s.value}</div>
@@ -140,7 +282,7 @@ export default function ReportPage() {
           </div>
 
           <div className="bg-white rounded-xl p-4 text-xs text-[#94A3B8] leading-relaxed">
-            <strong className="text-[#475569]">산출 기준:</strong> 평균 통근 거리 {CARBON.avgCommute}km × 왕복 × {CARBON.days}일 × {CARBON.people}명 × 0.21kgCO₂/km = <strong className="text-emerald-400">{carbonSaved}kg CO₂</strong> 저감.
+            <strong className="text-[#475569]">산출 기준:</strong> 평균 통근 거리 28.5km × 왕복 × {days}일 × {participants||28}명 × 0.21kgCO₂/km = <strong className="text-emerald-400">{carbonSaved}kg CO₂</strong> 저감.
             본 수치는 기업 ESG 보고서 및 탄소중립 공시에 활용 가능합니다.
           </div>
         </div>
