@@ -60,6 +60,16 @@ export default function MyPage() {
   const [loading, setLoading]     = useState(true)
   const [uploading, setUploading] = useState<string | null>(null)
   const [openId, setOpenId]       = useState<string | null>(null)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  useEffect(() => {
+    if (!localStorage.getItem('wk-onboarded')) setShowOnboarding(true)
+  }, [])
+
+  function dismissOnboarding() {
+    localStorage.setItem('wk-onboarded', '1')
+    setShowOnboarding(false)
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -156,6 +166,91 @@ export default function MyPage() {
           </div>
         )}
 
+        {/* 온보딩 체크리스트 */}
+        {showOnboarding && (
+          <div className="bg-white border border-blue-200 rounded-2xl p-5 mb-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="font-black text-base">👋 처음 오셨군요! 이렇게 시작하세요</h2>
+                <p className="text-xs text-[#94A3B8] mt-0.5">4단계만 따라오면 워케이션 준비 완료</p>
+              </div>
+              <button onClick={dismissOnboarding}
+                className="text-[#CBD5E1] hover:text-[#94A3B8] transition-colors text-xl leading-none px-1">
+                ×
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2 mb-4">
+              {[
+                {
+                  step: 1,
+                  done: true,
+                  icon: '✅',
+                  title: '계정 가입 완료',
+                  desc: '더 워케이션에 오신 걸 환영해요!',
+                  href: null,
+                },
+                {
+                  step: 2,
+                  done: false,
+                  icon: '🏨',
+                  title: '숙소 둘러보기',
+                  desc: 'AI 추천으로 팀에 맞는 숙소를 찾아보세요',
+                  href: '/accommodations',
+                  cta: '숙소 보러가기 →',
+                },
+                {
+                  step: 3,
+                  done: bookings.some(b => b.status === 'confirmed'),
+                  icon: '📅',
+                  title: '첫 예약 완료',
+                  desc: '지원금 자동 적용으로 더 저렴하게 예약해요',
+                  href: bookings.some(b => b.status === 'confirmed') ? null : '/accommodations',
+                  cta: '예약하러 가기 →',
+                },
+                {
+                  step: 4,
+                  done: false,
+                  icon: '🍅',
+                  title: '집중 모드 체험',
+                  desc: '할 일 선언 후 뽀모도로로 오늘의 알리바이를 획득하세요',
+                  href: '/focus',
+                  cta: '집중 모드 시작 →',
+                },
+              ].map(s => (
+                <div key={s.step} className={`flex items-center gap-3 rounded-xl px-4 py-3 border transition-all ${
+                  s.done
+                    ? 'bg-emerald-500/5 border-emerald-500/20'
+                    : 'bg-[#F8FAFC] border-[#E2E8F0]'
+                }`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
+                    s.done ? 'bg-emerald-500 text-white' : 'bg-[#E2E8F0] text-[#94A3B8]'
+                  }`}>
+                    {s.done ? '✓' : s.step}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-sm font-semibold ${s.done ? 'text-emerald-600' : 'text-[#0F172A]'}`}>
+                      {s.title}
+                    </div>
+                    <div className="text-xs text-[#94A3B8] truncate">{s.desc}</div>
+                  </div>
+                  {!s.done && s.href && (
+                    <Link href={s.href}
+                      className="shrink-0 text-xs text-blue-500 hover:text-blue-700 font-semibold whitespace-nowrap">
+                      {s.cta}
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button onClick={dismissOnboarding}
+              className="w-full text-xs text-[#94A3B8] hover:text-[#475569] py-2 transition-colors">
+              나중에 볼게요
+            </button>
+          </div>
+        )}
+
         {/* 퀵 액션 버튼 2개 */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <Link href="/focus"
@@ -188,14 +283,67 @@ export default function MyPage() {
             불러오는 중...
           </div>
         ) : bookings.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-[#E2E8F0]">
-            <div className="text-5xl mb-4">✈️</div>
-            <p className="font-bold text-[#0F172A] mb-1">첫 워케이션을 떠나볼까요?</p>
-            <p className="text-sm text-[#94A3B8] mb-5">전국 제휴 숙소에서 일과 휴식을 동시에</p>
-            <Link href="/accommodations"
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
-              숙소 둘러보기 →
-            </Link>
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8">
+            <div className="text-center mb-8">
+              <div className="text-5xl mb-3">✈️</div>
+              <p className="font-black text-lg text-[#0F172A] mb-1">첫 워케이션을 떠나볼까요?</p>
+              <p className="text-sm text-[#94A3B8]">아래 순서대로 따라오면 3분 안에 준비 완료예요</p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {[
+                {
+                  step: '01',
+                  icon: '🔍',
+                  title: '숙소 찾기',
+                  desc: 'AI 추천으로 팀 인원·스타일에 딱 맞는 숙소를 골라요. 지원금 배지도 자동으로 표시돼요.',
+                  href: '/accommodations',
+                  cta: '숙소 보러가기',
+                  color: 'border-blue-200 bg-blue-50',
+                  ctaColor: 'bg-blue-500 hover:bg-blue-600',
+                },
+                {
+                  step: '02',
+                  icon: '📅',
+                  title: '예약하기',
+                  desc: '날짜·인원을 선택하면 지원금이 자동 차감돼요. 회사 예산에서 바로 처리됩니다.',
+                  href: '/accommodations',
+                  cta: '예약 시작하기',
+                  color: 'border-purple-200 bg-purple-50',
+                  ctaColor: 'bg-purple-500 hover:bg-purple-600',
+                },
+                {
+                  step: '03',
+                  icon: '🍅',
+                  title: '집중하고 즐기기',
+                  desc: '뽀모도로로 할 일을 끝내고 알리바이를 획득하면, 나머지 시간은 진짜 휴식이에요.',
+                  href: '/focus',
+                  cta: '집중 모드 체험',
+                  color: 'border-emerald-200 bg-emerald-50',
+                  ctaColor: 'bg-emerald-500 hover:bg-emerald-600',
+                },
+              ].map((s, i, arr) => (
+                <div key={s.step} className="relative">
+                  {i < arr.length - 1 && (
+                    <div className="hidden md:block absolute top-8 left-full w-4 text-center text-[#CBD5E1] z-10 -translate-x-2">→</div>
+                  )}
+                  <div className={`border rounded-2xl p-5 h-full flex flex-col ${s.color}`}>
+                    <div className="text-xs font-black text-[#94A3B8] mb-2">STEP {s.step}</div>
+                    <div className="text-2xl mb-2">{s.icon}</div>
+                    <div className="font-black text-sm text-[#0F172A] mb-2">{s.title}</div>
+                    <div className="text-xs text-[#475569] leading-relaxed flex-1 mb-4">{s.desc}</div>
+                    <Link href={s.href}
+                      className={`text-center text-xs text-white font-semibold px-4 py-2 rounded-xl transition-colors ${s.ctaColor}`}>
+                      {s.cta} →
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <p className="text-xs text-[#94A3B8]">궁금한 점이 있으면 <Link href="/faq" className="text-blue-500 hover:underline">FAQ</Link>를 확인해주세요</p>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
