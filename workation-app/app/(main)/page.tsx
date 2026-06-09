@@ -9,6 +9,7 @@ export default function LandingPage() {
       <header className="px-6 py-5 flex justify-between items-center max-w-6xl mx-auto">
         <span className="text-lg font-bold">더 워케이션</span>
         <nav className="flex items-center gap-6">
+          <Link href="/about" className="text-sm text-blue-600 font-bold hover:text-blue-700 transition-colors">회사/사업 모델 소개</Link>
           <Link href="/workation" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">워케이션이란?</Link>
           <Link href="/subsidy" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">지원금 안내</Link>
           <Link href="/partner" className="text-sm text-[#475569] hover:text-blue-500 transition-colors">파트너 등록</Link>
