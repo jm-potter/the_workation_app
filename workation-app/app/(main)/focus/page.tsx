@@ -390,6 +390,64 @@ export default function FocusPage() {
           </div>
         </div>
 
+        {/* 추가 예정 업무 기능 (로드맵) */}
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 mt-6">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl">🚀</span>
+            <h2 className="font-black text-lg">💡 마이 업무 툴 - 추가 예정 기능 로드맵</h2>
+          </div>
+          <p className="text-xs text-[#94A3B8] mb-6">
+            워케이션 임직원의 자율적이고 신뢰성 높은 업무 수행을 위해 곧 도입될 연동 기능입니다.
+          </p>
+
+          <div className="flex flex-col gap-4">
+            {[
+              {
+                title: '🔌 협업 툴 실시간 연동 (API)',
+                desc: 'Slack 메시지 전송 빈도, Notion 문서 수정 이력, Github 커밋 수 등 연동된 외부 협업 툴의 활동을 감지해 워케이션 중 실제 업무 수행 상태를 자동으로 증빙합니다.',
+                tag: '개발 예정 (CBT)',
+                tagColor: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+              },
+              {
+                title: '🧾 1-Billing 실시간 지출 청구 (OCR)',
+                desc: '워케이션 중 지출한 식비, 교통비, 카페 음료 비용 영수증을 사진 촬영하여 간편 업로드하면 OCR이 가맹점명과 세부 금액을 자동 인식하여 회사의 재무팀으로 즉시 청구 정산합니다.',
+                tag: '개발 예정 (CBT)',
+                tagColor: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+              },
+              {
+                title: '📶 카페/근무지 공유 & 네트워크 품질 체크',
+                desc: '현지에서 방문한 카페나 코워킹 스페이스의 인터넷(Wi-Fi) 속도, 소음도, 업무 편의성(콘센트 여부)을 원클릭으로 측정하고 평가하여 동료들에게 최적의 근무지를 실시간으로 공유합니다.',
+                tag: '기획 중',
+                tagColor: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+              },
+              {
+                title: '👥 동료 실시간 현황 위젯',
+                desc: '동일한 지역 또는 숙소 인근에서 워케이션을 보내고 있는 다른 부서 팀원들의 현재 상태(집중 모드 중, 휴식 중)와 오늘 목표 달성도를 실시간 소셜 위젯으로 공유하여 유기적으로 소통합니다.',
+                tag: '기획 중',
+                tagColor: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+              },
+              {
+                title: '✍️ AI 일일 업무 보고서 초안 생성 (LLM)',
+                desc: '오늘 작성한 마이크로 목표 달성 여부와 뽀모도로 타이머로 수집된 순수 딥워크 집중 데이터를 분석하여, 하루 업무를 마치면 자동으로 보고용 일지/이메일 초안을 인공지능이 완성해 줍니다.',
+                tag: '정식 출시 이후',
+                tagColor: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
+              },
+            ].map((feature, i) => (
+              <div key={i} className="border border-[#F1F5F9] rounded-xl p-4 bg-[#F8FAFC]/50 hover:bg-white transition-all duration-200 hover:shadow-sm">
+                <div className="flex items-center justify-between gap-4 mb-2 flex-wrap">
+                  <h3 className="font-bold text-sm text-[#0F172A]">{feature.title}</h3>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${feature.tagColor}`}>
+                    {feature.tag}
+                  </span>
+                </div>
+                <p className="text-xs text-[#475569] leading-relaxed">
+                  {feature.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
       <Footer />
     </div>

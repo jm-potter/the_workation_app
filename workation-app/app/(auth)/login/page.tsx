@@ -23,7 +23,7 @@ export default function LoginPage() {
       setError('이메일 또는 비밀번호가 올바르지 않아요')
     } else {
       const role = data.user?.user_metadata?.role
-      if (role === 'emp') router.push('/accommodations')
+      if (role === 'emp') router.push('/select')
       else if (role === 'hr') router.push('/dashboard')
       else router.push('/dashboard')
     }
