@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Badge from './Badge'
 import type { UserRole } from '@/lib/types'
-import { supabase } from '@/lib/supabase'
+import { supabase, BYPASS_AUTH } from '@/lib/supabase'
 
 const roleLabel: Record<UserRole, string> = {
   hr:  '인사담당자',
@@ -28,8 +28,13 @@ export default function Header({ role: roleProp, userName: nameProp }: HeaderPro
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       const meta = data.user?.user_metadata
-      if (meta?.role) setRole(meta.role as UserRole)
-      if (meta?.name) setName(meta.name)
+      if (meta?.role) {
+        setRole(meta.role as UserRole)
+        if (meta?.name) setName(meta.name)
+      } else if (BYPASS_AUTH) {
+        setRole('emp')
+        setName('김지민')
+      }
     })
   }, [])
 

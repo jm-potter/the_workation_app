@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/ui/Header'
 import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
-import { supabase } from '@/lib/supabase'
+import { supabase, BYPASS_AUTH } from '@/lib/supabase'
 
 export default function EmployeeSelectPage() {
   const router = useRouter()
@@ -17,8 +17,12 @@ export default function EmployeeSelectPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) {
-        // 로그인 정보가 없으면 로그인 페이지로 이동
-        router.push('/login')
+        if (BYPASS_AUTH) {
+          setUserName('김지민')
+          setCompanyName('더 워케이션')
+        } else {
+          router.push('/login')
+        }
       } else {
         const meta = data.user.user_metadata
         setUserName(meta?.name || '임직원')

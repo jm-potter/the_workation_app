@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
-import { supabase } from '@/lib/supabase'
+import { supabase, BYPASS_AUTH } from '@/lib/supabase'
 
 type Booking = {
   id: string | number
@@ -73,18 +73,29 @@ export default function MyPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return
-      const uid  = data.user.id
-      const meta = data.user.user_metadata
+      let uid = data.user?.id
+      let emailVal = data.user?.email ?? ''
+      let nameVal = data.user?.user_metadata?.name ?? ''
+
+      if (!uid) {
+        if (BYPASS_AUTH) {
+          uid = '00000000-0000-0000-0000-000000000000'
+          emailVal = 'workation.kr@gmail.com'
+          nameVal = '김지민'
+        } else {
+          return
+        }
+      }
+
       setUserId(uid)
-      setEmail(data.user.email ?? '')
-      setUserName(meta?.name ?? '')
+      setEmail(emailVal)
+      setUserName(nameVal)
 
       const [{ data: bData }, { data: dData }] = await Promise.all([
         supabase
           .from('bookings')
           .select('id, start_date, end_date, guests, total_price, status, accommodations(name, region)')
-          .eq('user_id', uid)
+          .or(`user_id.eq.${uid},user_id.is.null`)
           .order('id', { ascending: false }),
         supabase
           .from('documents')

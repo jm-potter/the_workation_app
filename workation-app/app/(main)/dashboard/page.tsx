@@ -6,7 +6,7 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
 import Footer from '@/components/ui/Footer'
-import { supabase } from '@/lib/supabase'
+import { supabase, BYPASS_AUTH } from '@/lib/supabase'
 
 const PERFORMANCE = [
   { label: '업무 집중도',  before: 68, after: 84, unit: '%' },
@@ -52,8 +52,11 @@ export default function DashboardPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       const role = data.user?.user_metadata?.role
-      if (!role) router.push('/login')
-      else if (role === 'emp') router.push('/accommodations')
+      if (!role) {
+        if (!BYPASS_AUTH) router.push('/login')
+      } else if (role === 'emp') {
+        if (!BYPASS_AUTH) router.push('/accommodations')
+      }
     })
 
     Promise.all([

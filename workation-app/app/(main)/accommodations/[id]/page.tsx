@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Footer from '@/components/ui/Footer'
 import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
-import { supabase } from '@/lib/supabase'
+import { supabase, BYPASS_AUTH } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 type Accommodation = {
@@ -43,7 +43,7 @@ export default function AccommodationDetailPage() {
 
   async function handleBooking() {
     const { data } = await supabase.auth.getUser()
-    if (!data.user) {
+    if (!data.user && !BYPASS_AUTH) {
       setShowLoginModal(true)
     } else {
       router.push(`/booking?id=${acc?.id}`)
